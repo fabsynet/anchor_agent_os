@@ -165,75 +165,75 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| AUTH-05 | TBD | Pending |
-| AUTH-06 | TBD | Pending |
-| AUTH-07 | TBD | Pending |
-| AUTH-08 | TBD | Pending |
-| CLNT-01 | TBD | Pending |
-| CLNT-02 | TBD | Pending |
-| CLNT-03 | TBD | Pending |
-| CLNT-04 | TBD | Pending |
-| CLNT-05 | TBD | Pending |
-| CLNT-06 | TBD | Pending |
-| CLNT-07 | TBD | Pending |
-| CLNT-08 | TBD | Pending |
-| CLNT-09 | TBD | Pending |
-| PLCY-01 | TBD | Pending |
-| PLCY-02 | TBD | Pending |
-| PLCY-03 | TBD | Pending |
-| PLCY-04 | TBD | Pending |
-| PLCY-05 | TBD | Pending |
-| PLCY-06 | TBD | Pending |
-| TASK-01 | TBD | Pending |
-| TASK-02 | TBD | Pending |
-| TASK-03 | TBD | Pending |
-| TASK-04 | TBD | Pending |
-| TASK-05 | TBD | Pending |
-| TASK-06 | TBD | Pending |
-| DOCS-01 | TBD | Pending |
-| DOCS-02 | TBD | Pending |
-| DOCS-03 | TBD | Pending |
-| DOCS-04 | TBD | Pending |
-| DOCS-05 | TBD | Pending |
-| COMP-01 | TBD | Pending |
-| COMP-02 | TBD | Pending |
-| COMP-03 | TBD | Pending |
-| EXPN-01 | TBD | Pending |
-| EXPN-02 | TBD | Pending |
-| EXPN-03 | TBD | Pending |
-| EXPN-04 | TBD | Pending |
-| EXPN-05 | TBD | Pending |
-| EXPN-06 | TBD | Pending |
-| DASH-01 | TBD | Pending |
-| DASH-02 | TBD | Pending |
-| DASH-03 | TBD | Pending |
-| DASH-04 | TBD | Pending |
-| DASH-05 | TBD | Pending |
-| TRST-01 | TBD | Pending |
-| TRST-02 | TBD | Pending |
-| TRST-03 | TBD | Pending |
-| TRST-04 | TBD | Pending |
-| TRST-05 | TBD | Pending |
-| TRST-06 | TBD | Pending |
-| TRST-07 | TBD | Pending |
-| ANLY-01 | TBD | Pending |
-| ANLY-02 | TBD | Pending |
-| ANLY-03 | TBD | Pending |
-| ANLY-04 | TBD | Pending |
-| NOTF-01 | TBD | Pending |
-| NOTF-02 | TBD | Pending |
-| NOTF-03 | TBD | Pending |
-| NOTF-04 | TBD | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| AUTH-06 | Phase 1 | Pending |
+| AUTH-07 | Phase 1 | Pending |
+| AUTH-08 | Phase 1 | Pending |
+| CLNT-01 | Phase 2 | Pending |
+| CLNT-02 | Phase 2 | Pending |
+| CLNT-03 | Phase 2 | Pending |
+| CLNT-04 | Phase 2 | Pending |
+| CLNT-05 | Phase 2 | Pending |
+| CLNT-06 | Phase 2 | Pending |
+| CLNT-07 | Phase 2 | Pending |
+| CLNT-08 | Phase 2 | Pending |
+| CLNT-09 | Phase 7 | Pending |
+| PLCY-01 | Phase 2 | Pending |
+| PLCY-02 | Phase 2 | Pending |
+| PLCY-03 | Phase 2 | Pending |
+| PLCY-04 | Phase 2 | Pending |
+| PLCY-05 | Phase 2 | Pending |
+| PLCY-06 | Phase 3 | Pending |
+| TASK-01 | Phase 3 | Pending |
+| TASK-02 | Phase 3 | Pending |
+| TASK-03 | Phase 3 | Pending |
+| TASK-04 | Phase 3 | Pending |
+| TASK-05 | Phase 3 | Pending |
+| TASK-06 | Phase 3 | Pending |
+| DOCS-01 | Phase 4 | Pending |
+| DOCS-02 | Phase 4 | Pending |
+| DOCS-03 | Phase 4 | Pending |
+| DOCS-04 | Phase 4 | Pending |
+| DOCS-05 | Phase 4 | Pending |
+| COMP-01 | Phase 4 | Pending |
+| COMP-02 | Phase 4 | Pending |
+| COMP-03 | Phase 4 | Pending |
+| EXPN-01 | Phase 5 | Pending |
+| EXPN-02 | Phase 5 | Pending |
+| EXPN-03 | Phase 5 | Pending |
+| EXPN-04 | Phase 5 | Pending |
+| EXPN-05 | Phase 5 | Pending |
+| EXPN-06 | Phase 5 | Pending |
+| DASH-01 | Phase 3 | Pending |
+| DASH-02 | Phase 3 | Pending |
+| DASH-03 | Phase 5 | Pending |
+| DASH-04 | Phase 3 | Pending |
+| DASH-05 | Phase 7 | Pending |
+| TRST-01 | Phase 6 | Pending |
+| TRST-02 | Phase 6 | Pending |
+| TRST-03 | Phase 6 | Pending |
+| TRST-04 | Phase 6 | Pending |
+| TRST-05 | Phase 6 | Pending |
+| TRST-06 | Phase 6 | Pending |
+| TRST-07 | Phase 6 | Pending |
+| ANLY-01 | Phase 7 | Pending |
+| ANLY-02 | Phase 7 | Pending |
+| ANLY-03 | Phase 7 | Pending |
+| ANLY-04 | Phase 7 | Pending |
+| NOTF-01 | Phase 3 | Pending |
+| NOTF-02 | Phase 3 | Pending |
+| NOTF-03 | Phase 5 | Pending |
+| NOTF-04 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 52 total
-- Mapped to phases: 0
-- Unmapped: 52
+- v1 requirements: 63 total
+- Mapped to phases: 63
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-05 after initial definition*
+*Last updated: 2026-02-05 after roadmap creation*
