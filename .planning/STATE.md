@@ -69,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-09
-Stopped at: Completed 01-03-PLAN.md — NestJS backend with JWT auth, role guards, tenant-scoped Prisma, auth/users endpoints
-Resume file: None
+Stopped at: Execute-phase paused — 01-02 checkpoint pending (auth pages need user verification), 01-03 complete, Wave 3 not started
+Resume file: .planning/phases/01-foundation-auth/.continue-here.md
