@@ -9,6 +9,7 @@ const PUBLIC_ROUTES = [
   '/reset-password',
   '/update-password',
   '/accept-invite',
+  '/auth/callback',
 ];
 
 export async function middleware(request: NextRequest) {
