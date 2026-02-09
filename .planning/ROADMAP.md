@@ -26,12 +26,14 @@ Anchor's MVP delivers a complete insurance agent operating system in 7 phases, s
   3. User can reset a forgotten password via email
   4. Admin can invite a user via email and that user can create their account
   5. Admin sees full navigation; invited user sees restricted navigation (no budget/expense)
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01: Monorepo scaffolding, database schema, Supabase setup
-- [ ] 01-02: Authentication flow (signup, login, verification, password reset)
-- [ ] 01-03: Multi-tenancy, roles, permissions, invitation flow
+- [ ] 01-01-PLAN.md -- Monorepo scaffolding, Prisma schema, Supabase config, shared packages
+- [ ] 01-02-PLAN.md -- Auth pages (signup, login, verification, password reset)
+- [ ] 01-03-PLAN.md -- NestJS backend (JWT strategy, guards, tenant Prisma, user endpoints)
+- [ ] 01-04-PLAN.md -- App shell (sidebar, topnav, navy theme, role-based navigation)
+- [ ] 01-05-PLAN.md -- Invitations, setup wizard, team management, email templates
 
 ### Phase 2: Client & Policy Management
 **Goal**: Users can manage their book of business — clients, leads, and policies with full profiles
@@ -137,7 +139,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/3 | Not started | - |
+| 1. Foundation & Auth | 0/5 | Planning complete | - |
 | 2. Client & Policy Management | 0/3 | Not started | - |
 | 3. Tasks, Renewals & Dashboard | 0/4 | Not started | - |
 | 4. Documents & Compliance | 0/2 | Not started | - |
