@@ -1,0 +1,73 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  admin
+  agent
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  revoked
+  expired
+}
+
+model Tenant {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users       User[]
+  invitations Invitation[]
+
+  @@map("tenants")
+}
+
+model User {
+  id             String   @id @db.Uuid // matches auth.users.id
+  tenantId       String   @map("tenant_id") @db.Uuid
+  email          String
+  firstName      String   @map("first_name")
+  lastName       String   @map("last_name")
+  role           UserRole @default(agent)
+  avatarUrl      String?  @map("avatar_url")
+  setupCompleted Boolean  @default(false) @map("setup_completed")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  invitations Invitation[] @relation("invitedBy")
+
+  @@index([tenantId])
+  @@map("users")
+}
+
+model Invitation {
+  id          String           @id @default(uuid()) @db.Uuid
+  tenantId    String           @map("tenant_id") @db.Uuid
+  email       String
+  role        UserRole
+  status      InvitationStatus @default(pending)
+  invitedById String           @map("invited_by_id") @db.Uuid
+  token       String?          @unique
+  expiresAt   DateTime         @map("expires_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  invitedBy User   @relation("invitedBy", fields: [invitedById], references: [id])
+
+  @@index([tenantId])
+  @@index([email, status])
+  @@map("invitations")
+}
