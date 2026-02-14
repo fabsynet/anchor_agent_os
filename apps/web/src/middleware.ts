@@ -55,7 +55,14 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect authenticated users away from auth pages to dashboard
-  if (user && isPublicRoute && pathname !== '/verify') {
+  // Exception: /verify (email verification) and /accept-invite (invitation acceptance)
+  // need the user to be authenticated AND on these pages simultaneously.
+  if (
+    user &&
+    isPublicRoute &&
+    pathname !== '/verify' &&
+    !pathname.startsWith('/accept-invite')
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
