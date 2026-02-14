@@ -39,31 +39,33 @@ export function useUser(): UseUserReturn {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session?.access_token) {
-        // Extract role from JWT claims as fallback (custom_access_token_hook adds user_role)
+        // Extract role from JWT claims (custom_access_token_hook adds user_role)
+        let jwtRole: string | undefined;
         try {
           const payload = JSON.parse(atob(session.access_token.split('.')[1]));
-          if (payload.user_role) {
-            setProfile((prev) => prev ?? { role: payload.user_role } as UserProfile);
-          }
+          jwtRole = payload.user_role;
         } catch {
-          // JWT decode failed, continue to API call
+          // JWT decode failed
         }
 
-        // Fetch full profile from NestJS API (overrides JWT-only fallback)
-        try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-          const response = await fetch(`${apiUrl}/api/auth/me`, {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          });
+        // Attempt full profile from NestJS API, with fast abort if unreachable
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
 
-          if (response.ok) {
-            const profileData: UserProfile = await response.json();
-            setProfile(profileData);
-          }
-        } catch {
-          // API unreachable — JWT fallback already set above
+        const profileData = await fetch(`${apiUrl}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          signal: controller.signal,
+        })
+          .then((res) => (res.ok ? res.json() : null))
+          .catch(() => null)
+          .finally(() => clearTimeout(timeout));
+
+        if (profileData) {
+          setProfile(profileData);
+        } else if (jwtRole) {
+          // API unavailable — use JWT role as fallback
+          setProfile({ role: jwtRole } as UserProfile);
         }
       }
     } catch (error) {
