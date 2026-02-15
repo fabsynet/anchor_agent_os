@@ -35,38 +35,24 @@ export function useUser(): UseUserReturn {
 
       setUser(authUser);
 
-      // Fetch profile from NestJS API to get role and tenant info
-      const { data: { session } } = await supabase.auth.getSession();
+      // Fetch profile directly from the users table via Supabase
+      const { data: dbUser } = await supabase
+        .from('users')
+        .select('role, tenant_id, first_name, last_name, avatar_url, setup_completed')
+        .eq('id', authUser.id)
+        .single();
 
-      if (session?.access_token) {
-        // Extract role from JWT claims (custom_access_token_hook adds user_role)
-        let jwtRole: string | undefined;
-        try {
-          const payload = JSON.parse(atob(session.access_token.split('.')[1]));
-          jwtRole = payload.user_role;
-        } catch {
-          // JWT decode failed
-        }
-
-        // Attempt full profile from NestJS API, with fast abort if unreachable
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3000);
-
-        const profileData = await fetch(`${apiUrl}/api/auth/me`, {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-          signal: controller.signal,
-        })
-          .then((res) => (res.ok ? res.json() : null))
-          .catch(() => null)
-          .finally(() => clearTimeout(timeout));
-
-        if (profileData) {
-          setProfile(profileData);
-        } else if (jwtRole) {
-          // API unavailable — use JWT role as fallback
-          setProfile({ role: jwtRole } as UserProfile);
-        }
+      if (dbUser) {
+        setProfile({
+          id: authUser.id,
+          email: authUser.email ?? '',
+          firstName: dbUser.first_name,
+          lastName: dbUser.last_name,
+          role: dbUser.role,
+          tenantId: dbUser.tenant_id,
+          avatarUrl: dbUser.avatar_url,
+          setupCompleted: dbUser.setup_completed,
+        });
       }
     } catch (error) {
       console.error('Error fetching user:', error);
