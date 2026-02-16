@@ -76,5 +76,10 @@ These URLs control where Supabase redirects users after email verification, pass
 After completing all steps, you can verify the setup:
 
 1. Run `pnpm --filter web dev` to start the dev server
+pnpm --filter api start:dev
 2. Visit `http://localhost:3000/signup` -- the page should load without errors
 3. Try creating an account -- you should receive a verification email
+  pnpm --filter @anchor/database exec prisma generate 
+
+  install prisma in root repo
+  
