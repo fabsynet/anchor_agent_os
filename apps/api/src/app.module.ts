@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClsModule } from 'nestjs-cls';
@@ -9,7 +10,13 @@ import { TenantsModule } from './tenants/tenants.module.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [
+        '.env',                          // apps/api/.env (local overrides)
+        resolve(__dirname, '../../../.env'), // monorepo root .env
+      ],
+    }),
     ClsModule.forRoot({ middleware: { mount: true } }),
     PrismaModule,
     AuthModule,
