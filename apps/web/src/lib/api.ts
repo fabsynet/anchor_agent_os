@@ -37,7 +37,13 @@ async function request<T>(
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
-  });
+  }).catch(() => null);
+
+  if (!response) {
+    throw new Error(
+      'Unable to connect to the API server. Make sure the backend is running (pnpm --filter api dev).',
+    );
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({

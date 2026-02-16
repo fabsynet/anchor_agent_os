@@ -51,9 +51,11 @@ export default function TeamSettingsPage() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
+      setError(null);
       const [invitationsData, membersData] = await Promise.all([
         api.get<Invitation[]>("/api/invitations"),
         api.get<TeamMember[]>("/api/users"),
@@ -61,7 +63,9 @@ export default function TeamSettingsPage() {
       setInvitations(invitationsData);
       setMembers(membersData);
     } catch (err) {
-      console.error("Failed to fetch team data:", err);
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch team data";
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -75,6 +79,24 @@ export default function TeamSettingsPage() {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Team Management
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Manage your team members and invitations.
+          </p>
+        </div>
+        <div className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {error}
+        </div>
       </div>
     );
   }
