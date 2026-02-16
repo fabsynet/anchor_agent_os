@@ -35,7 +35,25 @@ export function useUser(): UseUserReturn {
 
       setUser(authUser);
 
-      // Fetch profile directly from the users table via Supabase
+      const meta = authUser.user_metadata ?? {};
+
+      // Determine role from signup metadata:
+      // - Organic signups have no invitation_id → admin (matches handle_new_user trigger)
+      // - Invited users have invitation_id → agent
+      const role = meta.invitation_id ? 'agent' : 'admin';
+
+      setProfile({
+        id: authUser.id,
+        email: authUser.email ?? '',
+        firstName: meta.firstName ?? meta.first_name ?? '',
+        lastName: meta.lastName ?? meta.last_name ?? '',
+        role,
+        tenantId: meta.tenant_id ?? '',
+        avatarUrl: null,
+        setupCompleted: false,
+      });
+
+      // Try to enrich from users table if RLS is configured
       const { data: dbUser } = await supabase
         .from('users')
         .select('role, tenant_id, first_name, last_name, avatar_url, setup_completed')
