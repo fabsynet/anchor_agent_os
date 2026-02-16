@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogOut, Settings, User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -19,6 +20,11 @@ import {
 export function UserMenu() {
   const router = useRouter();
   const { profile, isAdmin } = useUser();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const initials = profile
     ? `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`.toUpperCase()
@@ -33,6 +39,18 @@ export function UserMenu() {
     await supabase.auth.signOut();
     router.push('/login');
   };
+
+  if (!mounted) {
+    return (
+      <Button variant="ghost" className="relative size-9 rounded-full" disabled>
+        <Avatar>
+          <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+            ?
+          </AvatarFallback>
+        </Avatar>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
