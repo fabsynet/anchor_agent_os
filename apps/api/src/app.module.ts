@@ -13,8 +13,9 @@ import { TenantsModule } from './tenants/tenants.module.js';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [
-        '.env',                          // apps/api/.env (local overrides)
-        resolve(__dirname, '../../../.env'), // monorepo root .env
+        '.env',                                      // apps/api/.env
+        resolve(process.cwd(), '.env'),               // cwd .env
+        resolve(process.cwd(), '../../.env'),          // monorepo root from apps/api/
       ],
     }),
     ClsModule.forRoot({ middleware: { mount: true } }),

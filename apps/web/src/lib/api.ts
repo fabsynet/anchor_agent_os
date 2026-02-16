@@ -7,15 +7,21 @@ interface ApiOptions {
   headers?: Record<string, string>;
 }
 
-async function getAuthHeaders(): Promise<Record<string, string>> {
+async function getAuthHeaders(forceRefresh = false): Promise<Record<string, string>> {
   const supabase = createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
+
+  if (forceRefresh) {
+    // Force a token refresh by calling getUser() which validates with Supabase server
+    await supabase.auth.getUser();
+  }
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   if (session?.access_token) {
     headers['Authorization'] = `Bearer ${session.access_token}`;
@@ -43,6 +49,32 @@ async function request<T>(
     throw new Error(
       'Unable to connect to the API server. Make sure the backend is running (pnpm --filter api dev).',
     );
+  }
+
+  // On 401, refresh the token and retry once
+  if (response.status === 401) {
+    const freshHeaders = await getAuthHeaders(true);
+    const retryHeaders = { ...freshHeaders, ...options?.headers };
+
+    const retryResponse = await fetch(`${API_BASE_URL}${path}`, {
+      method,
+      headers: retryHeaders,
+      body: body ? JSON.stringify(body) : undefined,
+    }).catch(() => null);
+
+    if (!retryResponse) {
+      throw new Error('Unable to connect to the API server.');
+    }
+
+    if (!retryResponse.ok) {
+      const error = await retryResponse.json().catch(() => ({
+        message: `Request failed with status ${retryResponse.status}`,
+      }));
+      throw new Error(error.message || `API error: ${retryResponse.status}`);
+    }
+
+    if (retryResponse.status === 204) return undefined as T;
+    return retryResponse.json();
   }
 
   if (!response.ok) {
