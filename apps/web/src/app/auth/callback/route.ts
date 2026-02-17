@@ -28,27 +28,10 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}${next}`);
     }
 
-    // For new signup email verification: check if user needs setup
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      // Query the users table to check setup_completed status
-      const { data: profile } = await supabase
-        .from("users")
-        .select("setup_completed")
-        .eq("id", user.id)
-        .single();
-
-      if (!profile || !profile.setup_completed) {
-        // New user or setup not completed — redirect to setup wizard
-        return NextResponse.redirect(`${origin}/setup`);
-      }
-
-      // Setup already completed — go to dashboard
-      return NextResponse.redirect(`${origin}/`);
-    }
+    // Redirect to dashboard — the client-side useUser hook will
+    // check setup_completed via the backend API and redirect to
+    // /setup if needed
+    return NextResponse.redirect(`${origin}/`);
   }
 
   // Fallback: no code or unknown state, redirect to login
