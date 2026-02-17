@@ -8,6 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ClsService } from 'nestjs-cls';
+import { PrismaService } from '../../common/prisma/prisma.service.js';
 
 export interface AuthenticatedUser {
   id: string;
@@ -23,18 +24,20 @@ export class JwtAuthGuard implements CanActivate {
 
   constructor(
     private readonly cls: ClsService,
+    private readonly prisma: PrismaService,
     configService: ConfigService,
   ) {
     const supabaseUrl = configService.get<string>('NEXT_PUBLIC_SUPABASE_URL');
-    const serviceRoleKey = configService.get<string>('SUPABASE_SERVICE_ROLE_KEY');
+    const anonKey = configService.get<string>('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
-    if (!supabaseUrl || !serviceRoleKey) {
+    if (!supabaseUrl || !anonKey) {
       throw new Error(
-        'NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required',
+        'NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required',
       );
     }
 
-    this.supabase = createClient(supabaseUrl, serviceRoleKey, {
+    // Use anon key — auth.getUser() validates the user's own token
+    this.supabase = createClient(supabaseUrl, anonKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
   }
@@ -49,7 +52,7 @@ export class JwtAuthGuard implements CanActivate {
 
     const token = authHeader.substring(7);
 
-    // Validate token with Supabase (server-side verification)
+    // Validate token with Supabase Auth API
     const {
       data: { user: supabaseUser },
       error,
@@ -80,90 +83,75 @@ export class JwtAuthGuard implements CanActivate {
       userRole = supabaseUser.user_metadata?.user_role || supabaseUser.user_metadata?.role;
     }
 
-    // Step 3: Query the users table (service_role bypasses RLS)
+    // Step 3: Query the users table via Prisma (direct DB connection)
     if (!tenantId || !userRole) {
-      const { data: dbUser, error: dbError } = await this.supabase
-        .from('users')
-        .select('tenant_id, role')
-        .eq('id', supabaseUser.id)
-        .single();
+      try {
+        const dbUser = await this.prisma.user.findUnique({
+          where: { id: supabaseUser.id },
+          select: { tenantId: true, role: true },
+        });
 
-      if (dbError) {
-        this.logger.warn(
-          `DB lookup failed for user ${supabaseUser.id}: ${dbError.message}`,
-        );
-      }
-
-      if (dbUser) {
-        if (!tenantId) tenantId = dbUser.tenant_id;
-        if (!userRole) userRole = dbUser.role;
+        if (dbUser) {
+          if (!tenantId) tenantId = dbUser.tenantId;
+          if (!userRole) userRole = dbUser.role;
+        }
+      } catch (err: any) {
+        this.logger.warn(`DB lookup failed for user ${supabaseUser.id}: ${err.message}`);
       }
     }
 
     // Step 4: Auto-provision tenant + user if no record exists
-    // This handles the case where the handle_new_user trigger didn't fire
     if (!tenantId) {
       this.logger.warn(
         `No tenant found for user ${supabaseUser.id} (${supabaseUser.email}). Auto-provisioning...`,
       );
 
-      const email = supabaseUser.email || '';
-      const name = supabaseUser.user_metadata?.full_name || email.split('@')[0];
-      const slug = email
-        .split('@')[0]
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '-')
-        .substring(0, 30)
-        + '-' + Date.now().toString(36);
+      try {
+        const email = supabaseUser.email || '';
+        const name = supabaseUser.user_metadata?.full_name || email.split('@')[0];
+        const slug = email
+          .split('@')[0]
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '-')
+          .substring(0, 30)
+          + '-' + Date.now().toString(36);
 
-      // Create tenant
-      const { data: newTenant, error: tenantError } = await this.supabase
-        .from('tenants')
-        .insert({ name: `${name}'s Agency`, slug })
-        .select('id')
-        .single();
+        // Create tenant + user in a single transaction via Prisma
+        const isInvited = !!supabaseUser.user_metadata?.invitation_id;
+        const role = isInvited ? 'agent' : 'admin';
+        const nameParts = name.split(' ');
+        const firstName = nameParts[0] || 'User';
+        const lastName = nameParts.slice(1).join(' ') || '';
 
-      if (tenantError || !newTenant) {
-        this.logger.error(`Failed to create tenant: ${tenantError?.message}`);
-        throw new UnauthorizedException(
-          'Account setup incomplete. Please contact support.',
-        );
-      }
-
-      tenantId = newTenant.id;
-
-      // Determine role: no invitation_id = admin (organic signup)
-      const isInvited = !!supabaseUser.user_metadata?.invitation_id;
-      userRole = isInvited ? 'agent' : 'admin';
-
-      // Parse name
-      const nameParts = name.split(' ');
-      const firstName = nameParts[0] || 'User';
-      const lastName = nameParts.slice(1).join(' ') || '';
-
-      // Create user record
-      const { error: userError } = await this.supabase
-        .from('users')
-        .insert({
-          id: supabaseUser.id,
-          tenant_id: tenantId,
-          email,
-          first_name: firstName,
-          last_name: lastName,
-          role: userRole,
-          setup_completed: false,
+        const tenant = await this.prisma.tenant.create({
+          data: {
+            name: `${firstName}'s Agency`,
+            slug,
+            users: {
+              create: {
+                id: supabaseUser.id,
+                email,
+                firstName,
+                lastName,
+                role,
+                setupCompleted: false,
+              },
+            },
+          },
         });
 
-      if (userError) {
-        this.logger.error(`Failed to create user record: ${userError.message}`);
+        tenantId = tenant.id;
+        userRole = role;
+
+        this.logger.log(
+          `Auto-provisioned tenant ${tenantId} and user ${supabaseUser.id}`,
+        );
+      } catch (err: any) {
+        this.logger.error(`Failed to auto-provision: ${err.message}`);
         throw new UnauthorizedException(
           'Account setup incomplete. Please contact support.',
         );
       }
-
-      this.logger.log(
-        `Auto-provisioned tenant ${tenantId} and user ${supabaseUser.id}`,
-      );
     }
 
     // Final role fallback

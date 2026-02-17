@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { api } from '@/lib/api';
 import type { UserProfile } from '@anchor/shared';
 import type { User } from '@supabase/supabase-js';
 
@@ -35,11 +36,8 @@ export function useUser(): UseUserReturn {
 
       setUser(authUser);
 
+      // Derive initial profile from auth metadata (immediate, no API call)
       const meta = authUser.user_metadata ?? {};
-
-      // Determine role from signup metadata:
-      // - Organic signups have no invitation_id → admin (matches handle_new_user trigger)
-      // - Invited users have invitation_id → agent
       const role = meta.invitation_id ? 'agent' : 'admin';
 
       setProfile({
@@ -53,24 +51,33 @@ export function useUser(): UseUserReturn {
         setupCompleted: false,
       });
 
-      // Try to enrich from users table if RLS is configured
-      const { data: dbUser } = await supabase
-        .from('users')
-        .select('role, tenant_id, first_name, last_name, avatar_url, setup_completed')
-        .eq('id', authUser.id)
-        .single();
+      // Enrich from backend API (goes through NestJS, not direct DB)
+      try {
+        const dbProfile = await api.get<{
+          id: string;
+          email: string;
+          firstName: string;
+          lastName: string;
+          role: string;
+          tenantId: string;
+          avatarUrl: string | null;
+          setupCompleted: boolean;
+        }>('/api/auth/me');
 
-      if (dbUser) {
-        setProfile({
-          id: authUser.id,
-          email: authUser.email ?? '',
-          firstName: dbUser.first_name,
-          lastName: dbUser.last_name,
-          role: dbUser.role,
-          tenantId: dbUser.tenant_id,
-          avatarUrl: dbUser.avatar_url,
-          setupCompleted: dbUser.setup_completed,
-        });
+        if (dbProfile) {
+          setProfile({
+            id: dbProfile.id,
+            email: dbProfile.email,
+            firstName: dbProfile.firstName,
+            lastName: dbProfile.lastName,
+            role: dbProfile.role,
+            tenantId: dbProfile.tenantId,
+            avatarUrl: dbProfile.avatarUrl,
+            setupCompleted: dbProfile.setupCompleted,
+          });
+        }
+      } catch {
+        // Backend unreachable — keep metadata-derived profile
       }
     } catch (error) {
       console.error('Error fetching user:', error);
