@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { api } from '@/lib/api';
-import type { UserProfile } from '@anchor/shared';
+import type { UserProfile, UserRole } from '@anchor/shared';
 import type { User } from '@supabase/supabase-js';
 
 interface UseUserReturn {
@@ -58,7 +58,7 @@ export function useUser(): UseUserReturn {
           email: string;
           firstName: string;
           lastName: string;
-          role: string;
+          role: UserRole;
           tenantId: string;
           avatarUrl: string | null;
           setupCompleted: boolean;
