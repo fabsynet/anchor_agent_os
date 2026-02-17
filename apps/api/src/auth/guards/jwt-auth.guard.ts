@@ -2,6 +2,7 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -17,6 +18,7 @@ export interface AuthenticatedUser {
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
+  private readonly logger = new Logger(JwtAuthGuard.name);
   private supabase: SupabaseClient;
 
   constructor(
@@ -78,13 +80,19 @@ export class JwtAuthGuard implements CanActivate {
       userRole = supabaseUser.user_metadata?.user_role || supabaseUser.user_metadata?.role;
     }
 
-    // Step 3: Query the users table as last resort (service_role bypasses RLS)
+    // Step 3: Query the users table (service_role bypasses RLS)
     if (!tenantId || !userRole) {
-      const { data: dbUser } = await this.supabase
+      const { data: dbUser, error: dbError } = await this.supabase
         .from('users')
         .select('tenant_id, role')
         .eq('id', supabaseUser.id)
         .single();
+
+      if (dbError) {
+        this.logger.warn(
+          `DB lookup failed for user ${supabaseUser.id}: ${dbError.message}`,
+        );
+      }
 
       if (dbUser) {
         if (!tenantId) tenantId = dbUser.tenant_id;
@@ -92,7 +100,73 @@ export class JwtAuthGuard implements CanActivate {
       }
     }
 
-    // Step 4: Derive role from metadata if still missing
+    // Step 4: Auto-provision tenant + user if no record exists
+    // This handles the case where the handle_new_user trigger didn't fire
+    if (!tenantId) {
+      this.logger.warn(
+        `No tenant found for user ${supabaseUser.id} (${supabaseUser.email}). Auto-provisioning...`,
+      );
+
+      const email = supabaseUser.email || '';
+      const name = supabaseUser.user_metadata?.full_name || email.split('@')[0];
+      const slug = email
+        .split('@')[0]
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .substring(0, 30)
+        + '-' + Date.now().toString(36);
+
+      // Create tenant
+      const { data: newTenant, error: tenantError } = await this.supabase
+        .from('tenants')
+        .insert({ name: `${name}'s Agency`, slug })
+        .select('id')
+        .single();
+
+      if (tenantError || !newTenant) {
+        this.logger.error(`Failed to create tenant: ${tenantError?.message}`);
+        throw new UnauthorizedException(
+          'Account setup incomplete. Please contact support.',
+        );
+      }
+
+      tenantId = newTenant.id;
+
+      // Determine role: no invitation_id = admin (organic signup)
+      const isInvited = !!supabaseUser.user_metadata?.invitation_id;
+      userRole = isInvited ? 'agent' : 'admin';
+
+      // Parse name
+      const nameParts = name.split(' ');
+      const firstName = nameParts[0] || 'User';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Create user record
+      const { error: userError } = await this.supabase
+        .from('users')
+        .insert({
+          id: supabaseUser.id,
+          tenant_id: tenantId,
+          email,
+          first_name: firstName,
+          last_name: lastName,
+          role: userRole,
+          setup_completed: false,
+        });
+
+      if (userError) {
+        this.logger.error(`Failed to create user record: ${userError.message}`);
+        throw new UnauthorizedException(
+          'Account setup incomplete. Please contact support.',
+        );
+      }
+
+      this.logger.log(
+        `Auto-provisioned tenant ${tenantId} and user ${supabaseUser.id}`,
+      );
+    }
+
+    // Final role fallback
     if (!userRole) {
       userRole = supabaseUser.user_metadata?.invitation_id ? 'agent' : 'admin';
     }
