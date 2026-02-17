@@ -18,7 +18,7 @@ import { TenantsModule } from './tenants/tenants.module.js';
         resolve(process.cwd(), '../../.env'),          // monorepo root from apps/api/
       ],
     }),
-    ClsModule.forRoot({ middleware: { mount: true } }),
+    ClsModule.forRoot({ global: true, middleware: { mount: true } }),
     PrismaModule,
     AuthModule,
     UsersModule,
