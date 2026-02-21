@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   BadRequestException,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../common/prisma/prisma.service.js';
@@ -14,6 +15,7 @@ const INVITE_CAP = 2;
 
 @Injectable()
 export class InvitationsService {
+  private readonly logger = new Logger(InvitationsService.name);
   private readonly supabaseAdmin: SupabaseClient;
   private readonly frontendUrl: string;
 
@@ -24,6 +26,46 @@ export class InvitationsService {
     this.supabaseAdmin = createSupabaseAdmin(configService);
     this.frontendUrl =
       configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+  }
+
+  /**
+   * Delete an unconfirmed user from Supabase auth by email.
+   * This is needed because inviteUserByEmail creates a user in auth.users,
+   * and Supabase won't allow re-inviting an existing user.
+   * Only deletes if the user has NOT confirmed their email (never completed signup).
+   */
+  private async deleteUnconfirmedAuthUser(email: string): Promise<void> {
+    const { data, error } =
+      await this.supabaseAdmin.auth.admin.listUsers();
+
+    if (error) {
+      this.logger.warn(`Failed to list auth users: ${error.message}`);
+      return;
+    }
+
+    const authUser = data.users.find(
+      (u) => u.email?.toLowerCase() === email.toLowerCase(),
+    );
+
+    if (!authUser) return;
+
+    // Only delete if the user never confirmed (never set a password / completed signup)
+    if (authUser.email_confirmed_at && authUser.last_sign_in_at) {
+      throw new BadRequestException(
+        'This user has already registered and confirmed their account',
+      );
+    }
+
+    const { error: deleteError } =
+      await this.supabaseAdmin.auth.admin.deleteUser(authUser.id);
+
+    if (deleteError) {
+      this.logger.warn(
+        `Failed to delete unconfirmed auth user ${email}: ${deleteError.message}`,
+      );
+    } else {
+      this.logger.log(`Deleted unconfirmed auth user: ${email}`);
+    }
   }
 
   /**
@@ -66,7 +108,10 @@ export class InvitationsService {
       );
     }
 
-    // 3. Create invitation record
+    // 3. Clean up any unconfirmed auth user from a previous invite attempt
+    await this.deleteUnconfirmedAuthUser(email);
+
+    // 4. Create invitation record
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -81,7 +126,7 @@ export class InvitationsService {
       },
     });
 
-    // 4. Call Supabase inviteUserByEmail
+    // 5. Call Supabase inviteUserByEmail
     try {
       const { error } =
         await this.supabaseAdmin.auth.admin.inviteUserByEmail(email, {
@@ -94,7 +139,6 @@ export class InvitationsService {
         });
 
       if (error) {
-        // 5. If Supabase call fails, delete the invitation record and rethrow
         await this.prisma.invitation.delete({
           where: { id: invitation.id },
         });
@@ -103,14 +147,12 @@ export class InvitationsService {
         );
       }
     } catch (err) {
-      // If it's already a NestJS exception, rethrow as-is
       if (
         err instanceof BadRequestException ||
         err instanceof ForbiddenException
       ) {
         throw err;
       }
-      // Unexpected error: clean up and rethrow
       await this.prisma.invitation.delete({
         where: { id: invitation.id },
       });
@@ -144,6 +186,7 @@ export class InvitationsService {
 
   /**
    * Revoke a pending invitation.
+   * Also cleans up the unconfirmed auth user created by inviteUserByEmail.
    */
   async revokeInvitation(tenantId: string, invitationId: string) {
     const invitation = await this.prisma.invitation.findFirst({
@@ -160,6 +203,13 @@ export class InvitationsService {
       );
     }
 
+    // Clean up the unconfirmed auth user so the email can be re-invited
+    try {
+      await this.deleteUnconfirmedAuthUser(invitation.email);
+    } catch {
+      // If deletion fails (user already confirmed), still revoke the invitation record
+    }
+
     return this.prisma.invitation.update({
       where: { id: invitationId },
       data: { status: 'revoked' },
@@ -168,7 +218,7 @@ export class InvitationsService {
 
   /**
    * Resend an invitation (pending or expired).
-   * Updates expiresAt to 7 days from now and re-sends via Supabase.
+   * Deletes the old unconfirmed auth user and creates a fresh invite.
    */
   async resendInvitation(tenantId: string, invitationId: string) {
     const invitation = await this.prisma.invitation.findFirst({
@@ -185,6 +235,9 @@ export class InvitationsService {
       );
     }
 
+    // Delete old unconfirmed auth user so inviteUserByEmail succeeds
+    await this.deleteUnconfirmedAuthUser(invitation.email);
+
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -194,7 +247,7 @@ export class InvitationsService {
       data: { expiresAt, status: 'pending' },
     });
 
-    // Re-send via Supabase
+    // Re-send via Supabase (fresh invite)
     const { error } =
       await this.supabaseAdmin.auth.admin.inviteUserByEmail(
         invitation.email,
