@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ClientProfileHeader } from "@/components/clients/client-profile-header";
 import { ClientOverviewTab } from "@/components/clients/client-overview-tab";
 import { ClientTimelineTab } from "@/components/clients/client-timeline-tab";
+import { ClientPoliciesTab } from "@/components/clients/client-policies-tab";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -161,11 +162,11 @@ export default function ClientProfilePage({
         </TabsContent>
 
         <TabsContent value="policies" className="mt-4">
-          <Card>
-            <CardContent className="py-10 text-center text-muted-foreground">
-              Policies will appear here
-            </CardContent>
-          </Card>
+          <ClientPoliciesTab
+            clientId={id}
+            clientStatus={client.status}
+            onClientUpdated={fetchClient}
+          />
         </TabsContent>
 
         <TabsContent value="timeline" className="mt-4">
