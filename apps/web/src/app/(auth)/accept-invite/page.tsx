@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 import { AcceptInviteForm } from "@/components/auth/accept-invite-form";
+import type { User } from "@supabase/supabase-js";
 
 export default function AcceptInvitePage() {
   const router = useRouter();
@@ -13,28 +14,45 @@ export default function AcceptInvitePage() {
   const [agencyName, setAgencyName] = useState<string | undefined>();
 
   useEffect(() => {
-    async function checkAuth() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const supabase = createClient();
 
-      if (!user) {
-        // User is not authenticated yet - redirect to login
-        router.push("/login?error=invite_auth_required");
-        return;
+    // Listen for auth state changes — Supabase client auto-detects
+    // hash fragment tokens (#access_token=...&type=invite) from the invite URL
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        handleUser(session.user);
       }
+    });
 
-      // Get agency name from user metadata (set by inviteUserByEmail)
+    // Also check immediately in case session is already established
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        handleUser(user);
+      } else {
+        // Give Supabase a moment to process hash fragment tokens
+        // If still no user after 3 seconds, redirect to login
+        setTimeout(async () => {
+          const { data: { user: retryUser } } = await supabase.auth.getUser();
+          if (!retryUser) {
+            router.push("/login?error=invite_auth_required");
+          }
+        }, 3000);
+      }
+    });
+
+    function handleUser(user: User) {
       const metadata = user.user_metadata;
       if (metadata?.agency_name) {
         setAgencyName(metadata.agency_name);
       }
-
       setIsLoading(false);
     }
 
-    checkAuth();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [router]);
 
   if (isLoading) {

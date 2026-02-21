@@ -135,7 +135,7 @@ export class InvitationsService {
             tenant_id: tenantId,
             role,
           },
-          redirectTo: `${this.frontendUrl}/auth/callback?next=/accept-invite`,
+          redirectTo: `${this.frontendUrl}/accept-invite`,
         });
 
       if (error) {
@@ -257,7 +257,7 @@ export class InvitationsService {
             tenant_id: tenantId,
             role: invitation.role,
           },
-          redirectTo: `${this.frontendUrl}/auth/callback?next=/accept-invite`,
+          redirectTo: `${this.frontendUrl}/accept-invite`,
         },
       );
 
