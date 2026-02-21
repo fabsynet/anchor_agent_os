@@ -45,12 +45,14 @@ Plans:
   3. Each client has a profile page showing a living activity timeline
   4. User can add notes to a client and see them in the timeline
   5. User can create, edit, and delete policies linked to a client with type, carrier, dates, premium, and status
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 02-01: Client CRUD, search, lead/client status, profiles
-- [ ] 02-02: Client timeline, notes, activity history
-- [ ] 02-03: Policy CRUD, types, status, multi-policy per client
+- [ ] 02-01-PLAN.md -- Schema, shared types/constants/validation, install dependencies
+- [ ] 02-02-PLAN.md -- NestJS backend modules (Clients, Timeline, Policies)
+- [ ] 02-03-PLAN.md -- Client list page (tabs, search, filters, table/card toggle, forms)
+- [ ] 02-04-PLAN.md -- Client profile page (tabbed sections, timeline/notes display)
+- [ ] 02-05-PLAN.md -- Policy frontend (forms, cards/table, auto-convert, visual verification)
 
 ### Phase 3: Tasks, Renewals & Dashboard
 **Goal**: The system actively prevents quiet failures — auto-generating renewal tasks and surfacing what needs attention daily
@@ -140,7 +142,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 0/5 | Planning complete | - |
-| 2. Client & Policy Management | 0/3 | Not started | - |
+| 2. Client & Policy Management | 0/5 | Planning complete | - |
 | 3. Tasks, Renewals & Dashboard | 0/4 | Not started | - |
 | 4. Documents & Compliance | 0/2 | Not started | - |
 | 5. Expenses & Budgets | 0/2 | Not started | - |
