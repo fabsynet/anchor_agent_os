@@ -16,31 +16,46 @@ export default function AcceptInvitePage() {
   useEffect(() => {
     const supabase = createClient();
 
-    // Listen for auth state changes — Supabase client auto-detects
-    // hash fragment tokens (#access_token=...&type=invite) from the invite URL
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        handleUser(session.user);
-      }
-    });
+    async function initSession() {
+      // Supabase invite links redirect with hash fragment tokens:
+      // /accept-invite#access_token=...&refresh_token=...&type=invite
+      // The SSR client (createBrowserClient) doesn't auto-detect these,
+      // so we manually parse and set the session.
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
 
-    // Also check immediately in case session is already established
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        handleUser(user);
-      } else {
-        // Give Supabase a moment to process hash fragment tokens
-        // If still no user after 3 seconds, redirect to login
-        setTimeout(async () => {
-          const { data: { user: retryUser } } = await supabase.auth.getUser();
-          if (!retryUser) {
-            router.push("/login?error=invite_auth_required");
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (error) {
+            console.error("Failed to set session from invite:", error.message);
+            router.push("/login?error=invite_session_failed");
+            return;
           }
-        }, 3000);
+
+          // Clear the hash from the URL (tokens are sensitive)
+          window.history.replaceState(null, "", window.location.pathname);
+        }
       }
-    });
+
+      // Now check for authenticated user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/login?error=invite_auth_required");
+        return;
+      }
+
+      handleUser(user);
+    }
 
     function handleUser(user: User) {
       const metadata = user.user_metadata;
@@ -50,9 +65,7 @@ export default function AcceptInvitePage() {
       setIsLoading(false);
     }
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    initSession();
   }, [router]);
 
   if (isLoading) {
