@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service.js';
 import { TimelineService } from '../timeline/timeline.service.js';
+import { RenewalsService } from '../renewals/renewals.service.js';
 import { CreatePolicyDto } from './dto/create-policy.dto.js';
 import { UpdatePolicyDto } from './dto/update-policy.dto.js';
 
@@ -29,6 +30,7 @@ export class PoliciesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly timelineService: TimelineService,
+    private readonly renewalsService: RenewalsService,
   ) {}
 
   /**
@@ -123,6 +125,28 @@ export class PoliciesService {
     this.logger.log(
       `Policy created: ${result.id} (${dto.type}) for client ${clientId} by user ${userId}`,
     );
+
+    // Generate renewal tasks if policy has an endDate
+    if (result.endDate) {
+      try {
+        const policyWithClient = await this.prisma.policy.findUnique({
+          where: { id: result.id },
+          include: {
+            client: { select: { firstName: true, lastName: true } },
+          },
+        });
+        if (policyWithClient) {
+          await this.renewalsService.generateTasksForPolicy(
+            policyWithClient as any,
+          );
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to generate renewal tasks for policy ${result.id}`,
+          error,
+        );
+      }
+    }
 
     return result;
   }
@@ -299,6 +323,53 @@ export class PoliciesService {
           policyId: id,
           changedFields: Object.keys(updateData),
         },
+      );
+    }
+
+    // Renewal lifecycle hooks
+    try {
+      // If status changed to cancelled or expired, delete pending renewal tasks
+      if (
+        dto.status &&
+        dto.status !== existing.status &&
+        (dto.status === 'cancelled' || dto.status === 'expired')
+      ) {
+        await this.renewalsService.deleteRenewalTasksForPolicy(id);
+      }
+
+      // If endDate changed, regenerate renewal tasks
+      if (dto.endDate !== undefined) {
+        const existingEndDate = existing.endDate
+          ? new Date(existing.endDate).toISOString()
+          : null;
+        const newEndDate = dto.endDate
+          ? new Date(dto.endDate).toISOString()
+          : null;
+
+        if (existingEndDate !== newEndDate) {
+          if (newEndDate) {
+            // Query fresh policy with client includes for task description
+            const policyWithClient = await this.prisma.policy.findUnique({
+              where: { id },
+              include: {
+                client: { select: { firstName: true, lastName: true } },
+              },
+            });
+            if (policyWithClient) {
+              await this.renewalsService.regenerateRenewalTasks(
+                policyWithClient as any,
+              );
+            }
+          } else {
+            // endDate was removed, just delete pending renewal tasks
+            await this.renewalsService.deleteRenewalTasksForPolicy(id);
+          }
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to update renewal tasks for policy ${id}`,
+        error,
       );
     }
 
