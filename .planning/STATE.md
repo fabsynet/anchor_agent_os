@@ -131,5 +131,5 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 03-05-PLAN.md (Dashboard UI) -- Phase 3 complete
-Resume file: None
+Stopped at: Phase 3 complete, post-fix committed (dashboard /api prefix). Ready for Phase 4.
+Resume file: .planning/phases/03-tasks-renewals-and-dashboard/.continue-here.md
