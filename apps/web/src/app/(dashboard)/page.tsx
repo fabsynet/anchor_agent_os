@@ -47,11 +47,11 @@ export default function DashboardPage() {
           activityData,
           incomeData,
         ] = await Promise.all([
-          api.get<DashboardSummary>('/dashboard/summary'),
-          api.get<UpcomingRenewal[]>('/dashboard/renewals'),
-          api.get<OverdueTask[]>('/dashboard/overdue-tasks'),
-          api.get<ActivityItem[]>('/dashboard/recent-activity'),
-          api.get<PremiumIncome>('/dashboard/premium-income'),
+          api.get<DashboardSummary>('/api/dashboard/summary'),
+          api.get<UpcomingRenewal[]>('/api/dashboard/renewals'),
+          api.get<OverdueTask[]>('/api/dashboard/overdue-tasks'),
+          api.get<ActivityItem[]>('/api/dashboard/recent-activity'),
+          api.get<PremiumIncome>('/api/dashboard/premium-income'),
         ]);
 
         setSummary(summaryData);
