@@ -60,6 +60,31 @@ enum PaymentFrequency {
   @@map("payment_frequency")
 }
 
+enum TaskStatus {
+  todo
+  in_progress
+  waiting
+  done
+
+  @@map("task_status")
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+
+  @@map("task_priority")
+}
+
+enum TaskType {
+  manual
+  renewal
+
+  @@map("task_type")
+}
+
 enum ActivityEventType {
   client_created
   client_updated
@@ -69,6 +94,9 @@ enum ActivityEventType {
   policy_updated
   policy_status_changed
   policy_deleted
+  task_created
+  task_completed
+  task_status_changed
 
   @@map("activity_event_type")
 }
@@ -90,6 +118,7 @@ model Tenant {
   policies       Policy[]
   activityEvents ActivityEvent[]
   notes          Note[]
+  tasks          Task[]
 
   @@map("tenants")
 }
@@ -103,6 +132,7 @@ model User {
   role           UserRole @default(agent)
   avatarUrl      String?  @map("avatar_url")
   setupCompleted Boolean  @default(false) @map("setup_completed")
+  digestOptOut   Boolean  @default(false) @map("digest_opt_out")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -113,6 +143,8 @@ model User {
   policiesCreated Policy[]        @relation("policyCreatedBy")
   activityEvents  ActivityEvent[] @relation("activityEventUser")
   notesMade       Note[]          @relation("noteUser")
+  tasksAssigned   Task[]          @relation("taskAssignee")
+  tasksCreated    Task[]          @relation("taskCreatedBy")
 
   @@index([tenantId])
   @@map("users")
@@ -160,6 +192,7 @@ model Client {
   policies       Policy[]
   activityEvents ActivityEvent[]
   notes          Note[]
+  tasks          Task[]
 
   @@index([tenantId])
   @@index([tenantId, status])
@@ -191,6 +224,7 @@ model Policy {
   tenant    Tenant @relation(fields: [tenantId], references: [id])
   client    Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   createdBy User   @relation("policyCreatedBy", fields: [createdById], references: [id])
+  tasks     Task[]
 
   @@index([tenantId])
   @@index([clientId])
@@ -232,4 +266,34 @@ model Note {
   @@index([clientId, createdAt(sort: Desc)])
   @@index([tenantId])
   @@map("notes")
+}
+
+model Task {
+  id                String       @id @default(uuid()) @db.Uuid
+  tenantId          String       @map("tenant_id") @db.Uuid
+  title             String
+  description       String?
+  status            TaskStatus   @default(todo)
+  priority          TaskPriority @default(medium)
+  type              TaskType     @default(manual)
+  dueDate           DateTime?    @map("due_date") @db.Date
+  assigneeId        String?      @map("assignee_id") @db.Uuid
+  clientId          String?      @map("client_id") @db.Uuid
+  policyId          String?      @map("policy_id") @db.Uuid
+  createdById       String       @map("created_by_id") @db.Uuid
+  renewalDaysBefore Int?         @map("renewal_days_before")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  tenant    Tenant  @relation(fields: [tenantId], references: [id])
+  assignee  User?   @relation("taskAssignee", fields: [assigneeId], references: [id])
+  client    Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  policy    Policy? @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  createdBy User    @relation("taskCreatedBy", fields: [createdById], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, dueDate])
+  @@index([policyId, type, status])
+  @@map("tasks")
 }
