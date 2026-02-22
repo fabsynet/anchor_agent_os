@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 2 -- Client & Policy Management
+**Current focus:** Phase 3 -- Tasks, Renewals & Dashboard
 
 ## Current Position
 
-Phase: 2 of 7 (Client & Policy Management)
-Plan: 6 of 6 in current phase
-Status: In progress -- Plans 02-01 through 02-05 complete, 02-06 complete
-Last activity: 2026-02-21 -- Completed 02-03-PLAN.md (Client List & Forms)
+Phase: 3 of 7 (Tasks, Renewals & Dashboard)
+Plan: 1 of 5 in current phase
+Status: In progress -- Plan 03-01 (Data Foundation) complete
+Last activity: 2026-02-22 -- Completed 03-01-PLAN.md
 
-Progress: ████████░░░░░░░░░░░░░ 33% (7/21 plans complete, 2 Phase 1 plans still at checkpoint)
+Progress: ██████████░░░░░░░░░░░ 50% (13/26 plans complete)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -26,33 +26,18 @@ Plans 01-04 and 01-05 remain at checkpoint:human-verify. Auth rewrite was commit
 ### 01-05: Invitations & Team (checkpoint pending)
 - **Remaining to verify:** Team settings page loads, invite form, pending invites, revoke, invite cap, setup wizard, accept-invite page
 
-## Phase 2 Progress
+## Phase 2: Client & Policy Management -- COMPLETE (UAT passed 2026-02-21)
 
-### 02-01: Data Foundation -- COMPLETE
-- **Commits:** 8164de7 (Prisma schema), 6594697 (shared types + deps)
-- **Delivered:** 4 new models (Client, Policy, ActivityEvent, Note), 5 enums, shared types, Zod schemas, Canadian insurance constants, @tanstack/react-table, date-fns, 6 shadcn components
-- **Summary:** .planning/phases/02-client-and-policy-management/02-01-SUMMARY.md
+**UAT:** 26/26 tests passed, 0 issues
+**UAT file:** .planning/phases/02-client-and-policy-management/02-UAT.md
 
-### 02-02: Backend API Modules -- COMPLETE
-- **Commits:** fec3385 (ClientsModule), 4c7d4ea (TimelineModule + PoliciesModule + wiring)
-- **Delivered:** 13 API endpoints across 3 NestJS modules (Clients, Timeline, Policies), tenant-scoped CRUD, policy status machine, activity event logging, lead auto-convert on first policy
-- **Summary:** .planning/phases/02-client-and-policy-management/02-02-SUMMARY.md
-
-### 02-03: Client List & Forms -- COMPLETE
-- **Commits:** fa5b357 (client list page), ba7ec0e (create/edit forms)
-- **Delivered:** /clients page with Clients/Leads tabs, search, table/card toggle, pagination; /clients/new create form; /clients/[id]/edit form with prefill; react-hook-form + zodResolver + createClientSchema
-- **Summary:** .planning/phases/02-client-and-policy-management/02-03-SUMMARY.md
-
-### 02-04: Client Profile & Timeline UI -- COMPLETE
-- **Commits:** 282ba71 (profile page + header + overview), 7293508 (timeline/notes tab + components)
-- **Delivered:** Client profile page at /clients/[id] with 4 tabs (Overview, Policies placeholder, Timeline/Notes, Documents placeholder), profile header with Convert/Delete actions, timeline compact/expanded views, note creation, 8 activity icons
-- **Summary:** .planning/phases/02-client-and-policy-management/02-04-SUMMARY.md
-
-### 02-05: Policy Management UI -- COMPLETE (via prior session)
-
-### 02-06: Standalone Policies Page -- COMPLETE
-- **Delivered:** GET /api/policies endpoint with search/filter/pagination, /policies page with status tabs, search bar, table/card toggle, client name links
-- **Files:** all-policies.controller.ts, policies.service.ts (findAllForTenant), PolicyWithClient type, policies-list.tsx, all-policy-table.tsx, all-policy-cards.tsx, page.tsx
+### Plans completed:
+- 02-01: Data Foundation (Prisma schema, shared types, Zod schemas, constants, deps)
+- 02-02: Backend API Modules (13 endpoints across Clients, Timeline, Policies)
+- 02-03: Client List & Forms (list page, search, table/card toggle, create/edit forms)
+- 02-04: Client Profile & Timeline UI (profile page, tabs, timeline, notes)
+- 02-05: Policy Management UI (policy CRUD dialog, cards/table, auto-convert)
+- 02-06: Standalone Policies Page (cross-client search, status filters, pagination)
 
 ## Environment Setup Required
 
@@ -106,6 +91,8 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | TimelineItem type defined locally, not in shared | Phase 2 | Merged event/note shape is specific to frontend timeline display |
 | Use z.input<typeof schema> for form types with .default() | Phase 2 | Zod v4 .default() makes input type optional but output required; zodResolver uses input type |
 | createClientSchema for both create and edit forms | Phase 2 | Edit form sends full data; avoids zodResolver type union mismatch between create/update schemas |
+| onDelete: Cascade on Task->Policy relation | Phase 3 | Auto-delete renewal tasks when policy is deleted (no orphans) |
+| jsx: react-jsx in API tsconfig | Phase 3 | Needed for React Email .tsx template compilation |
 
 ### Pending Todos
 
@@ -113,15 +100,15 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - Test /settings/team after auth rewrite (Phase 1 checkpoint)
 - Apply RLS migration via Supabase SQL Editor (may not be needed)
 - RESEND_API_KEY needed for invitation email sending (01-05)
-- Phase 2 complete — ready for Phase 3 planning
+- Phase 3 Plan 01 complete -- proceed to Plan 02 (Task backend API)
 
 ### Blockers/Concerns
 
 - handle_new_user Supabase trigger may not be set up -- guard auto-provisions as fallback
-- Phase 1 checkpoints (01-04, 01-05) still pending user verification -- does not block Phase 2
+- Phase 1 checkpoints (01-04, 01-05) still pending user verification -- does not block Phase 3
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Stopped at: Completed 02-06 (Standalone Policies Page).
-Resume with: Begin Phase 3 planning (Tasks, Renewals & Dashboard).
+Last session: 2026-02-22
+Stopped at: Completed 03-01-PLAN.md (Data Foundation for Phase 3)
+Resume file: None
