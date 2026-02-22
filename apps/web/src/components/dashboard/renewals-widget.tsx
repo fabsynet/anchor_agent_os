@@ -1,9 +1,18 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
+import { format, parseISO } from 'date-fns';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CalendarClock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-// Stub -- full implementation in Task 2
 export interface UpcomingRenewal {
   id: string;
   type: string;
@@ -18,27 +27,104 @@ interface RenewalsWidgetProps {
   loading: boolean;
 }
 
-export function RenewalsWidget({ renewals, loading }: RenewalsWidgetProps) {
+function DaysRemainingBadge({ days }: { days: number }) {
   return (
-    <Card>
+    <span
+      className={cn(
+        'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
+        days <= 7
+          ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+          : days <= 30
+            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+            : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+      )}
+    >
+      {days}d
+    </span>
+  );
+}
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, ' ');
+}
+
+export function RenewalsWidget({ renewals, loading }: RenewalsWidgetProps) {
+  const displayRenewals = renewals?.slice(0, 5) ?? [];
+  const hasMore = (renewals?.length ?? 0) > 5;
+
+  return (
+    <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="text-base">Upcoming Renewals</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <CalendarClock className="size-4 text-muted-foreground" />
+          Upcoming Renewals
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         {loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <Skeleton className="h-5 w-10" />
+              </div>
+            ))}
           </div>
-        ) : !renewals || renewals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No upcoming renewals</p>
+        ) : displayRenewals.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <CalendarClock className="size-8 text-muted-foreground/50 mb-2" />
+            <p className="text-sm text-muted-foreground">
+              No upcoming renewals
+            </p>
+          </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            {renewals.length} renewal(s) upcoming
-          </p>
+          <div className="space-y-3">
+            {/* Table header */}
+            <div className="grid grid-cols-[1fr_auto_auto] gap-2 text-xs font-medium text-muted-foreground border-b pb-2">
+              <span>Policy / Client</span>
+              <span className="text-right">Expiry</span>
+              <span className="text-right">Days</span>
+            </div>
+
+            {displayRenewals.map((renewal) => (
+              <div
+                key={renewal.id}
+                className="grid grid-cols-[1fr_auto_auto] gap-2 items-center text-sm"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium truncate">
+                    {capitalize(renewal.type)}
+                    {renewal.carrier ? ` - ${renewal.carrier}` : ''}
+                  </p>
+                  <Link
+                    href={`/clients/${renewal.client.id}`}
+                    className="text-xs text-muted-foreground hover:text-foreground hover:underline truncate block"
+                  >
+                    {renewal.client.firstName} {renewal.client.lastName}
+                  </Link>
+                </div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  {format(parseISO(renewal.endDate), 'MMM d, yyyy')}
+                </span>
+                <DaysRemainingBadge days={renewal.daysRemaining} />
+              </div>
+            ))}
+          </div>
         )}
       </CardContent>
+      {hasMore && (
+        <CardFooter className="pt-0">
+          <Link
+            href="/policies?status=pending_renewal"
+            className="text-sm text-primary hover:underline"
+          >
+            View all renewals
+          </Link>
+        </CardFooter>
+      )}
     </Card>
   );
 }
