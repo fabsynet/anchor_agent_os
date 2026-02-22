@@ -12,6 +12,8 @@ import { ClientsModule } from './clients/clients.module.js';
 import { TimelineModule } from './timeline/timeline.module.js';
 import { PoliciesModule } from './policies/policies.module.js';
 import { TasksModule } from './tasks/tasks.module.js';
+import { RenewalsModule } from './renewals/renewals.module.js';
+import { DashboardModule } from './dashboard/dashboard.module.js';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { TasksModule } from './tasks/tasks.module.js';
     TimelineModule,
     PoliciesModule,
     TasksModule,
+    RenewalsModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
