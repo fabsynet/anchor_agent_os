@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 2 of 7 (Client & Policy Management)
-Plan: 4 of 5 in current phase
-Status: In progress -- Plans 02-01 through 02-04 complete, 02-05 remaining
+Plan: 6 of 6 in current phase
+Status: In progress -- Plans 02-01 through 02-05 complete, 02-06 complete
 Last activity: 2026-02-21 -- Completed 02-03-PLAN.md (Client List & Forms)
 
 Progress: ████████░░░░░░░░░░░░░ 33% (7/21 plans complete, 2 Phase 1 plans still at checkpoint)
@@ -48,7 +48,11 @@ Plans 01-04 and 01-05 remain at checkpoint:human-verify. Auth rewrite was commit
 - **Delivered:** Client profile page at /clients/[id] with 4 tabs (Overview, Policies placeholder, Timeline/Notes, Documents placeholder), profile header with Convert/Delete actions, timeline compact/expanded views, note creation, 8 activity icons
 - **Summary:** .planning/phases/02-client-and-policy-management/02-04-SUMMARY.md
 
-### 02-05: Policy Management UI -- NOT STARTED
+### 02-05: Policy Management UI -- COMPLETE (via prior session)
+
+### 02-06: Standalone Policies Page -- COMPLETE
+- **Delivered:** GET /api/policies endpoint with search/filter/pagination, /policies page with status tabs, search bar, table/card toggle, client name links
+- **Files:** all-policies.controller.ts, policies.service.ts (findAllForTenant), PolicyWithClient type, policies-list.tsx, all-policy-table.tsx, all-policy-cards.tsx, page.tsx
 
 ## Environment Setup Required
 
@@ -109,7 +113,7 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - Test /settings/team after auth rewrite (Phase 1 checkpoint)
 - Apply RLS migration via Supabase SQL Editor (may not be needed)
 - RESEND_API_KEY needed for invitation email sending (01-05)
-- Complete Phase 2: 02-05 (not started)
+- Phase 2 complete — ready for Phase 3 planning
 
 ### Blockers/Concerns
 
@@ -119,5 +123,5 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 02-03-PLAN.md (Client List & Forms). 8 new frontend files.
-Resume with: Execute 02-05-PLAN.md (Policy Management UI) -- last remaining plan in Phase 2.
+Stopped at: Completed 02-06 (Standalone Policies Page).
+Resume with: Begin Phase 3 planning (Tasks, Renewals & Dashboard).

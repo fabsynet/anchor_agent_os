@@ -57,3 +57,14 @@ export interface Policy {
   /** ISO datetime string */
   updatedAt: string;
 }
+
+/**
+ * Policy with embedded client info, used for cross-client policy listings.
+ */
+export interface PolicyWithClient extends Policy {
+  client: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+}

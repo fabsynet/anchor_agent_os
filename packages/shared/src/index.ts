@@ -9,6 +9,7 @@ export type {
   PolicyStatus,
   PaymentFrequency,
   Policy,
+  PolicyWithClient,
 } from './types/policy';
 export type {
   ActivityEventType,

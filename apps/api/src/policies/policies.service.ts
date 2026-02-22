@@ -128,6 +128,73 @@ export class PoliciesService {
   }
 
   /**
+   * List all policies across all clients for a tenant, with search/filter/pagination.
+   */
+  async findAllForTenant(
+    tenantId: string,
+    query: {
+      search?: string;
+      status?: string;
+      type?: string;
+      page?: number;
+      limit?: number;
+    },
+  ) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+
+    const where: Record<string, unknown> = {};
+
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    if (query.type) {
+      where.type = query.type;
+    }
+
+    if (query.search) {
+      where.OR = [
+        {
+          client: {
+            firstName: { contains: query.search, mode: 'insensitive' },
+          },
+        },
+        {
+          client: {
+            lastName: { contains: query.search, mode: 'insensitive' },
+          },
+        },
+        { carrier: { contains: query.search, mode: 'insensitive' } },
+        { policyNumber: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [policies, total] = await Promise.all([
+      this.prisma.tenantClient.policy.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          client: {
+            select: { id: true, firstName: true, lastName: true },
+          },
+        },
+      }),
+      this.prisma.policy.count({ where: { ...where, tenantId } }),
+    ]);
+
+    return {
+      data: policies,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  /**
    * List all policies for a client, ordered by createdAt descending.
    */
   async findAll(tenantId: string, clientId: string) {
