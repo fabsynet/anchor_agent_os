@@ -70,3 +70,19 @@ export type {
 
 export { createNoteSchema } from './validation/note.schema';
 export type { CreateNoteInput } from './validation/note.schema';
+
+// Types - Tasks
+export type {
+  TaskStatus,
+  TaskPriority,
+  TaskType,
+  Task,
+  TaskWithRelations,
+} from './types/task';
+
+// Constants - Tasks
+export { TASK_STATUSES, TASK_PRIORITIES, RENEWAL_MILESTONES } from './constants/tasks';
+
+// Validation schemas - Tasks
+export { createTaskSchema, updateTaskSchema } from './validation/task.schema';
+export type { CreateTaskInput, UpdateTaskInput } from './validation/task.schema';

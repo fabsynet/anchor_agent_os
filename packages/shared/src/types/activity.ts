@@ -6,7 +6,10 @@ export type ActivityEventType =
   | 'policy_created'
   | 'policy_updated'
   | 'policy_status_changed'
-  | 'policy_deleted';
+  | 'policy_deleted'
+  | 'task_created'
+  | 'task_completed'
+  | 'task_status_changed';
 
 /** Immutable activity event record for the client timeline. */
 export interface ActivityEvent {
