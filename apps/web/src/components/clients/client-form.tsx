@@ -73,9 +73,13 @@ export function ClientForm({
   const isClient = watchedStatus === "client";
 
   async function onSubmit(data: ClientFormValues) {
+    // Strip empty strings so optional fields aren't sent as "" to the API
+    const cleaned = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== "")
+    );
     try {
       if (mode === "create") {
-        const result = await api.post<Client>("/api/clients", data);
+        const result = await api.post<Client>("/api/clients", cleaned);
         toast.success("Client created");
         if (onSuccess) {
           onSuccess();
@@ -83,7 +87,7 @@ export function ClientForm({
           router.push(`/clients/${result.id}`);
         }
       } else {
-        await api.patch<Client>(`/api/clients/${clientId}`, data);
+        await api.patch<Client>(`/api/clients/${clientId}`, cleaned);
         toast.success("Client updated");
         if (onSuccess) {
           onSuccess();
