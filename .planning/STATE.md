@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 3 of 7 (Tasks, Renewals & Dashboard)
-Plan: 2 of 5 in current phase
-Status: In progress -- Plan 03-02 (Task CRUD & Renewals) complete
-Last activity: 2026-02-22 -- Completed 03-02-PLAN.md
+Plan: 3 of 5 in current phase
+Status: In progress -- Plans 03-01, 03-02, 03-03 complete
+Last activity: 2026-02-22 -- Completed 03-03-PLAN.md
 
-Progress: ███████████░░░░░░░░░░ 54% (14/26 plans complete)
+Progress: ████████████░░░░░░░░░ 62% (16/26 plans complete)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -97,15 +97,17 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Renewal lifecycle hooks wrapped in try/catch | Phase 3 | Prevent renewal failures from breaking policy create/update |
 | GET /tasks/assignees not admin-only | Phase 3 | Any authenticated user needs assignee list for task forms |
 | Renewal tasks enforce dismissible-only rule | Phase 3 | Only status changes allowed on renewal tasks via BadRequestException |
+| Premium income uses startDate with createdAt fallback | Phase 3 | Two-query approach per period avoids raw SQL while prioritizing effective date |
+| Renewal milestones use 61-day query window | Phase 3 | Covers all three milestone intervals (60/30/7 days before renewal) |
+| @types/react added as API dev dependency | Phase 3 | Required for TSX email template compilation in NestJS |
 
 ### Pending Todos
 
 - Verify DATABASE_URL is in root .env and packages/database/.env
 - Test /settings/team after auth rewrite (Phase 1 checkpoint)
 - Apply RLS migration via Supabase SQL Editor (may not be needed)
-- RESEND_API_KEY needed for invitation email sending (01-05)
-- Phase 3 Plan 02 complete -- Task CRUD and Renewal engine operational
-- Proceed to Plan 04 (Dashboard UI) and Plan 05 (Notifications)
+- RESEND_API_KEY needed for email sending (invitations + daily digest)
+- Phase 3 Plans 01-03 complete -- proceed to Plan 04 (Task UI) and Plan 05 (Dashboard UI)
 
 ### Blockers/Concerns
 
@@ -115,5 +117,5 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 03-02-PLAN.md (Task CRUD & Renewal Engine)
+Stopped at: Completed 03-03-PLAN.md (Dashboard API & Email Notifications)
 Resume file: None
