@@ -13,7 +13,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import multer from 'multer';
+import { memoryStorage, type FileFilterCallback } from 'multer';
 import { DocumentsService } from './documents.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
@@ -52,12 +52,12 @@ export class DocumentsController {
   @Post()
   @UseInterceptors(
     FilesInterceptor('files', 10, {
-      storage: multer.memoryStorage(),
+      storage: memoryStorage(),
       limits: { fileSize: 10 * 1024 * 1024 },
       fileFilter: (
         _req: any,
-        file: Express.Multer.File,
-        cb: multer.FileFilterCallback,
+        file: { mimetype: string; originalname: string },
+        cb: FileFilterCallback,
       ) => {
         if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
           cb(null, true);
@@ -75,7 +75,7 @@ export class DocumentsController {
     @Param('clientId', ParseUUIDPipe) clientId: string,
     @TenantId() tenantId: string,
     @CurrentUser() user: AuthenticatedUser,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: Array<{ originalname: string; mimetype: string; size: number; buffer: Buffer }>,
     @Body() body: UploadDocumentDto,
   ) {
     return this.documentsService.uploadMany(
