@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 Phase: 4 of 7 (Documents & Compliance)
 Plan: 4 of 4 in current phase
 Status: Phase complete
-Last activity: 2026-02-23 -- Completed 04-03-PLAN.md (Document UI & Client Profile Integration)
+Last activity: 2026-02-23 -- Completed 04-04-PLAN.md (Compliance Page & Policy Detail Dialog)
 
 Progress: █████████████████░░░░ 89% (17/19 plans complete; 01-04, 01-05 at checkpoint)
 
@@ -113,6 +113,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Compliance log strictly read-only | Phase 4 | No mutation endpoints -- immutable per user decision |
 | Bucket auto-creation with graceful fallback | Phase 4 | DocumentsService constructor tries to create bucket, logs warning on failure |
 | TimelineService.createActivityEvent optional policyId | Phase 4 | Backward-compatible 8th parameter for document activity events |
+| Compliance filters use _none sentinel pattern | Phase 4 | Consistent with Phase 3 pattern for Radix Select "all" options |
+| User filter hidden on 403 | Phase 4 | Admin-only endpoint graceful degradation for non-admin users |
+| Policy detail dialog as policy detail view | Phase 4 | Card/dialog pattern instead of dedicated page for policy details |
+| Linked policy filter cascades from client | Phase 4 | Only shows policies for selected client in compliance filters |
 | Extended local types for API response fields | Phase 4 | ClientListItemWithDocs, PolicyWithCounts for documentCount/_count.documents |
 | Document count badges conditionally rendered | Phase 4 | Only show when count > 0 to avoid visual clutter |
 | Compliance tab no filters (simple chronological) | Phase 4 | Full filter UI is on standalone /compliance page |
@@ -150,10 +154,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 04-01: Data Foundation (Document model, shared types/schemas/constants, upload helper, body limit, Compliance nav)
 - 04-02: Backend Modules (Documents CRUD API, Compliance query API, document count includes)
 - 04-03: Document UI & Client Profile Integration (6 document components, Documents tab, Compliance tab, count badges)
-- 04-04: Compliance Page (standalone compliance page with filters, table, pagination)
+- 04-04: Compliance Page & Policy Detail Dialog (compliance log with 5 filters, policy detail dialog with documents)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 04-03-PLAN.md. Phase 4 fully complete. Ready for Phase 5.
+Stopped at: Completed 04-04-PLAN.md. All Phase 4 plans complete. Ready for Phase 5.
 Resume file: none
