@@ -159,5 +159,5 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 04-04-PLAN.md. All Phase 4 plans complete. Ready for Phase 5.
-Resume file: none
+Stopped at: All Phase 4 plans executed. Paused before verification/finalization steps.
+Resume file: .planning/phases/04-documents-and-compliance/.continue-here.md
