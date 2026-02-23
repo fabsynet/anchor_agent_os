@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 5 of 7 (Expenses & Budgets)
-Plan: 2 of 5 in current phase
-Status: In progress -- 05-02 complete, Wave 2 executing
-Last activity: 2026-02-23 -- Completed 05-02-PLAN.md (Expenses Backend API)
+Plan: 3 of 5 in current phase
+Status: In progress -- 05-03 complete, Wave 2 done
+Last activity: 2026-02-23 -- Completed 05-03-PLAN.md (Budget Backend, Alerts, Dashboard Financial)
 
-Progress: ██████████████████░░░ 90% (19/21 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ███████████████████░░ 93% (20/21 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -128,6 +128,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Recurring expense cron at 2AM Toronto | Phase 5 | 1 hour after renewals cron at 1AM to avoid overlap |
 | Static routes before :id param routes | Phase 5 | Prevents NestJS from misinterpreting /categories as UUID param |
 | Preset + custom category merge | Phase 5 | 14 preset categories merged with distinct custom categories from DB |
+| Budget threshold check fire-and-forget | Phase 5 | Promise.catch in controller to not block approval response |
+| Budget categories delete-and-recreate on update | Phase 5 | Simpler than diffing for small category lists |
+| canViewFinancials queried from DB not JWT | Phase 5 | Field not on AuthenticatedUser interface; DB lookup in controller |
+| Idempotent alerts via metadata match | Phase 5 | Prevents duplicate 80% threshold alerts for same budget+category+month |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -169,14 +173,14 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ### Plans completed:
 - 05-01: Data Foundation (5 Prisma models, shared types/schemas/constants, Recharts installed)
 - 05-02: Expenses Backend API (14-method service, 13 endpoints, approval workflow, receipt upload, cron scheduler)
+- 05-03: Budget Backend, Alerts, Dashboard Financial (budget CRUD + auto-renewal cron, alerts with idempotent 80% threshold, dashboard financial endpoint)
 
 ### Plans remaining:
-- 05-03: Expense UI (list, form, approval workflow)
 - 05-04: Budget UI (budget management, progress bars, charts)
 - 05-05: Dashboard Integration (expense widgets, budget summary)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-02-PLAN.md (Expenses Backend API)
+Stopped at: Completed 05-03-PLAN.md (Budget Backend, Alerts, Dashboard Financial)
 Resume file: none
