@@ -96,3 +96,17 @@ export { DOCUMENT_CATEGORIES, MAX_FILE_SIZE, ALLOWED_MIME_TYPES, ALLOWED_EXTENSI
 // Validation schemas - Documents & Compliance
 export { uploadDocumentSchema, searchDocumentsSchema, searchComplianceSchema } from './validation/document.schema';
 export type { UploadDocumentInput, SearchDocumentsInput, SearchComplianceInput } from './validation/document.schema';
+
+// Types - Expenses & Budgets
+export type { ExpenseStatus, RecurrenceFrequency, Expense, ExpenseReceipt, ExpenseListItem } from './types/expense';
+export type { Budget, BudgetCategory } from './types/budget';
+export type { InAppNotification } from './types/notification';
+
+// Constants - Expenses
+export { EXPENSE_CATEGORIES, EXPENSE_STATUSES, RECURRENCE_FREQUENCIES, RECEIPT_ALLOWED_MIME_TYPES, RECEIPT_MAX_FILE_SIZE } from './constants/expenses';
+
+// Validation schemas - Expenses & Budgets
+export { createExpenseSchema, updateExpenseSchema } from './validation/expense.schema';
+export type { CreateExpenseInput, UpdateExpenseInput } from './validation/expense.schema';
+export { createBudgetSchema, updateBudgetSchema } from './validation/budget.schema';
+export type { CreateBudgetInput, UpdateBudgetInput } from './validation/budget.schema';
