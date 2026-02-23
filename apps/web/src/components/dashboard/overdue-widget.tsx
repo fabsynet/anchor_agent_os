@@ -1,16 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { differenceInDays, parseISO } from 'date-fns';
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface OverdueTask {
@@ -60,7 +63,17 @@ function getOverdueDuration(dueDate: string): string {
   return `${days} days overdue`;
 }
 
+const PAGE_SIZE = 5;
+
 export function OverdueWidget({ tasks, loading }: OverdueWidgetProps) {
+  const [page, setPage] = useState(0);
+  const allTasks = tasks ?? [];
+  const totalPages = Math.ceil(allTasks.length / PAGE_SIZE);
+  const displayTasks = allTasks.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE
+  );
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -68,18 +81,18 @@ export function OverdueWidget({ tasks, loading }: OverdueWidgetProps) {
           <AlertTriangle
             className={cn(
               'size-4',
-              tasks && tasks.length > 0
+              allTasks.length > 0
                 ? 'text-red-500'
                 : 'text-muted-foreground'
             )}
           />
           Overdue Tasks
-          {tasks && tasks.length > 0 && (
+          {allTasks.length > 0 && (
             <Badge
               variant="destructive"
               className="ml-auto text-xs"
             >
-              {tasks.length}
+              {allTasks.length}
             </Badge>
           )}
         </CardTitle>
@@ -94,7 +107,7 @@ export function OverdueWidget({ tasks, loading }: OverdueWidgetProps) {
               </div>
             ))}
           </div>
-        ) : !tasks || tasks.length === 0 ? (
+        ) : allTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <CheckCircle2 className="size-8 text-green-500/50 mb-2" />
             <p className="text-sm text-muted-foreground">
@@ -103,7 +116,7 @@ export function OverdueWidget({ tasks, loading }: OverdueWidgetProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {tasks.map((task) => {
+            {displayTasks.map((task) => {
               const priority = priorityConfig[task.priority] ?? priorityConfig.low;
               return (
                 <div
@@ -147,6 +160,39 @@ export function OverdueWidget({ tasks, loading }: OverdueWidgetProps) {
           </div>
         )}
       </CardContent>
+      {totalPages > 1 && (
+        <CardFooter className="flex items-center justify-between pt-0">
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              disabled={page <= 0}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              {page + 1}/{totalPages}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+          <Link
+            href="/tasks?status=todo"
+            className="text-xs text-primary hover:underline"
+          >
+            View all
+          </Link>
+        </CardFooter>
+      )}
     </Card>
   );
 }

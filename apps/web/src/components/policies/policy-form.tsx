@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -87,6 +88,27 @@ export function PolicyForm({
     reValidateMode: "onChange",
   });
 
+  // Reset form values when dialog opens with new data (edit mode)
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        type: defaultValues?.type ?? "auto",
+        customType: defaultValues?.customType ?? "",
+        carrier: defaultValues?.carrier ?? "",
+        policyNumber: defaultValues?.policyNumber ?? "",
+        startDate: defaultValues?.startDate ?? "",
+        endDate: defaultValues?.endDate ?? "",
+        premium: defaultValues?.premium ?? "",
+        coverageAmount: defaultValues?.coverageAmount ?? "",
+        deductible: defaultValues?.deductible ?? "",
+        paymentFrequency: defaultValues?.paymentFrequency ?? undefined,
+        brokerCommission: defaultValues?.brokerCommission ?? "",
+        status: defaultValues?.status ?? "draft",
+        notes: defaultValues?.notes ?? "",
+      });
+    }
+  }, [open, defaultValues, form]);
+
   const watchedType = form.watch("type");
 
   async function onSubmit(data: PolicyFormValues) {
@@ -150,7 +172,7 @@ export function PolicyForm({
                     <FormLabel>Type</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -244,7 +266,7 @@ export function PolicyForm({
                     <FormLabel>Status</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -363,7 +385,7 @@ export function PolicyForm({
                     <FormLabel>Payment Frequency</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>

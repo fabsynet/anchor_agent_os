@@ -81,8 +81,58 @@ export class RenewalsService {
     if (!policy.endDate) return 0;
 
     const today = startOfDay(new Date());
+    const endDate = startOfDay(new Date(policy.endDate));
     let tasksCreated = 0;
 
+    // Check if policy expires within 7 days (or is already past due)
+    // If so, create an urgent catch-all task regardless of milestones
+    const daysUntilExpiry = Math.ceil(
+      (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (daysUntilExpiry < 7) {
+      // Check idempotency: skip if an urgent renewal task already exists
+      const existingUrgent = await this.prisma.task.findFirst({
+        where: {
+          policyId: policy.id,
+          type: 'renewal',
+          renewalDaysBefore: daysUntilExpiry <= 0 ? 0 : daysUntilExpiry,
+          status: { not: 'done' },
+        },
+      });
+
+      if (!existingUrgent) {
+        const clientName = `${policy.client.firstName} ${policy.client.lastName}`;
+        const endDateStr = new Date(policy.endDate).toLocaleDateString('en-CA');
+        const isOverdue = daysUntilExpiry <= 0;
+        const title = isOverdue
+          ? `OVERDUE Renewal: ${policy.type} policy expired`
+          : `URGENT Renewal: ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'} until ${policy.type} policy expires`;
+
+        await this.prisma.task.create({
+          data: {
+            tenantId: policy.tenantId,
+            title,
+            description: `Policy for ${clientName} ${isOverdue ? 'expired' : 'expires'} on ${endDateStr}. Immediate action required.`,
+            type: 'renewal',
+            status: 'todo',
+            priority: 'urgent',
+            dueDate: isOverdue ? today : endDate,
+            policyId: policy.id,
+            clientId: policy.clientId,
+            createdById: policy.createdById,
+            renewalDaysBefore: isOverdue ? 0 : daysUntilExpiry,
+          },
+        });
+
+        tasksCreated++;
+        this.logger.debug(
+          `Created urgent renewal task (${daysUntilExpiry}d) for policy ${policy.id}`,
+        );
+      }
+    }
+
+    // Generate standard milestone tasks (60/30/7 days) for future dates
     for (const milestone of RENEWAL_MILESTONES) {
       const targetDate = startOfDay(
         subDays(new Date(policy.endDate), milestone.daysBefore),

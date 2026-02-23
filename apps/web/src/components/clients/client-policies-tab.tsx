@@ -29,6 +29,8 @@ interface ClientPoliciesTabProps {
   onClientUpdated: () => void;
 }
 
+const PAGE_SIZE = 10;
+
 export function ClientPoliciesTab({
   clientId,
   clientStatus,
@@ -40,19 +42,26 @@ export function ClientPoliciesTab({
   const [showForm, setShowForm] = useState(false);
   const [editingPolicy, setEditingPolicy] = useState<Policy | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Policy | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchPolicies = useCallback(async () => {
     try {
-      const data = await api.get<Policy[]>(
-        `/api/clients/${clientId}/policies`
-      );
-      setPolicies(data);
+      const result = await api.get<{
+        data: Policy[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>(`/api/clients/${clientId}/policies?page=${page}&limit=${PAGE_SIZE}`);
+      setPolicies(result.data);
+      setTotalPages(result.totalPages);
     } catch {
       // Silently handle -- empty state will show
     } finally {
       setLoading(false);
     }
-  }, [clientId]);
+  }, [clientId, page]);
 
   useEffect(() => {
     fetchPolicies();
@@ -147,6 +156,31 @@ export function ClientPoliciesTab({
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
       )}
 
       {/* Policy Form Dialog */}

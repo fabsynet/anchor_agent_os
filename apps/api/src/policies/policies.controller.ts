@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
@@ -25,14 +26,19 @@ export class PoliciesController {
 
   /**
    * GET /api/clients/:clientId/policies
-   * List all policies for a client.
+   * List policies for a client with optional pagination.
    */
   @Get()
   async findAll(
     @TenantId() tenantId: string,
     @Param('clientId', ParseUUIDPipe) clientId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ) {
-    return this.policiesService.findAll(tenantId, clientId);
+    return this.policiesService.findAll(tenantId, clientId, {
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
   }
 
   /**
