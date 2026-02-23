@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   UserPlus,
@@ -18,6 +21,8 @@ import {
   Activity,
   ListPlus,
   Trash2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 export interface ActivityItem {
@@ -58,7 +63,17 @@ function getActivityIcon(type: string) {
   }
 }
 
+const PAGE_SIZE = 5;
+
 export function ActivityFeed({ activities, loading }: ActivityFeedProps) {
+  const [page, setPage] = useState(0);
+  const allActivities = activities ?? [];
+  const totalPages = Math.ceil(allActivities.length / PAGE_SIZE);
+  const displayActivities = allActivities.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE
+  );
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -80,14 +95,14 @@ export function ActivityFeed({ activities, loading }: ActivityFeedProps) {
               </div>
             ))}
           </div>
-        ) : !activities || activities.length === 0 ? (
+        ) : allActivities.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <Activity className="size-8 text-muted-foreground/50 mb-2" />
             <p className="text-sm text-muted-foreground">No recent activity</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {activities.map((item) => (
+            {displayActivities.map((item) => (
               <div key={item.id} className="flex items-start gap-3">
                 <div className="shrink-0 mt-0.5">
                   {getActivityIcon(item.type)}
@@ -116,6 +131,33 @@ export function ActivityFeed({ activities, loading }: ActivityFeedProps) {
           </div>
         )}
       </CardContent>
+      {totalPages > 1 && (
+        <CardFooter className="flex items-center justify-center pt-0">
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              disabled={page <= 0}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              {page + 1}/{totalPages}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }

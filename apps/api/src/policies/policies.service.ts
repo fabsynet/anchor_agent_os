@@ -219,13 +219,33 @@ export class PoliciesService {
   }
 
   /**
-   * List all policies for a client, ordered by createdAt descending.
+   * List policies for a client with optional pagination, ordered by createdAt descending.
    */
-  async findAll(tenantId: string, clientId: string) {
-    return this.prisma.tenantClient.policy.findMany({
-      where: { clientId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(
+    tenantId: string,
+    clientId: string,
+    query?: { page?: number; limit?: number },
+  ) {
+    const page = query?.page ?? 1;
+    const limit = query?.limit ?? 10;
+
+    const [policies, total] = await Promise.all([
+      this.prisma.tenantClient.policy.findMany({
+        where: { clientId },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.policy.count({ where: { tenantId, clientId } }),
+    ]);
+
+    return {
+      data: policies,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   /**

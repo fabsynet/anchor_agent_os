@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import {
@@ -9,8 +10,9 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CalendarClock } from 'lucide-react';
+import { CalendarClock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface UpcomingRenewal {
@@ -48,9 +50,16 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, ' ');
 }
 
+const PAGE_SIZE = 5;
+
 export function RenewalsWidget({ renewals, loading }: RenewalsWidgetProps) {
-  const displayRenewals = renewals?.slice(0, 5) ?? [];
-  const hasMore = (renewals?.length ?? 0) > 5;
+  const [page, setPage] = useState(0);
+  const allRenewals = renewals ?? [];
+  const totalPages = Math.ceil(allRenewals.length / PAGE_SIZE);
+  const displayRenewals = allRenewals.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE
+  );
 
   return (
     <Card className="flex flex-col">
@@ -115,13 +124,40 @@ export function RenewalsWidget({ renewals, loading }: RenewalsWidgetProps) {
           </div>
         )}
       </CardContent>
-      {hasMore && (
-        <CardFooter className="pt-0">
+      {allRenewals.length > 0 && (
+        <CardFooter className="flex items-center justify-between pt-0">
+          {totalPages > 1 ? (
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7"
+                disabled={page <= 0}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <span className="text-xs text-muted-foreground">
+                {page + 1}/{totalPages}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7"
+                disabled={page >= totalPages - 1}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          ) : (
+            <span />
+          )}
           <Link
             href="/policies?status=pending_renewal"
-            className="text-sm text-primary hover:underline"
+            className="text-xs text-primary hover:underline"
           >
-            View all renewals
+            View all
           </Link>
         </CardFooter>
       )}
