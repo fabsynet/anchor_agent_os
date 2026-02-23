@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 4 of 7 (Documents & Compliance)
-Plan: 2 of 2 in current phase
+Plan: 4 of 4 in current phase
 Status: Phase complete
-Last activity: 2026-02-23 -- Completed 04-02-PLAN.md (Backend Modules)
+Last activity: 2026-02-23 -- Completed 04-03-PLAN.md (Document UI & Client Profile Integration)
 
-Progress: ████████████████░░░░░ 80% (20/25 plans complete)
+Progress: █████████████████░░░░ 89% (17/19 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -113,6 +113,9 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Compliance log strictly read-only | Phase 4 | No mutation endpoints -- immutable per user decision |
 | Bucket auto-creation with graceful fallback | Phase 4 | DocumentsService constructor tries to create bucket, logs warning on failure |
 | TimelineService.createActivityEvent optional policyId | Phase 4 | Backward-compatible 8th parameter for document activity events |
+| Extended local types for API response fields | Phase 4 | ClientListItemWithDocs, PolicyWithCounts for documentCount/_count.documents |
+| Document count badges conditionally rendered | Phase 4 | Only show when count > 0 to avoid visual clutter |
+| Compliance tab no filters (simple chronological) | Phase 4 | Full filter UI is on standalone /compliance page |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -146,9 +149,11 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ### Plans completed:
 - 04-01: Data Foundation (Document model, shared types/schemas/constants, upload helper, body limit, Compliance nav)
 - 04-02: Backend Modules (Documents CRUD API, Compliance query API, document count includes)
+- 04-03: Document UI & Client Profile Integration (6 document components, Documents tab, Compliance tab, count badges)
+- 04-04: Compliance Page (standalone compliance page with filters, table, pagination)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 04-02-PLAN.md. Phase 4 complete. Ready for Phase 5.
+Stopped at: Completed 04-03-PLAN.md. Phase 4 fully complete. Ready for Phase 5.
 Resume file: none
