@@ -110,3 +110,34 @@ export { createExpenseSchema, updateExpenseSchema } from './validation/expense.s
 export type { CreateExpenseInput, UpdateExpenseInput } from './validation/expense.schema';
 export { createBudgetSchema, updateBudgetSchema } from './validation/budget.schema';
 export type { CreateBudgetInput, UpdateBudgetInput } from './validation/budget.schema';
+
+// Types - Badge & Testimonials
+export type {
+  AgentProfile,
+  Testimonial,
+  PublicBadgeProfile,
+  CustomLink,
+  TestimonialWithProfile,
+} from './types/badge';
+
+// Constants - Badge
+export {
+  STRENGTH_CATEGORIES,
+  INSURANCE_PRODUCTS,
+  ACCENT_COLOR_PRESETS,
+  MAX_FEATURED_TESTIMONIALS,
+  COVER_PHOTO_MAX_SIZE,
+  COVER_PHOTO_ALLOWED_TYPES,
+  BADGE_ASSETS_BUCKET,
+} from './constants/badge';
+export type { StrengthCategory } from './constants/badge';
+
+// Validation schemas - Badge & Testimonials
+export {
+  submitTestimonialSchema,
+  updateAgentProfileSchema,
+} from './validation/badge.schema';
+export type {
+  SubmitTestimonialInput,
+  UpdateAgentProfileInput,
+} from './validation/badge.schema';
