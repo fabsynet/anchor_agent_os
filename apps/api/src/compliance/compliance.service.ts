@@ -48,7 +48,7 @@ export class ComplianceService {
     }
 
     const [data, total] = await Promise.all([
-      this.prisma.activityEvent.findMany({
+      (this.prisma as any).activityEvent.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
@@ -63,7 +63,7 @@ export class ComplianceService {
           },
         },
       }),
-      this.prisma.activityEvent.count({ where }),
+      (this.prisma as any).activityEvent.count({ where }),
     ]);
 
     return {

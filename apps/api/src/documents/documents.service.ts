@@ -66,7 +66,7 @@ export class DocumentsService {
     tenantId: string,
     clientId: string,
     userId: string,
-    files: Express.Multer.File[],
+    files: Array<{ originalname: string; mimetype: string; size: number; buffer: Buffer }>,
     policyId?: string,
     categories?: string,
   ) {
@@ -116,7 +116,7 @@ export class DocumentsService {
         parsedCategories.length > 0 ? parsedCategories[0] : 'correspondence';
 
       // Create Prisma Document record
-      const doc = await this.prisma.tenantClient.document.create({
+      const doc = await (this.prisma.tenantClient as any).document.create({
         data: {
           clientId,
           policyId: policyId || null,
@@ -171,7 +171,7 @@ export class DocumentsService {
       where.category = query.category;
     }
 
-    const documents = await this.prisma.tenantClient.document.findMany({
+    const documents = await (this.prisma.tenantClient as any).document.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       include: {
@@ -216,7 +216,7 @@ export class DocumentsService {
    * URL expires in 300 seconds (5 minutes).
    */
   async getSignedUrl(tenantId: string, clientId: string, documentId: string) {
-    const doc = await this.prisma.tenantClient.document.findFirst({
+    const doc = await (this.prisma.tenantClient as any).document.findFirst({
       where: { id: documentId, clientId },
     });
 
@@ -254,7 +254,7 @@ export class DocumentsService {
     userId: string,
     documentId: string,
   ) {
-    const doc = await this.prisma.tenantClient.document.findFirst({
+    const doc = await (this.prisma.tenantClient as any).document.findFirst({
       where: { id: documentId, clientId },
     });
 
@@ -274,7 +274,7 @@ export class DocumentsService {
     }
 
     // Delete Prisma record
-    await this.prisma.tenantClient.document.delete({
+    await (this.prisma.tenantClient as any).document.delete({
       where: { id: documentId },
     });
 
@@ -301,7 +301,7 @@ export class DocumentsService {
    * Used for frontend badge display.
    */
   async getDocumentCounts(tenantId: string, clientId: string) {
-    const documents = await this.prisma.tenantClient.document.findMany({
+    const documents = await (this.prisma.tenantClient as any).document.findMany({
       where: { clientId },
       select: { policyId: true },
     });

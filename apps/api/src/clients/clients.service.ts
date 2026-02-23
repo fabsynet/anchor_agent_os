@@ -80,7 +80,7 @@ export class ClientsService {
     }
 
     const [clients, total] = await Promise.all([
-      this.prisma.tenantClient.client.findMany({
+      (this.prisma.tenantClient as any).client.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,

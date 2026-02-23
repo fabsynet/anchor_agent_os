@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 5 -- Expenses & Budgets (next up)
+**Current focus:** Phase 5 -- Expenses & Budgets (executing)
 
 ## Current Position
 
 Phase: 5 of 7 (Expenses & Budgets)
-Plan: 0 of 5 in current phase
-Status: Ready to plan/execute
-Last activity: 2026-02-23 -- Phase 4 verified and finalized
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-02-23 -- Completed 05-01-PLAN.md (Data Foundation)
 
-Progress: █████████████████░░░░ 89% (17/19 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ██████████████████░░░ 90% (18/19 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -120,6 +120,9 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Extended local types for API response fields | Phase 4 | ClientListItemWithDocs, PolicyWithCounts for documentCount/_count.documents |
 | Document count badges conditionally rendered | Phase 4 | Only show when count > 0 to avoid visual clutter |
 | Compliance tab no filters (simple chronological) | Phase 4 | Full filter UI is on standalone /compliance page |
+| Expense category as String not enum | Phase 5 | Supports custom categories beyond 14 presets; validation at app layer |
+| Budget unique on tenantId+month+year | Phase 5 | One budget per month per tenant; enforced at DB level |
+| canViewFinancials on User model | Phase 5 | Financial access control field for agent-level permissions |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -156,8 +159,19 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 04-03: Document UI & Client Profile Integration (6 document components, Documents tab, Compliance tab, count badges)
 - 04-04: Compliance Page & Policy Detail Dialog (compliance log with 5 filters, policy detail dialog with documents)
 
+## Phase 5: Expenses & Budgets -- IN PROGRESS
+
+### Plans completed:
+- 05-01: Data Foundation (5 Prisma models, shared types/schemas/constants, Recharts installed)
+
+### Plans remaining:
+- 05-02: Backend API Modules (Expenses CRUD, Budgets CRUD, Notifications)
+- 05-03: Expense UI (list, form, approval workflow)
+- 05-04: Budget UI (budget management, progress bars, charts)
+- 05-05: Dashboard Integration (expense widgets, budget summary)
+
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Phase 4 finalized (verified, ROADMAP+REQUIREMENTS updated). Phase 5 is next.
+Stopped at: Completed 05-01-PLAN.md (Data Foundation for Expenses & Budgets)
 Resume file: none
