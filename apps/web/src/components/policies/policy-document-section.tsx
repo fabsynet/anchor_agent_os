@@ -30,10 +30,10 @@ export function PolicyDocumentSection({
   const fetchDocuments = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await api.get<DocumentListItem[]>(
+      const result = await api.get<{ data: DocumentListItem[]; total: number }>(
         `/api/clients/${clientId}/documents?policyId=${policyId}`
       );
-      setDocuments(result);
+      setDocuments(result.data);
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to load documents"
