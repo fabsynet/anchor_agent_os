@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 4 -- Documents & Compliance (COMPLETE)
+**Current focus:** Phase 5 -- Expenses & Budgets (next up)
 
 ## Current Position
 
-Phase: 4 of 7 (Documents & Compliance)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-02-23 -- Completed 04-04-PLAN.md (Compliance Page & Policy Detail Dialog)
+Phase: 5 of 7 (Expenses & Budgets)
+Plan: 0 of 5 in current phase
+Status: Ready to plan/execute
+Last activity: 2026-02-23 -- Phase 4 verified and finalized
 
 Progress: █████████████████░░░░ 89% (17/19 plans complete; 01-04, 01-05 at checkpoint)
 
@@ -159,5 +159,5 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: All Phase 4 plans executed. Paused before verification/finalization steps.
-Resume file: .planning/phases/04-documents-and-compliance/.continue-here.md
+Stopped at: Phase 4 finalized (verified, ROADMAP+REQUIREMENTS updated). Phase 5 is next.
+Resume file: none

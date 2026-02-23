@@ -50,17 +50,17 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Document Management
 
-- [ ] **DOCS-01**: User can upload documents (PDF, images, Word) linked to a client or policy
-- [ ] **DOCS-02**: Documents are stored securely with tenant isolation (agency A cannot access agency B's files)
-- [ ] **DOCS-03**: User can view, download, and delete uploaded documents
-- [ ] **DOCS-04**: Documents have a name and optional category/type tag
-- [ ] **DOCS-05**: File size limit of 10MB per document
+- [x] **DOCS-01**: User can upload documents (PDF, images, Word) linked to a client or policy
+- [x] **DOCS-02**: Documents are stored securely with tenant isolation (agency A cannot access agency B's files)
+- [x] **DOCS-03**: User can view, download, and delete uploaded documents
+- [x] **DOCS-04**: Documents have a name and optional category/type tag
+- [x] **DOCS-05**: File size limit of 10MB per document
 
 ### Compliance
 
-- [ ] **COMP-01**: System automatically logs key actions as compliance activities (policy created, renewal task completed, document uploaded)
-- [ ] **COMP-02**: User can view the compliance activity log filtered by client, date range, or action type
-- [ ] **COMP-03**: Compliance log entries are immutable (cannot be edited or deleted)
+- [x] **COMP-01**: System automatically logs key actions as compliance activities (policy created, renewal task completed, document uploaded)
+- [x] **COMP-02**: User can view the compliance activity log filtered by client, date range, or action type
+- [x] **COMP-03**: Compliance log entries are immutable (cannot be edited or deleted)
 
 ### Expenses & Budgets
 
@@ -194,14 +194,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TASK-04 | Phase 3 | Complete |
 | TASK-05 | Phase 3 | Complete |
 | TASK-06 | Phase 3 | Complete |
-| DOCS-01 | Phase 4 | Pending |
-| DOCS-02 | Phase 4 | Pending |
-| DOCS-03 | Phase 4 | Pending |
-| DOCS-04 | Phase 4 | Pending |
-| DOCS-05 | Phase 4 | Pending |
-| COMP-01 | Phase 4 | Pending |
-| COMP-02 | Phase 4 | Pending |
-| COMP-03 | Phase 4 | Pending |
+| DOCS-01 | Phase 4 | Complete |
+| DOCS-02 | Phase 4 | Complete |
+| DOCS-03 | Phase 4 | Complete |
+| DOCS-04 | Phase 4 | Complete |
+| DOCS-05 | Phase 4 | Complete |
+| COMP-01 | Phase 4 | Complete |
+| COMP-02 | Phase 4 | Complete |
+| COMP-03 | Phase 4 | Complete |
 | EXPN-01 | Phase 5 | Pending |
 | EXPN-02 | Phase 5 | Pending |
 | EXPN-03 | Phase 5 | Pending |

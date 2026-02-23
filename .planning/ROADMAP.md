@@ -9,7 +9,7 @@ Anchor's MVP delivers a complete insurance agent operating system in 7 phases, s
 - [ ] **Phase 1: Foundation & Auth** - Monorepo setup, Supabase integration, authentication, multi-tenancy, user roles
 - [x] **Phase 2: Client & Policy Management** - Client CRM, policy records, lead/client workflow
 - [x] **Phase 3: Tasks, Renewals & Dashboard** - Task system, renewal automation, Today Dashboard, email notifications
-- [ ] **Phase 4: Documents & Compliance** - Document upload/linking, compliance activity log
+- [x] **Phase 4: Documents & Compliance** - Document upload/linking, compliance activity log
 - [ ] **Phase 5: Expenses & Budgets** - Expense tracking, receipt uploads, budgets, alerts, financial dashboard widget
 - [ ] **Phase 6: Trust & Reputation** - Testimonials, surveys, feedback, public Agent Badge page
 - [ ] **Phase 7: Analytics, Import & Polish** - Light analytics, CSV import, performance optimization
@@ -87,10 +87,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- Data foundation (Prisma Document model, shared types/schemas/constants, api.ts upload, NAV_ITEMS)
-- [ ] 04-02-PLAN.md -- Backend modules (Documents CRUD + Supabase Storage, Compliance query endpoint)
-- [ ] 04-03-PLAN.md -- Document frontend (upload, folder browse, preview, client profile tabs, count badges)
-- [ ] 04-04-PLAN.md -- Compliance page (/compliance with filters, table, pagination) + policy document section
+- [x] 04-01-PLAN.md -- Data foundation (Prisma Document model, shared types/schemas/constants, api.ts upload, NAV_ITEMS)
+- [x] 04-02-PLAN.md -- Backend modules (Documents CRUD + Supabase Storage, Compliance query endpoint)
+- [x] 04-03-PLAN.md -- Document frontend (upload, folder browse, preview, client profile tabs, count badges)
+- [x] 04-04-PLAN.md -- Compliance page (/compliance with filters, table, pagination) + policy document section
 
 ### Phase 5: Expenses & Budgets
 **Goal**: Admin has financial awareness -- tracking expenses, setting budgets, and receiving alerts before limits are exceeded
@@ -151,7 +151,7 @@ Plans:
 | 1. Foundation & Auth | 0/5 | Planning complete | - |
 | 2. Client & Policy Management | 6/6 | UAT passed | 2026-02-21 |
 | 3. Tasks, Renewals & Dashboard | 5/5 | Verified | 2026-02-22 |
-| 4. Documents & Compliance | 0/4 | Planning complete | - |
+| 4. Documents & Compliance | 4/4 | Verified | 2026-02-23 |
 | 5. Expenses & Budgets | 0/5 | Planning complete | - |
 | 6. Trust & Reputation | 0/2 | Not started | - |
 | 7. Analytics, Import & Polish | 0/3 | Not started | - |
