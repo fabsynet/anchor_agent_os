@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 5 of 7 (Expenses & Budgets)
-Plan: 1 of 5 in current phase
-Status: In progress
-Last activity: 2026-02-23 -- Completed 05-01-PLAN.md (Data Foundation)
+Plan: 2 of 5 in current phase
+Status: In progress -- 05-02 complete, Wave 2 executing
+Last activity: 2026-02-23 -- Completed 05-02-PLAN.md (Expenses Backend API)
 
-Progress: ██████████████████░░░ 90% (18/19 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ██████████████████░░░ 90% (19/21 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -123,6 +123,11 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Expense category as String not enum | Phase 5 | Supports custom categories beyond 14 presets; validation at app layer |
 | Budget unique on tenantId+month+year | Phase 5 | One budget per month per tenant; enforced at DB level |
 | canViewFinancials on User model | Phase 5 | Financial access control field for agent-level permissions |
+| Receipt storage uses DocumentsService pattern | Phase 5 | Supabase Storage bucket auto-creation, UUID-prefix paths for receipts |
+| Admin approve/reject uses inline role check | Phase 5 | ForbiddenException on user.role !== 'admin', not @Roles decorator |
+| Recurring expense cron at 2AM Toronto | Phase 5 | 1 hour after renewals cron at 1AM to avoid overlap |
+| Static routes before :id param routes | Phase 5 | Prevents NestJS from misinterpreting /categories as UUID param |
+| Preset + custom category merge | Phase 5 | 14 preset categories merged with distinct custom categories from DB |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -163,9 +168,9 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 
 ### Plans completed:
 - 05-01: Data Foundation (5 Prisma models, shared types/schemas/constants, Recharts installed)
+- 05-02: Expenses Backend API (14-method service, 13 endpoints, approval workflow, receipt upload, cron scheduler)
 
 ### Plans remaining:
-- 05-02: Backend API Modules (Expenses CRUD, Budgets CRUD, Notifications)
 - 05-03: Expense UI (list, form, approval workflow)
 - 05-04: Budget UI (budget management, progress bars, charts)
 - 05-05: Dashboard Integration (expense widgets, budget summary)
@@ -173,5 +178,5 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-01-PLAN.md (Data Foundation for Expenses & Budgets)
+Stopped at: Completed 05-02-PLAN.md (Expenses Backend API)
 Resume file: none
