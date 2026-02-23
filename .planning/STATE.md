@@ -153,6 +153,9 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | SettingsNav as shared component (not layout.tsx) | Phase 6 | Follows expenses sub-nav pattern; each settings page imports directly |
 | Badge tab available to ALL roles | Phase 6 | Every agent should be able to create their badge page |
 | Inline TestimonialCard within testimonial-manager | Phase 6 | Admin curation card differs from public display card; separate concerns |
+| Explicit TestimonialFormValues interface (not z.input) | Phase 6 | z.coerce.number() in Zod v4 produces unknown input type; manual type + resolver cast |
+| hexToRgba helper for accent color tinting | Phase 6 | Generates rgba from hex for product badges and featured borders |
+| Public pages use plain fetch (no auth) | Phase 6 | Server components fetch from API without Supabase session context |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
