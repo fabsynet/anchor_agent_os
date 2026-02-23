@@ -394,7 +394,7 @@ export class BadgeService {
       },
     });
 
-    if (!profile || !profile.isPublished) {
+    if (!profile) {
       throw new NotFoundException(`Agent profile not found`);
     }
 

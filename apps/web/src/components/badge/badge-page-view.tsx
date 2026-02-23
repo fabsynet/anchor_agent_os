@@ -79,6 +79,13 @@ export function BadgePageView({ profile, supabaseUrl }: BadgePageViewProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* ─── Unpublished Notice ────────────────────────────── */}
+      {!profile.isPublished && (
+        <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-3 text-center text-sm text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-800 dark:text-yellow-200">
+          This badge page is not published yet. Only you can see this preview.
+        </div>
+      )}
+
       {/* ─── Cover Banner ─────────────────────────────────── */}
       <div className="relative w-full">
         <div

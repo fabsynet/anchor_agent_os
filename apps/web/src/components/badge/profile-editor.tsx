@@ -204,9 +204,11 @@ export function ProfileEditor({ onSlugLoaded }: ProfileEditorProps) {
               />
             </button>
           </div>
-          {isPublished && profile?.slug && (
+          {profile?.slug && (
             <div className="flex items-center gap-2 rounded-md bg-muted p-3">
-              <span className="text-sm text-muted-foreground">Your badge page:</span>
+              <span className="text-sm text-muted-foreground">
+                {isPublished ? 'Your badge page:' : 'Preview your badge page:'}
+              </span>
               <a
                 href={`/agent/${profile.slug}`}
                 target="_blank"
@@ -220,6 +222,11 @@ export function ProfileEditor({ onSlugLoaded }: ProfileEditorProps) {
                   <ExternalLink className="size-3" />
                 </a>
               </Button>
+              {!isPublished && (
+                <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                  Not published
+                </span>
+              )}
             </div>
           )}
         </CardContent>

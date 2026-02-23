@@ -8,6 +8,7 @@ import {
   Matches,
   MaxLength,
   ValidateNested,
+  ValidateIf,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -37,26 +38,32 @@ export class UpdateProfileDto {
   phone?: string;
 
   @IsOptional()
+  @ValidateIf((_o, v) => v !== '')
   @IsEmail()
   email?: string;
 
   @IsOptional()
+  @ValidateIf((_o, v) => v !== '')
   @IsUrl()
   website?: string;
 
   @IsOptional()
+  @ValidateIf((_o, v) => v !== '')
   @IsUrl()
   linkedIn?: string;
 
   @IsOptional()
+  @ValidateIf((_o, v) => v !== '')
   @IsUrl()
   twitter?: string;
 
   @IsOptional()
+  @ValidateIf((_o, v) => v !== '')
   @IsUrl()
   facebook?: string;
 
   @IsOptional()
+  @ValidateIf((_o, v) => v !== '')
   @IsUrl()
   instagram?: string;
 
