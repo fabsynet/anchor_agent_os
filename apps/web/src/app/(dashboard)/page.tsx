@@ -24,6 +24,7 @@ import {
   PremiumIncomeCard,
   type PremiumIncome,
 } from '@/components/dashboard/premium-income';
+import { FinancialWidget } from '@/components/dashboard/financial-widget';
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -96,6 +97,9 @@ export default function DashboardPage() {
 
       {/* Premium Income */}
       <PremiumIncomeCard income={premiumIncome} loading={loading} />
+
+      {/* Financial Overview (Phase 5) */}
+      <FinancialWidget />
     </div>
   );
 }

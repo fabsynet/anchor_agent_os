@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Plus, Receipt } from 'lucide-react';
 import type { ExpenseListItem } from '@anchor/shared';
 
 import { useUser } from '@/hooks/use-user';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExpenseList } from '@/components/expenses/expense-list';
@@ -41,6 +44,8 @@ export default function ExpensesPage() {
     setRefreshKey((k) => k + 1);
   }, []);
 
+  const pathname = usePathname();
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -55,6 +60,32 @@ export default function ExpensesPage() {
           <Plus className="size-4" />
           Add Expense
         </Button>
+      </div>
+
+      {/* Sub-navigation */}
+      <div className="flex gap-4 border-b">
+        <Link
+          href="/expenses"
+          className={cn(
+            'pb-2 text-sm font-medium transition-colors hover:text-foreground',
+            pathname === '/expenses'
+              ? 'border-b-2 border-primary text-foreground'
+              : 'text-muted-foreground'
+          )}
+        >
+          Expenses
+        </Link>
+        <Link
+          href="/expenses/budgets"
+          className={cn(
+            'pb-2 text-sm font-medium transition-colors hover:text-foreground',
+            pathname === '/expenses/budgets'
+              ? 'border-b-2 border-primary text-foreground'
+              : 'text-muted-foreground'
+          )}
+        >
+          Budgets
+        </Link>
       </div>
 
       {/* Expense List */}

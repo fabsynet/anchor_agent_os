@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Loader2, Users } from "lucide-react";
+import { toast } from "sonner";
 
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,7 @@ interface TeamMember {
   role: string;
   avatarUrl: string | null;
   createdAt: string;
+  canViewFinancials: boolean;
 }
 
 const INVITE_CAP = 2;
@@ -101,6 +103,31 @@ export default function TeamSettingsPage() {
     );
   }
 
+  const handleToggleFinancials = async (
+    memberId: string,
+    currentValue: boolean
+  ) => {
+    try {
+      await api.patch(`/api/users/${memberId}/financial-access`, {
+        canViewFinancials: !currentValue,
+      });
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.id === memberId
+            ? { ...m, canViewFinancials: !currentValue }
+            : m
+        )
+      );
+      toast.success(
+        `Financial access ${!currentValue ? "granted" : "revoked"}`
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to update access";
+      toast.error(message);
+    }
+  };
+
   // Count pending + accepted invitations for cap enforcement
   const activeInviteCount = invitations.filter(
     (inv) => inv.status === "pending" || inv.status === "accepted"
@@ -149,6 +176,7 @@ export default function TeamSettingsPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Financials</TableHead>
                   <TableHead>Joined</TableHead>
                 </TableRow>
               </TableHeader>
@@ -163,6 +191,38 @@ export default function TeamSettingsPage() {
                       <Badge variant="secondary" className="capitalize">
                         {member.role}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {member.role === "admin" ? (
+                        <span className="text-xs text-muted-foreground">
+                          Always
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleToggleFinancials(
+                              member.id,
+                              member.canViewFinancials
+                            )
+                          }
+                          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                            member.canViewFinancials
+                              ? "bg-primary"
+                              : "bg-input"
+                          }`}
+                          role="switch"
+                          aria-checked={member.canViewFinancials}
+                          aria-label="Can view financials"
+                        >
+                          <span
+                            className={`pointer-events-none block size-4 rounded-full bg-background shadow-lg ring-0 transition-transform ${
+                              member.canViewFinancials
+                                ? "translate-x-4"
+                                : "translate-x-0"
+                            }`}
+                          />
+                        </button>
+                      )}
                     </TableCell>
                     <TableCell>
                       {new Date(member.createdAt).toLocaleDateString("en-CA", {

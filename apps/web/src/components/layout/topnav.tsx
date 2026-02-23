@@ -3,6 +3,7 @@
 import { Menu } from 'lucide-react';
 import { ModeToggle } from '@/components/layout/mode-toggle';
 import { UserMenu } from '@/components/layout/user-menu';
+import { NotificationBell } from '@/components/layout/notification-bell';
 import { Button } from '@/components/ui/button';
 
 interface TopnavProps {
@@ -28,6 +29,7 @@ export function Topnav({ onMobileMenuToggle }: TopnavProps) {
 
       {/* Right section */}
       <div className="flex items-center gap-2">
+        <NotificationBell />
         <ModeToggle />
         <UserMenu />
       </div>

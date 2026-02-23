@@ -48,4 +48,22 @@ export class UsersService {
       data: { setupCompleted: true },
     });
   }
+
+  /**
+   * Toggle canViewFinancials for a user (admin-only).
+   */
+  async updateFinancialAccess(userId: string, canViewFinancials: boolean) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User ${userId} not found`);
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { canViewFinancials },
+    });
+  }
 }
