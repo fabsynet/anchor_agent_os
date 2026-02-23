@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 6 of 7 (Trust & Reputation)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-23 -- Completed 06-01-PLAN.md (Data Foundation)
+Last activity: 2026-02-23 -- Completed 06-02-PLAN.md (Badge Backend API)
 
-Progress: ███████████████████████ 100% (23/24 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ████████████████████████ 100% (24/25 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -146,6 +146,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | productsOffered as String[] (not enum) | Phase 6 | Matches constant values, allows future expansion without migration |
 | Testimonial isVisible defaults true (auto-approved) | Phase 6 | Per CONTEXT.md: auto-approved, agent hides later if needed |
 | PublicBadgeProfile extends AgentProfile | Phase 6 | Adds fullName, agencyName, avatarUrl, filtered testimonials |
+| Badge constants inlined in API service | Phase 6 | API doesn't have @anchor/shared dep; inline 4 constants |
+| Public controller without @UseGuards | Phase 6 | Separate controller class for unauthenticated badge/testimonial endpoints |
+| Badge-assets bucket public | Phase 6 | Cover photos publicly visible; no signed URLs needed |
+| Auto-unfeature oldest when max 2 reached | Phase 6 | Better UX than rejecting; silently rotates featured testimonials |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -195,9 +199,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 
 ### Plans completed:
 - 06-01: Data Foundation (AgentProfile + Testimonial models, shared types/schemas/constants)
+- 06-02: Badge Backend API (9 endpoints: 7 authenticated profile/testimonial mgmt, 2 public badge/testimonial)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 06-01-PLAN.md (Data Foundation) -- Phase 6 plan 1 of 4
+Stopped at: Completed 06-02-PLAN.md (Badge Backend API) -- Phase 6 plan 2 of 4
 Resume file: none
