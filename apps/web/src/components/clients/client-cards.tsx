@@ -11,8 +11,14 @@ import {
   Phone,
   FileText,
   CalendarClock,
+  Paperclip,
 } from "lucide-react";
 import type { ClientListItem, ClientStatus } from "@anchor/shared";
+
+/** Extended client list item with document count from API */
+type ClientListItemWithDocs = ClientListItem & {
+  documentCount?: number;
+};
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,7 +47,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface ClientCardsProps {
-  data: ClientListItem[];
+  data: ClientListItemWithDocs[];
   onDelete: (id: string) => void;
 }
 
@@ -148,6 +154,15 @@ export function ClientCards({ data, onDelete }: ClientCardsProps) {
                       {client.policyCount === 1 ? "policy" : "policies"}
                     </span>
                   </div>
+                  {(client.documentCount ?? 0) > 0 && (
+                    <div className="flex items-center gap-1.5">
+                      <Paperclip className="size-3.5" />
+                      <span>
+                        {client.documentCount}{" "}
+                        {client.documentCount === 1 ? "doc" : "docs"}
+                      </span>
+                    </div>
+                  )}
                   {renewalDate && (
                     <div className="flex items-center gap-1.5">
                       <CalendarClock className="size-3.5" />
