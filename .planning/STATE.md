@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 5 of 7 (Expenses & Budgets)
-Plan: 3 of 5 in current phase
-Status: In progress -- 05-03 complete, Wave 2 done
-Last activity: 2026-02-23 -- Completed 05-03-PLAN.md (Budget Backend, Alerts, Dashboard Financial)
+Plan: 4 of 5 in current phase
+Status: In progress -- 05-04 complete, Wave 3 executing
+Last activity: 2026-02-23 -- Completed 05-04-PLAN.md (Expense UI)
 
-Progress: ███████████████████░░ 93% (20/21 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ████████████████████░ 95% (21/24 plans complete; 01-04, 01-05 at checkpoint; 05-05 in progress)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -132,6 +132,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Budget categories delete-and-recreate on update | Phase 5 | Simpler than diffing for small category lists |
 | canViewFinancials queried from DB not JWT | Phase 5 | Field not on AuthenticatedUser interface; DB lookup in controller |
 | Idempotent alerts via metadata match | Phase 5 | Prevents duplicate 80% threshold alerts for same budget+category+month |
+| Multi-mode dialog (create/edit/view) for expenses | Phase 5 | Single dialog component with parent-controlled mode instead of separate routes |
+| Custom category via text input toggle | Phase 5 | User clicks "Custom..." in Select to reveal text input, "Presets" to go back |
+| Receipt preview grid with hover overlay | Phase 5 | Action buttons appear on hover for open/delete; thumbnails for images, icon for PDFs |
+| ExpenseList self-fetches with refreshKey prop | Phase 5 | Parent triggers refetch by incrementing refreshKey counter |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -174,13 +178,13 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 05-01: Data Foundation (5 Prisma models, shared types/schemas/constants, Recharts installed)
 - 05-02: Expenses Backend API (14-method service, 13 endpoints, approval workflow, receipt upload, cron scheduler)
 - 05-03: Budget Backend, Alerts, Dashboard Financial (budget CRUD + auto-renewal cron, alerts with idempotent 80% threshold, dashboard financial endpoint)
+- 05-04: Expense UI (expense list with status tabs/filters/pagination, form dialog with receipt upload, inline admin approval)
 
 ### Plans remaining:
-- 05-04: Budget UI (budget management, progress bars, charts)
 - 05-05: Dashboard Integration (expense widgets, budget summary)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-03-PLAN.md (Budget Backend, Alerts, Dashboard Financial)
+Stopped at: Completed 05-04-PLAN.md (Expense UI)
 Resume file: none
