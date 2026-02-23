@@ -12,10 +12,12 @@ import {
   UploadedFiles,
   ParseUUIDPipe,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage, type FileFilterCallback } from 'multer';
 import { ExpensesService } from './expenses.service.js';
+import { BudgetsService } from '../budgets/budgets.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
@@ -38,7 +40,12 @@ const RECEIPT_MIME_TYPES = [
 @Controller('expenses')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ExpensesController {
-  constructor(private readonly expensesService: ExpensesService) {}
+  private readonly logger = new Logger(ExpensesController.name);
+
+  constructor(
+    private readonly expensesService: ExpensesService,
+    private readonly budgetsService: BudgetsService,
+  ) {}
 
   // ─── 1. POST /api/expenses ──────────────────────────────
 
@@ -199,7 +206,21 @@ export class ExpensesController {
         'Only admins can approve/reject expenses',
       );
     }
-    return this.expensesService.approve(tenantId, user.id, id);
+    const expense = await this.expensesService.approve(tenantId, user.id, id);
+
+    // Trigger budget threshold check (fire-and-forget)
+    this.budgetsService
+      .checkBudgetThreshold(
+        tenantId,
+        expense.category,
+        new Date(expense.date).getMonth() + 1,
+        new Date(expense.date).getFullYear(),
+      )
+      .catch((err) =>
+        this.logger.warn('Budget threshold check failed', err),
+      );
+
+    return expense;
   }
 
   // ─── 10. POST /api/expenses/:id/reject ─────────────────

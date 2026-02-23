@@ -18,6 +18,8 @@ import { NotificationsModule } from './notifications/notifications.module.js';
 import { DocumentsModule } from './documents/documents.module.js';
 import { ComplianceModule } from './compliance/compliance.module.js';
 import { ExpensesModule } from './expenses/expenses.module.js';
+import { AlertsModule } from './alerts/alerts.module.js';
+import { BudgetsModule } from './budgets/budgets.module.js';
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { ExpensesModule } from './expenses/expenses.module.js';
     DocumentsModule,
     ComplianceModule,
     ExpensesModule,
+    AlertsModule,
+    BudgetsModule,
   ],
 })
 export class AppModule {}

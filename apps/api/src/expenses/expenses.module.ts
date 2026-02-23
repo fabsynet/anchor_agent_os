@@ -3,9 +3,10 @@ import { ExpensesService } from './expenses.service.js';
 import { ExpensesController } from './expenses.controller.js';
 import { ExpensesScheduler } from './expenses.scheduler.js';
 import { AuthModule } from '../auth/auth.module.js';
+import { BudgetsModule } from '../budgets/budgets.module.js';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, BudgetsModule],
   controllers: [ExpensesController],
   providers: [ExpensesService, ExpensesScheduler],
   exports: [ExpensesService],
