@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 5 -- Expenses & Budgets (executing)
+**Current focus:** Phase 5 -- Expenses & Budgets (COMPLETE)
 
 ## Current Position
 
 Phase: 5 of 7 (Expenses & Budgets)
-Plan: 4 of 5 in current phase
-Status: In progress -- 05-04 complete, Wave 3 executing
-Last activity: 2026-02-23 -- Completed 05-04-PLAN.md (Expense UI)
+Plan: 5 of 5 in current phase
+Status: Phase complete
+Last activity: 2026-02-23 -- Completed 05-05-PLAN.md (Budget UI, Notifications, Financial Widget)
 
-Progress: ████████████████████░ 95% (21/24 plans complete; 01-04, 01-05 at checkpoint; 05-05 in progress)
+Progress: █████████████████████ 100% (22/24 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -136,6 +136,12 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Custom category via text input toggle | Phase 5 | User clicks "Custom..." in Select to reveal text input, "Presets" to go back |
 | Receipt preview grid with hover overlay | Phase 5 | Action buttons appear on hover for open/delete; thumbnails for images, icon for PDFs |
 | ExpenseList self-fetches with refreshKey prop | Phase 5 | Parent triggers refetch by incrementing refreshKey counter |
+| Financial widget self-hides on 403 | Phase 5 | Catches forbidden error and returns null instead of error UI |
+| PATCH /api/users/:id/financial-access | Phase 5 | Dedicated endpoint for admin to toggle canViewFinancials |
+| Sub-navigation tabs on expenses pages | Phase 5 | Both /expenses and /expenses/budgets show Expenses/Budgets tab bar |
+| Recharts v3 ResponsiveContainer confirmed | Phase 5 | Available in v3 despite some migration docs suggesting removal |
+| Progress bar color thresholds | Phase 5 | primary (<80%), yellow-500 (>=80%), red-500 (>=100%) |
+| Inline toggle switch for boolean user prefs | Phase 5 | Custom switch instead of @radix-ui/react-switch to avoid new dep |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -172,19 +178,17 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 04-03: Document UI & Client Profile Integration (6 document components, Documents tab, Compliance tab, count badges)
 - 04-04: Compliance Page & Policy Detail Dialog (compliance log with 5 filters, policy detail dialog with documents)
 
-## Phase 5: Expenses & Budgets -- IN PROGRESS
+## Phase 5: Expenses & Budgets -- COMPLETE
 
 ### Plans completed:
 - 05-01: Data Foundation (5 Prisma models, shared types/schemas/constants, Recharts installed)
 - 05-02: Expenses Backend API (14-method service, 13 endpoints, approval workflow, receipt upload, cron scheduler)
 - 05-03: Budget Backend, Alerts, Dashboard Financial (budget CRUD + auto-renewal cron, alerts with idempotent 80% threshold, dashboard financial endpoint)
 - 05-04: Expense UI (expense list with status tabs/filters/pagination, form dialog with receipt upload, inline admin approval)
-
-### Plans remaining:
-- 05-05: Dashboard Integration (expense widgets, budget summary)
+- 05-05: Budget UI, Notifications, Financial Widget (budget list/form, notification bell, donut chart, financial dashboard widget, canViewFinancials toggle)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-04-PLAN.md (Expense UI)
+Stopped at: Completed 05-05-PLAN.md (Budget UI, Notifications, Financial Widget) -- Phase 5 COMPLETE
 Resume file: none
