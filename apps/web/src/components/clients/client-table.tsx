@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, FileText } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -41,8 +41,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+/** Extended client list item with document count from API */
+type ClientListItemWithDocs = ClientListItem & {
+  documentCount?: number;
+};
+
 interface ClientTableProps {
-  data: ClientListItem[];
+  data: ClientListItemWithDocs[];
   onDelete: (id: string) => void;
 }
 
@@ -61,7 +66,7 @@ export function ClientTable({ data, onDelete }: ClientTableProps) {
     name: string;
   } | null>(null);
 
-  const columns: ColumnDef<ClientListItem>[] = [
+  const columns: ColumnDef<ClientListItemWithDocs>[] = [
     {
       accessorKey: "lastName",
       header: "Name",
@@ -91,6 +96,20 @@ export function ClientTable({ data, onDelete }: ClientTableProps) {
       accessorKey: "policyCount",
       header: "Policies",
       cell: ({ row }) => row.original.policyCount,
+    },
+    {
+      accessorKey: "documentCount",
+      header: "Docs",
+      cell: ({ row }) => {
+        const count = row.original.documentCount ?? 0;
+        if (count === 0) return null;
+        return (
+          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            <FileText className="size-3" />
+            {count}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "nextRenewalDate",

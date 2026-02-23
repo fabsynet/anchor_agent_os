@@ -11,6 +11,8 @@ import { ClientProfileHeader } from "@/components/clients/client-profile-header"
 import { ClientOverviewTab } from "@/components/clients/client-overview-tab";
 import { ClientTimelineTab } from "@/components/clients/client-timeline-tab";
 import { ClientPoliciesTab } from "@/components/clients/client-policies-tab";
+import { ClientDocumentsTab } from "@/components/clients/client-documents-tab";
+import { ClientComplianceTab } from "@/components/clients/client-compliance-tab";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -155,6 +157,7 @@ export default function ClientProfilePage({
           <TabsTrigger value="policies">Policies</TabsTrigger>
           <TabsTrigger value="timeline">Timeline / Notes</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4">
@@ -174,11 +177,11 @@ export default function ClientProfilePage({
         </TabsContent>
 
         <TabsContent value="documents" className="mt-4">
-          <Card>
-            <CardContent className="py-10 text-center text-muted-foreground">
-              Documents coming soon
-            </CardContent>
-          </Card>
+          <ClientDocumentsTab clientId={id} />
+        </TabsContent>
+
+        <TabsContent value="compliance" className="mt-4">
+          <ClientComplianceTab clientId={id} />
         </TabsContent>
       </Tabs>
     </div>

@@ -86,3 +86,13 @@ export { TASK_STATUSES, TASK_PRIORITIES, RENEWAL_MILESTONES } from './constants/
 // Validation schemas - Tasks
 export { createTaskSchema, updateTaskSchema } from './validation/task.schema';
 export type { CreateTaskInput, UpdateTaskInput } from './validation/task.schema';
+
+// Types - Documents
+export type { DocumentCategory, Document, DocumentListItem } from './types/document';
+
+// Constants - Documents
+export { DOCUMENT_CATEGORIES, MAX_FILE_SIZE, ALLOWED_MIME_TYPES, ALLOWED_EXTENSIONS } from './constants/documents';
+
+// Validation schemas - Documents & Compliance
+export { uploadDocumentSchema, searchDocumentsSchema, searchComplianceSchema } from './validation/document.schema';
+export type { UploadDocumentInput, SearchDocumentsInput, SearchComplianceInput } from './validation/document.schema';

@@ -85,6 +85,19 @@ enum TaskType {
   @@map("task_type")
 }
 
+enum DocumentCategory {
+  policy_document
+  application
+  id_license
+  claim_form
+  proof_of_insurance
+  endorsement
+  cancellation_notice
+  correspondence
+
+  @@map("document_category")
+}
+
 enum ActivityEventType {
   client_created
   client_updated
@@ -97,6 +110,8 @@ enum ActivityEventType {
   task_created
   task_completed
   task_status_changed
+  document_uploaded
+  document_deleted
 
   @@map("activity_event_type")
 }
@@ -119,6 +134,7 @@ model Tenant {
   activityEvents ActivityEvent[]
   notes          Note[]
   tasks          Task[]
+  documents      Document[]
 
   @@map("tenants")
 }
@@ -143,8 +159,9 @@ model User {
   policiesCreated Policy[]        @relation("policyCreatedBy")
   activityEvents  ActivityEvent[] @relation("activityEventUser")
   notesMade       Note[]          @relation("noteUser")
-  tasksAssigned   Task[]          @relation("taskAssignee")
-  tasksCreated    Task[]          @relation("taskCreatedBy")
+  tasksAssigned      Task[]          @relation("taskAssignee")
+  tasksCreated       Task[]          @relation("taskCreatedBy")
+  documentsUploaded  Document[]      @relation("documentUploadedBy")
 
   @@index([tenantId])
   @@map("users")
@@ -193,6 +210,7 @@ model Client {
   activityEvents ActivityEvent[]
   notes          Note[]
   tasks          Task[]
+  documents      Document[]
 
   @@index([tenantId])
   @@index([tenantId, status])
@@ -225,6 +243,8 @@ model Policy {
   client    Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
   createdBy User   @relation("policyCreatedBy", fields: [createdById], references: [id])
   tasks     Task[]
+  documents      Document[]
+  activityEvents ActivityEvent[]
 
   @@index([tenantId])
   @@index([clientId])
@@ -237,17 +257,22 @@ model ActivityEvent {
   tenantId    String            @map("tenant_id") @db.Uuid
   clientId    String            @map("client_id") @db.Uuid
   userId      String            @map("user_id") @db.Uuid
+  policyId    String?           @map("policy_id") @db.Uuid
   type        ActivityEventType
   description String
   metadata    Json?
   createdAt   DateTime          @default(now()) @map("created_at")
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  user   User   @relation("activityEventUser", fields: [userId], references: [id])
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  client Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User    @relation("activityEventUser", fields: [userId], references: [id])
+  policy Policy? @relation(fields: [policyId], references: [id], onDelete: SetNull)
 
   @@index([clientId, createdAt(sort: Desc)])
   @@index([tenantId])
+  @@index([tenantId, type])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([policyId])
   @@map("activity_events")
 }
 
@@ -266,6 +291,30 @@ model Note {
   @@index([clientId, createdAt(sort: Desc)])
   @@index([tenantId])
   @@map("notes")
+}
+
+model Document {
+  id            String           @id @default(uuid()) @db.Uuid
+  tenantId      String           @map("tenant_id") @db.Uuid
+  clientId      String           @map("client_id") @db.Uuid
+  policyId      String?          @map("policy_id") @db.Uuid
+  uploadedById  String           @map("uploaded_by_id") @db.Uuid
+  fileName      String           @map("file_name")
+  mimeType      String           @map("mime_type")
+  fileSize      Int              @map("file_size")
+  category      DocumentCategory @default(correspondence)
+  storagePath   String           @map("storage_path")
+  createdAt     DateTime         @default(now()) @map("created_at")
+
+  tenant     Tenant  @relation(fields: [tenantId], references: [id])
+  client     Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  policy     Policy? @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  uploadedBy User    @relation("documentUploadedBy", fields: [uploadedById], references: [id])
+
+  @@index([tenantId])
+  @@index([clientId])
+  @@index([clientId, policyId])
+  @@map("documents")
 }
 
 model Task {

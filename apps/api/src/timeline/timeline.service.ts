@@ -17,6 +17,7 @@ export class TimelineService {
     type: string,
     description: string,
     metadata?: Record<string, unknown>,
+    policyId?: string,
   ) {
     const event = await this.prisma.tenantClient.activityEvent.create({
       data: {
@@ -25,6 +26,7 @@ export class TimelineService {
         type: type as any,
         description,
         metadata: metadata ?? undefined,
+        policyId: policyId ?? undefined,
       } as any,
     });
 

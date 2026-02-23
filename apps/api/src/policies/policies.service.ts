@@ -204,6 +204,7 @@ export class PoliciesService {
           client: {
             select: { id: true, firstName: true, lastName: true },
           },
+          _count: { select: { documents: true } },
         },
       }),
       this.prisma.policy.count({ where: { ...where, tenantId } }),
@@ -235,6 +236,9 @@ export class PoliciesService {
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { createdAt: 'desc' },
+        include: {
+          _count: { select: { documents: true } },
+        },
       }),
       this.prisma.policy.count({ where: { tenantId, clientId } }),
     ]);

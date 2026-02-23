@@ -9,13 +9,16 @@ export type ActivityEventType =
   | 'policy_deleted'
   | 'task_created'
   | 'task_completed'
-  | 'task_status_changed';
+  | 'task_status_changed'
+  | 'document_uploaded'
+  | 'document_deleted';
 
 /** Immutable activity event record for the client timeline. */
 export interface ActivityEvent {
   id: string;
   clientId: string;
   userId: string;
+  policyId?: string | null;
   type: ActivityEventType;
   description: string;
   /** Old/new values for change tracking, or null */
@@ -24,6 +27,12 @@ export interface ActivityEvent {
   createdAt: string;
   /** Populated when fetching timeline with user details */
   user?: {
+    firstName: string;
+    lastName: string;
+  };
+  /** Populated when fetching compliance/audit views */
+  client?: {
+    id: string;
     firstName: string;
     lastName: string;
   };

@@ -9,7 +9,7 @@ Anchor's MVP delivers a complete insurance agent operating system in 7 phases, s
 - [ ] **Phase 1: Foundation & Auth** - Monorepo setup, Supabase integration, authentication, multi-tenancy, user roles
 - [x] **Phase 2: Client & Policy Management** - Client CRM, policy records, lead/client workflow
 - [x] **Phase 3: Tasks, Renewals & Dashboard** - Task system, renewal automation, Today Dashboard, email notifications
-- [ ] **Phase 4: Documents & Compliance** - Document upload/linking, compliance activity log
+- [x] **Phase 4: Documents & Compliance** - Document upload/linking, compliance activity log
 - [ ] **Phase 5: Expenses & Budgets** - Expense tracking, receipt uploads, budgets, alerts, financial dashboard widget
 - [ ] **Phase 6: Trust & Reputation** - Testimonials, surveys, feedback, public Agent Badge page
 - [ ] **Phase 7: Analytics, Import & Polish** - Light analytics, CSV import, performance optimization
@@ -84,27 +84,32 @@ Plans:
   3. User can view, download, and delete documents with category tags
   4. Key actions (policy created, task completed, document uploaded) are automatically logged
   5. User can view the compliance log filtered by client, date range, or action type
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: Document upload, storage, linking, categories
-- [ ] 04-02: Compliance activity log (auto-logging, immutable entries, filtering)
+- [x] 04-01-PLAN.md -- Data foundation (Prisma Document model, shared types/schemas/constants, api.ts upload, NAV_ITEMS)
+- [x] 04-02-PLAN.md -- Backend modules (Documents CRUD + Supabase Storage, Compliance query endpoint)
+- [x] 04-03-PLAN.md -- Document frontend (upload, folder browse, preview, client profile tabs, count badges)
+- [x] 04-04-PLAN.md -- Compliance page (/compliance with filters, table, pagination) + policy document section
 
 ### Phase 5: Expenses & Budgets
-**Goal**: Admin has financial awareness — tracking expenses, setting budgets, and receiving alerts before limits are exceeded
+**Goal**: Admin has financial awareness -- tracking expenses, setting budgets, and receiving alerts before limits are exceeded
 **Depends on**: Phase 1 (roles), Phase 4 (storage for receipts)
 **Requirements**: EXPN-01, EXPN-02, EXPN-03, EXPN-04, EXPN-05, EXPN-06, DASH-03, NOTF-03
 **Success Criteria** (what must be TRUE):
-  1. Admin can create expenses with amount (CAD), category, date, description, and optional client linkage
-  2. Admin can upload receipt images attached to expenses
-  3. Admin can create monthly budgets by category that auto-retire after their end date
-  4. System sends alert when spending reaches 80% of a budget category
+  1. Any user can create expenses with amount (CAD), category, date, description (everyone submits, admin approves)
+  2. User can upload receipt images (JPEG, PNG, WebP, PDF) attached to expenses
+  3. Admin can create monthly budgets with overall limit and per-category limits that auto-renew
+  4. System sends in-app alert when approved spending reaches 80% of a budget category
   5. Today Dashboard shows budget usage and expense totals for the current month
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 05-01: Expense CRUD, categories, receipt uploads, client linkage
-- [ ] 05-02: Budgets, auto-retirement, 80% alerts, dashboard financial widget
+- [ ] 05-01-PLAN.md -- Data foundation (Prisma schema, shared types/schemas/constants, Recharts install)
+- [ ] 05-02-PLAN.md -- Expense backend (CRUD, approval workflow, receipt upload, recurring cron)
+- [ ] 05-03-PLAN.md -- Budget & alerts backend (budget CRUD, auto-renewal cron, threshold alerts, dashboard financial endpoint)
+- [ ] 05-04-PLAN.md -- Expense UI (list with status tabs, form dialog, receipt upload/preview, inline approval)
+- [ ] 05-05-PLAN.md -- Budget UI, notification bell, donut chart, and dashboard financial widget
 
 ### Phase 6: Trust & Reputation
 **Goal**: Agents can build and showcase their professional reputation through client testimonials and a public digital presence
@@ -146,7 +151,7 @@ Plans:
 | 1. Foundation & Auth | 0/5 | Planning complete | - |
 | 2. Client & Policy Management | 6/6 | UAT passed | 2026-02-21 |
 | 3. Tasks, Renewals & Dashboard | 5/5 | Verified | 2026-02-22 |
-| 4. Documents & Compliance | 0/2 | Not started | - |
-| 5. Expenses & Budgets | 0/2 | Not started | - |
+| 4. Documents & Compliance | 4/4 | Verified | 2026-02-23 |
+| 5. Expenses & Budgets | 0/5 | Planning complete | - |
 | 6. Trust & Reputation | 0/2 | Not started | - |
 | 7. Analytics, Import & Polish | 0/3 | Not started | - |

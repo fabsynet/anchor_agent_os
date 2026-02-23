@@ -18,7 +18,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'clients', label: 'Clients', href: '/clients', icon: 'Users', adminOnly: false },
   { id: 'policies', label: 'Policies', href: '/policies', icon: 'Shield', adminOnly: false },
   { id: 'tasks', label: 'Tasks', href: '/tasks', icon: 'CheckSquare', adminOnly: false },
-  { id: 'documents', label: 'Documents', href: '/documents', icon: 'FileText', adminOnly: false },
+  { id: 'compliance', label: 'Compliance', href: '/compliance', icon: 'FileText', adminOnly: false },
   { id: 'expenses', label: 'Expenses', href: '/expenses', icon: 'DollarSign', adminOnly: false },
   { id: 'settings', label: 'Settings', href: '/settings', icon: 'Settings', adminOnly: true },
 ];

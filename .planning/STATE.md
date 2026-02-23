@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 3 -- Tasks, Renewals & Dashboard (COMPLETE)
+**Current focus:** Phase 5 -- Expenses & Budgets (next up)
 
 ## Current Position
 
-Phase: 3 of 7 (Tasks, Renewals & Dashboard)
-Plan: 5 of 5 in current phase
-Status: Phase 3 COMPLETE -- all 5 plans done
-Last activity: 2026-02-22 -- Completed 03-05-PLAN.md
+Phase: 5 of 7 (Expenses & Budgets)
+Plan: 0 of 5 in current phase
+Status: Ready to plan/execute
+Last activity: 2026-02-23 -- Phase 4 verified and finalized
 
-Progress: ██████████████░░░░░░░ 72% (18/25 plans complete)
+Progress: █████████████████░░░░ 89% (17/19 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -105,8 +105,23 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Policy dropdown cascades from client selection | Phase 3 | Only fetch/show policies when client is selected |
 | Dashboard types defined locally in widgets | Phase 3 | Frontend-specific API response shapes, not shared across packages |
 | Widget three-state pattern (loading/empty/data) | Phase 3 | Consistent UX with Skeleton placeholders and meaningful empty states |
+| onDelete: SetNull on Document->Policy relation | Phase 4 | Documents move to client level when policy deleted, not deleted |
+| NAV_ITEMS: Compliance instead of Documents | Phase 4 | No standalone /documents page; compliance page gets sidebar access |
+| ActivityEvent policyId column for document tracking | Phase 4 | Enables per-policy document and compliance event tracking |
+| Express body limit 11mb for file uploads | Phase 4 | 10MB file + form metadata; Multer handles actual multipart parsing |
+| Compliance queries use raw prisma not tenantClient | Phase 4 | Cross-client queries need manual tenantId in where clause |
+| Compliance log strictly read-only | Phase 4 | No mutation endpoints -- immutable per user decision |
+| Bucket auto-creation with graceful fallback | Phase 4 | DocumentsService constructor tries to create bucket, logs warning on failure |
+| TimelineService.createActivityEvent optional policyId | Phase 4 | Backward-compatible 8th parameter for document activity events |
+| Compliance filters use _none sentinel pattern | Phase 4 | Consistent with Phase 3 pattern for Radix Select "all" options |
+| User filter hidden on 403 | Phase 4 | Admin-only endpoint graceful degradation for non-admin users |
+| Policy detail dialog as policy detail view | Phase 4 | Card/dialog pattern instead of dedicated page for policy details |
+| Linked policy filter cascades from client | Phase 4 | Only shows policies for selected client in compliance filters |
+| Extended local types for API response fields | Phase 4 | ClientListItemWithDocs, PolicyWithCounts for documentCount/_count.documents |
+| Document count badges conditionally rendered | Phase 4 | Only show when count > 0 to avoid visual clutter |
+| Compliance tab no filters (simple chronological) | Phase 4 | Full filter UI is on standalone /compliance page |
 
-## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE
+## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
 ### Plans completed:
 - 03-01: Data Foundation (Task model, shared types/schemas/constants, dependencies)
@@ -115,21 +130,34 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 03-04: Task UI (list/kanban page, table view, kanban board, task form dialog)
 - 03-05: Dashboard UI (summary cards, quick actions, renewals/overdue/activity widgets, premium income)
 
+### Post-testing fixes applied:
+- Edit forms (policy, client) now populate with existing values (useEffect reset + Radix Select value)
+- Pagination added to all remaining lists (client policies tab, dashboard widgets)
+- Renewal engine catches policies <7 days to expiry and creates urgent tasks
+
 ### Pending Todos
 
 - Verify DATABASE_URL is in root .env and packages/database/.env
 - Test /settings/team after auth rewrite (Phase 1 checkpoint)
 - Apply RLS migration via Supabase SQL Editor (may not be needed)
 - RESEND_API_KEY needed for email sending (invitations + daily digest)
-- Phase 3 COMPLETE -- ready for Phase 4 (Documents & Compliance)
 
 ### Blockers/Concerns
 
 - handle_new_user Supabase trigger may not be set up -- guard auto-provisions as fallback
-- Phase 1 checkpoints (01-04, 01-05) still pending user verification -- does not block Phase 4
+- Phase 1 checkpoints (01-04, 01-05) still pending user verification -- does not block future phases
+- Supabase Storage "documents" bucket must exist (auto-created on API start or manually in Dashboard)
+
+## Phase 4: Documents & Compliance -- COMPLETE
+
+### Plans completed:
+- 04-01: Data Foundation (Document model, shared types/schemas/constants, upload helper, body limit, Compliance nav)
+- 04-02: Backend Modules (Documents CRUD API, Compliance query API, document count includes)
+- 04-03: Document UI & Client Profile Integration (6 document components, Documents tab, Compliance tab, count badges)
+- 04-04: Compliance Page & Policy Detail Dialog (compliance log with 5 filters, policy detail dialog with documents)
 
 ## Session Continuity
 
-Last session: 2026-02-22
-Stopped at: Phase 3 complete, post-fix committed (dashboard /api prefix). Ready for Phase 4.
-Resume file: .planning/phases/03-tasks-renewals-and-dashboard/.continue-here.md
+Last session: 2026-02-23
+Stopped at: Phase 4 finalized (verified, ROADMAP+REQUIREMENTS updated). Phase 5 is next.
+Resume file: none
