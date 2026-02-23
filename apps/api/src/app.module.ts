@@ -15,6 +15,8 @@ import { TasksModule } from './tasks/tasks.module.js';
 import { RenewalsModule } from './renewals/renewals.module.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
+import { DocumentsModule } from './documents/documents.module.js';
+import { ComplianceModule } from './compliance/compliance.module.js';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { NotificationsModule } from './notifications/notifications.module.js';
     RenewalsModule,
     DashboardModule,
     NotificationsModule,
+    DocumentsModule,
+    ComplianceModule,
   ],
 })
 export class AppModule {}

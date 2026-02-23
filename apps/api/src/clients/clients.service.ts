@@ -86,7 +86,7 @@ export class ClientsService {
         take: limit,
         orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
         include: {
-          _count: { select: { policies: true } },
+          _count: { select: { policies: true, documents: true } },
           policies: {
             select: { endDate: true, status: true },
           },
@@ -98,6 +98,7 @@ export class ClientsService {
     // Map results to include policyCount and nextRenewalDate
     const data = clients.map((client: any) => {
       const policyCount = client._count?.policies ?? 0;
+      const documentCount = client._count?.documents ?? 0;
 
       // Find the nearest future endDate among active or pending_renewal policies
       const now = new Date();
@@ -116,7 +117,7 @@ export class ClientsService {
 
       // Remove internal fields from response
       const { _count, policies, ...rest } = client;
-      return { ...rest, policyCount, nextRenewalDate };
+      return { ...rest, policyCount, documentCount, nextRenewalDate };
     });
 
     return {
