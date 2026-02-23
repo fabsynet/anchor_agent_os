@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
+import { SettingsNav } from "@/components/settings/settings-nav";
 import {
   Card,
   CardContent,
@@ -89,7 +90,14 @@ export default function TeamSettingsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your account, team, and public badge page.
+          </p>
+        </div>
+        <SettingsNav />
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">
             Team Management
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -137,7 +145,16 @@ export default function TeamSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <p className="text-muted-foreground">
+          Manage your account, team, and public badge page.
+        </p>
+      </div>
+
+      <SettingsNav />
+
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight">
           Team Management
         </h2>
         <p className="text-sm text-muted-foreground">

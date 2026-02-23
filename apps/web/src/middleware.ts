@@ -10,6 +10,8 @@ const PUBLIC_ROUTES = [
   '/update-password',
   '/accept-invite',
   '/auth/callback',
+  '/agent',        // Public badge pages
+  '/testimonial',  // Public testimonial submission
 ];
 
 export async function middleware(request: NextRequest) {
@@ -66,7 +68,9 @@ export async function middleware(request: NextRequest) {
     pathname !== '/verify' &&
     pathname !== '/update-password' &&
     !pathname.startsWith('/accept-invite') &&
-    !pathname.startsWith('/auth/callback')
+    !pathname.startsWith('/auth/callback') &&
+    !pathname.startsWith('/agent') &&
+    !pathname.startsWith('/testimonial')
   ) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
