@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 5 -- Expenses & Budgets (COMPLETE)
+**Current focus:** Phase 6 -- Trust & Reputation (executing)
 
 ## Current Position
 
-Phase: 5 of 7 (Expenses & Budgets)
-Plan: 5 of 5 in current phase
-Status: Phase complete
-Last activity: 2026-02-23 -- Completed 05-05-PLAN.md (Budget UI, Notifications, Financial Widget)
+Phase: 6 of 7 (Trust & Reputation)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-23 -- Completed 06-01-PLAN.md (Data Foundation)
 
-Progress: █████████████████████ 100% (22/24 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ███████████████████████ 100% (23/24 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -142,6 +142,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Recharts v3 ResponsiveContainer confirmed | Phase 5 | Available in v3 despite some migration docs suggesting removal |
 | Progress bar color thresholds | Phase 5 | primary (<80%), yellow-500 (>=80%), red-500 (>=100%) |
 | Inline toggle switch for boolean user prefs | Phase 5 | Custom switch instead of @radix-ui/react-switch to avoid new dep |
+| customLinks as Json with default "[]" | Phase 6 | Flexible label/url pairs without separate table |
+| productsOffered as String[] (not enum) | Phase 6 | Matches constant values, allows future expansion without migration |
+| Testimonial isVisible defaults true (auto-approved) | Phase 6 | Per CONTEXT.md: auto-approved, agent hides later if needed |
+| PublicBadgeProfile extends AgentProfile | Phase 6 | Adds fullName, agencyName, avatarUrl, filtered testimonials |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -187,8 +191,13 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 05-04: Expense UI (expense list with status tabs/filters/pagination, form dialog with receipt upload, inline admin approval)
 - 05-05: Budget UI, Notifications, Financial Widget (budget list/form, notification bell, donut chart, financial dashboard widget, canViewFinancials toggle)
 
+## Phase 6: Trust & Reputation -- In Progress
+
+### Plans completed:
+- 06-01: Data Foundation (AgentProfile + Testimonial models, shared types/schemas/constants)
+
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-05-PLAN.md (Budget UI, Notifications, Financial Widget) -- Phase 5 COMPLETE
+Stopped at: Completed 06-01-PLAN.md (Data Foundation) -- Phase 6 plan 1 of 4
 Resume file: none
