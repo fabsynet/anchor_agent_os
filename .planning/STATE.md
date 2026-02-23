@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 6 -- Trust & Reputation (executing)
+**Current focus:** Phase 6 -- Trust & Reputation (COMPLETE)
 
 ## Current Position
 
 Phase: 6 of 7 (Trust & Reputation)
-Plan: 2 of 4 in current phase
-Status: In progress
-Last activity: 2026-02-23 -- Completed 06-02-PLAN.md (Badge Backend API)
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2026-02-23 -- Completed 06-04-PLAN.md (Badge Management UI)
 
-Progress: ████████████████████████ 100% (24/25 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ██████████████████████████ 100% (25/25 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -150,6 +150,9 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Public controller without @UseGuards | Phase 6 | Separate controller class for unauthenticated badge/testimonial endpoints |
 | Badge-assets bucket public | Phase 6 | Cover photos publicly visible; no signed URLs needed |
 | Auto-unfeature oldest when max 2 reached | Phase 6 | Better UX than rejecting; silently rotates featured testimonials |
+| SettingsNav as shared component (not layout.tsx) | Phase 6 | Follows expenses sub-nav pattern; each settings page imports directly |
+| Badge tab available to ALL roles | Phase 6 | Every agent should be able to create their badge page |
+| Inline TestimonialCard within testimonial-manager | Phase 6 | Admin curation card differs from public display card; separate concerns |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -195,14 +198,16 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 05-04: Expense UI (expense list with status tabs/filters/pagination, form dialog with receipt upload, inline admin approval)
 - 05-05: Budget UI, Notifications, Financial Widget (budget list/form, notification bell, donut chart, financial dashboard widget, canViewFinancials toggle)
 
-## Phase 6: Trust & Reputation -- In Progress
+## Phase 6: Trust & Reputation -- COMPLETE
 
 ### Plans completed:
 - 06-01: Data Foundation (AgentProfile + Testimonial models, shared types/schemas/constants)
 - 06-02: Badge Backend API (9 endpoints: 7 authenticated profile/testimonial mgmt, 2 public badge/testimonial)
+- 06-03: Public Badge Page UI (public badge page, testimonial submission form, public layout)
+- 06-04: Badge Management UI (profile editor, cover photo upload, testimonial manager, settings sub-nav)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 06-02-PLAN.md (Badge Backend API) -- Phase 6 plan 2 of 4
+Stopped at: Completed 06-04-PLAN.md (Badge Management UI) -- Phase 6 complete (4/4 plans)
 Resume file: none
