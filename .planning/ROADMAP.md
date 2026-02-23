@@ -84,11 +84,13 @@ Plans:
   3. User can view, download, and delete documents with category tags
   4. Key actions (policy created, task completed, document uploaded) are automatically logged
   5. User can view the compliance log filtered by client, date range, or action type
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: Document upload, storage, linking, categories
-- [ ] 04-02: Compliance activity log (auto-logging, immutable entries, filtering)
+- [ ] 04-01-PLAN.md -- Data foundation (Prisma Document model, shared types/schemas/constants, api.ts upload, NAV_ITEMS)
+- [ ] 04-02-PLAN.md -- Backend modules (Documents CRUD + Supabase Storage, Compliance query endpoint)
+- [ ] 04-03-PLAN.md -- Document frontend (upload, folder browse, preview, client profile tabs, count badges)
+- [ ] 04-04-PLAN.md -- Compliance page (/compliance with filters, table, pagination) + policy document section
 
 ### Phase 5: Expenses & Budgets
 **Goal**: Admin has financial awareness — tracking expenses, setting budgets, and receiving alerts before limits are exceeded
@@ -146,7 +148,7 @@ Plans:
 | 1. Foundation & Auth | 0/5 | Planning complete | - |
 | 2. Client & Policy Management | 6/6 | UAT passed | 2026-02-21 |
 | 3. Tasks, Renewals & Dashboard | 5/5 | Verified | 2026-02-22 |
-| 4. Documents & Compliance | 0/2 | Not started | - |
+| 4. Documents & Compliance | 0/4 | Planning complete | - |
 | 5. Expenses & Budgets | 0/2 | Not started | - |
 | 6. Trust & Reputation | 0/2 | Not started | - |
 | 7. Analytics, Import & Polish | 0/3 | Not started | - |
