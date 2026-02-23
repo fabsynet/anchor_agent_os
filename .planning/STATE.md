@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 4 -- Documents & Compliance (IN PROGRESS)
+**Current focus:** Phase 4 -- Documents & Compliance (COMPLETE)
 
 ## Current Position
 
 Phase: 4 of 7 (Documents & Compliance)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-22 -- Completed 04-01-PLAN.md (Data Foundation)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-23 -- Completed 04-02-PLAN.md (Backend Modules)
 
-Progress: ███████████████░░░░░░ 76% (19/25 plans complete)
+Progress: ████████████████░░░░░ 80% (20/25 plans complete)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -109,6 +109,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | NAV_ITEMS: Compliance instead of Documents | Phase 4 | No standalone /documents page; compliance page gets sidebar access |
 | ActivityEvent policyId column for document tracking | Phase 4 | Enables per-policy document and compliance event tracking |
 | Express body limit 11mb for file uploads | Phase 4 | 10MB file + form metadata; Multer handles actual multipart parsing |
+| Compliance queries use raw prisma not tenantClient | Phase 4 | Cross-client queries need manual tenantId in where clause |
+| Compliance log strictly read-only | Phase 4 | No mutation endpoints -- immutable per user decision |
+| Bucket auto-creation with graceful fallback | Phase 4 | DocumentsService constructor tries to create bucket, logs warning on failure |
+| TimelineService.createActivityEvent optional policyId | Phase 4 | Backward-compatible 8th parameter for document activity events |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -134,18 +138,17 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ### Blockers/Concerns
 
 - handle_new_user Supabase trigger may not be set up -- guard auto-provisions as fallback
-- Phase 1 checkpoints (01-04, 01-05) still pending user verification -- does not block Phase 4
+- Phase 1 checkpoints (01-04, 01-05) still pending user verification -- does not block future phases
+- Supabase Storage "documents" bucket must exist (auto-created on API start or manually in Dashboard)
 
-## Phase 4: Documents & Compliance -- IN PROGRESS
+## Phase 4: Documents & Compliance -- COMPLETE
 
 ### Plans completed:
 - 04-01: Data Foundation (Document model, shared types/schemas/constants, upload helper, body limit, Compliance nav)
-
-### Plans remaining:
-- 04-02: Backend Modules, Document UI, Compliance UI
+- 04-02: Backend Modules (Documents CRUD API, Compliance query API, document count includes)
 
 ## Session Continuity
 
-Last session: 2026-02-22
-Stopped at: Completed 04-01-PLAN.md. Ready for 04-02.
+Last session: 2026-02-23
+Stopped at: Completed 04-02-PLAN.md. Phase 4 complete. Ready for Phase 5.
 Resume file: none
