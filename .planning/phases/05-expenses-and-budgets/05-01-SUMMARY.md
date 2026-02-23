@@ -82,7 +82,7 @@ Each task was committed atomically:
 1. **Task 1: Prisma Schema -- New Models and Enums** - `ccf03cc` (feat)
 2. **Task 2: Shared Types, Validation Schemas, and Constants** - `4414133` (feat)
 
-**Plan metadata:** (pending)
+**Plan metadata:** `1be4f4f` (docs: complete plan)
 
 ## Files Created/Modified
 - `packages/database/prisma/schema.prisma` - Added 5 models, 2 enums, updated Tenant/User relations
