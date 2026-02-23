@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -68,6 +69,24 @@ export function ClientForm({
     mode: "onBlur",
     reValidateMode: "onChange",
   });
+
+  // Reset form values when defaultValues change (edit mode)
+  useEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      form.reset({
+        firstName: defaultValues?.firstName ?? "",
+        lastName: defaultValues?.lastName ?? "",
+        email: defaultValues?.email ?? "",
+        phone: defaultValues?.phone ?? "",
+        status: defaultValues?.status ?? "lead",
+        address: defaultValues?.address ?? "",
+        city: defaultValues?.city ?? "",
+        province: defaultValues?.province ?? "",
+        postalCode: defaultValues?.postalCode ?? "",
+        dateOfBirth: defaultValues?.dateOfBirth ?? "",
+      });
+    }
+  }, [mode, defaultValues, form]);
 
   const watchedStatus = form.watch("status");
   const isClient = watchedStatus === "client";
@@ -264,7 +283,7 @@ export function ClientForm({
                   <FormLabel>Province</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
