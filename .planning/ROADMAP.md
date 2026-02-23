@@ -11,7 +11,7 @@ Anchor's MVP delivers a complete insurance agent operating system in 7 phases, s
 - [x] **Phase 3: Tasks, Renewals & Dashboard** - Task system, renewal automation, Today Dashboard, email notifications
 - [x] **Phase 4: Documents & Compliance** - Document upload/linking, compliance activity log
 - [ ] **Phase 5: Expenses & Budgets** - Expense tracking, receipt uploads, budgets, alerts, financial dashboard widget
-- [ ] **Phase 6: Trust & Reputation** - Testimonials, surveys, feedback, public Agent Badge page
+- [ ] **Phase 6: Trust & Reputation** - Testimonials, public Agent Badge page
 - [ ] **Phase 7: Analytics, Import & Polish** - Light analytics, CSV import, performance optimization
 
 ## Phase Details
@@ -114,18 +114,20 @@ Plans:
 ### Phase 6: Trust & Reputation
 **Goal**: Agents can build and showcase their professional reputation through client testimonials and a public digital presence
 **Depends on**: Phase 2 (clients)
-**Requirements**: TRST-01, TRST-02, TRST-03, TRST-04, TRST-05, TRST-06, TRST-07
+**Requirements**: TRST-01, TRST-02, TRST-05, TRST-06, TRST-07 (TRST-03, TRST-04 deferred -- surveys out of scope)
 **Success Criteria** (what must be TRUE):
-  1. User can generate and send a testimonial request link to a client
+  1. User can generate and share a testimonial request link
   2. Client can submit a testimonial without creating an account
-  3. User can create and send feedback surveys; responses appear on the client profile
-  4. Each agent has a public badge page displaying photo, license, contact info, social links, and approved testimonials
-  5. Agent can choose which testimonials appear on their public badge page
-**Plans**: TBD
+  3. Each agent has a public badge page displaying photo, license, contact info, social links, and approved testimonials
+  4. Agent can choose which testimonials appear on their public badge page (show/hide, feature up to 2)
+  5. Agent receives in-app notification when a new testimonial is submitted
+**Plans**: 4 plans
 
 Plans:
-- [ ] 06-01: Testimonial requests, client submissions, survey/feedback system
-- [ ] 06-02: Public Agent Badge page (SSG, agent profile, testimonial display)
+- [ ] 06-01-PLAN.md -- Data foundation (AgentProfile + Testimonial schema, shared types/schemas/constants)
+- [ ] 06-02-PLAN.md -- Backend badge module (profile CRUD, testimonial submission, curation, image upload, notifications)
+- [ ] 06-03-PLAN.md -- Public pages (testimonial form, badge page, middleware update, display components)
+- [ ] 06-04-PLAN.md -- Badge management UI (Settings > Badge, profile editor, testimonial curation, link sharing)
 
 ### Phase 7: Analytics, Import & Polish
 **Goal**: Agents can understand their book of business, import existing data, and experience a polished, performant app
@@ -152,6 +154,6 @@ Plans:
 | 2. Client & Policy Management | 6/6 | UAT passed | 2026-02-21 |
 | 3. Tasks, Renewals & Dashboard | 5/5 | Verified | 2026-02-22 |
 | 4. Documents & Compliance | 4/4 | Verified | 2026-02-23 |
-| 5. Expenses & Budgets | 0/5 | Planning complete | - |
-| 6. Trust & Reputation | 0/2 | Not started | - |
+| 5. Expenses & Budgets | 5/5 | Complete | 2026-02-23 |
+| 6. Trust & Reputation | 0/4 | Planning complete | - |
 | 7. Analytics, Import & Polish | 0/3 | Not started | - |

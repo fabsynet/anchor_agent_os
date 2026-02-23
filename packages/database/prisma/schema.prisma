@@ -156,6 +156,7 @@ model Tenant {
   expenseReceipts  ExpenseReceipt[]
   budgets          Budget[]
   notifications    InAppNotification[]
+  agentProfiles    AgentProfile[]
 
   @@map("tenants")
 }
@@ -188,6 +189,7 @@ model User {
   expensesApproved   Expense[]          @relation("expenseApprovedBy")
   budgetsCreated     Budget[]           @relation("budgetCreatedBy")
   notifications      InAppNotification[]
+  agentProfile       AgentProfile?
 
   @@index([tenantId])
   @@map("users")
@@ -477,4 +479,56 @@ model InAppNotification {
   @@index([tenantId, userId, isRead])
   @@index([userId, createdAt(sort: Desc)])
   @@map("in_app_notifications")
+}
+
+model AgentProfile {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @unique @map("user_id") @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  slug            String   @unique
+  licenseNumber   String?  @map("license_number")
+  bio             String?
+  phone           String?
+  email           String?
+  website         String?
+  linkedIn        String?  @map("linkedin")
+  twitter         String?
+  facebook        String?
+  instagram       String?
+  whatsApp        String?  @map("whatsapp")
+  productsOffered String[] @map("products_offered")
+  customLinks     Json?    @map("custom_links") @default("[]")
+  coverPhotoPath  String?  @map("cover_photo_path")
+  accentColor     String?  @map("accent_color") @default("#0f172a")
+  isPublished     Boolean  @default(false) @map("is_published")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id])
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  testimonials Testimonial[]
+
+  @@index([tenantId])
+  @@index([slug])
+  @@map("agent_profiles")
+}
+
+model Testimonial {
+  id             String   @id @default(uuid()) @db.Uuid
+  agentProfileId String   @map("agent_profile_id") @db.Uuid
+  authorName     String   @map("author_name")
+  authorEmail    String?  @map("author_email")
+  isAnonymous    Boolean  @default(false) @map("is_anonymous")
+  rating         Int
+  content        String
+  strengths      String[]
+  isVisible      Boolean  @default(true) @map("is_visible")
+  isFeatured     Boolean  @default(false) @map("is_featured")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  agentProfile AgentProfile @relation(fields: [agentProfileId], references: [id], onDelete: Cascade)
+
+  @@index([agentProfileId, isVisible, createdAt(sort: Desc)])
+  @@index([agentProfileId, isFeatured])
+  @@map("testimonials")
 }
