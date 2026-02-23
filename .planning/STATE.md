@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 5 -- Expenses & Budgets (executing)
+**Current focus:** Phase 5 -- Expenses & Budgets (COMPLETE)
 
 ## Current Position
 
 Phase: 5 of 7 (Expenses & Budgets)
-Plan: 1 of 5 in current phase
-Status: In progress
-Last activity: 2026-02-23 -- Completed 05-01-PLAN.md (Data Foundation)
+Plan: 5 of 5 in current phase
+Status: Phase complete
+Last activity: 2026-02-23 -- Completed 05-05-PLAN.md (Budget UI, Notifications, Financial Widget)
 
-Progress: ██████████████████░░░ 90% (18/19 plans complete; 01-04, 01-05 at checkpoint)
+Progress: █████████████████████ 100% (22/24 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -123,6 +123,25 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Expense category as String not enum | Phase 5 | Supports custom categories beyond 14 presets; validation at app layer |
 | Budget unique on tenantId+month+year | Phase 5 | One budget per month per tenant; enforced at DB level |
 | canViewFinancials on User model | Phase 5 | Financial access control field for agent-level permissions |
+| Receipt storage uses DocumentsService pattern | Phase 5 | Supabase Storage bucket auto-creation, UUID-prefix paths for receipts |
+| Admin approve/reject uses inline role check | Phase 5 | ForbiddenException on user.role !== 'admin', not @Roles decorator |
+| Recurring expense cron at 2AM Toronto | Phase 5 | 1 hour after renewals cron at 1AM to avoid overlap |
+| Static routes before :id param routes | Phase 5 | Prevents NestJS from misinterpreting /categories as UUID param |
+| Preset + custom category merge | Phase 5 | 14 preset categories merged with distinct custom categories from DB |
+| Budget threshold check fire-and-forget | Phase 5 | Promise.catch in controller to not block approval response |
+| Budget categories delete-and-recreate on update | Phase 5 | Simpler than diffing for small category lists |
+| canViewFinancials queried from DB not JWT | Phase 5 | Field not on AuthenticatedUser interface; DB lookup in controller |
+| Idempotent alerts via metadata match | Phase 5 | Prevents duplicate 80% threshold alerts for same budget+category+month |
+| Multi-mode dialog (create/edit/view) for expenses | Phase 5 | Single dialog component with parent-controlled mode instead of separate routes |
+| Custom category via text input toggle | Phase 5 | User clicks "Custom..." in Select to reveal text input, "Presets" to go back |
+| Receipt preview grid with hover overlay | Phase 5 | Action buttons appear on hover for open/delete; thumbnails for images, icon for PDFs |
+| ExpenseList self-fetches with refreshKey prop | Phase 5 | Parent triggers refetch by incrementing refreshKey counter |
+| Financial widget self-hides on 403 | Phase 5 | Catches forbidden error and returns null instead of error UI |
+| PATCH /api/users/:id/financial-access | Phase 5 | Dedicated endpoint for admin to toggle canViewFinancials |
+| Sub-navigation tabs on expenses pages | Phase 5 | Both /expenses and /expenses/budgets show Expenses/Budgets tab bar |
+| Recharts v3 ResponsiveContainer confirmed | Phase 5 | Available in v3 despite some migration docs suggesting removal |
+| Progress bar color thresholds | Phase 5 | primary (<80%), yellow-500 (>=80%), red-500 (>=100%) |
+| Inline toggle switch for boolean user prefs | Phase 5 | Custom switch instead of @radix-ui/react-switch to avoid new dep |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -159,19 +178,17 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 04-03: Document UI & Client Profile Integration (6 document components, Documents tab, Compliance tab, count badges)
 - 04-04: Compliance Page & Policy Detail Dialog (compliance log with 5 filters, policy detail dialog with documents)
 
-## Phase 5: Expenses & Budgets -- IN PROGRESS
+## Phase 5: Expenses & Budgets -- COMPLETE
 
 ### Plans completed:
 - 05-01: Data Foundation (5 Prisma models, shared types/schemas/constants, Recharts installed)
-
-### Plans remaining:
-- 05-02: Backend API Modules (Expenses CRUD, Budgets CRUD, Notifications)
-- 05-03: Expense UI (list, form, approval workflow)
-- 05-04: Budget UI (budget management, progress bars, charts)
-- 05-05: Dashboard Integration (expense widgets, budget summary)
+- 05-02: Expenses Backend API (14-method service, 13 endpoints, approval workflow, receipt upload, cron scheduler)
+- 05-03: Budget Backend, Alerts, Dashboard Financial (budget CRUD + auto-renewal cron, alerts with idempotent 80% threshold, dashboard financial endpoint)
+- 05-04: Expense UI (expense list with status tabs/filters/pagination, form dialog with receipt upload, inline admin approval)
+- 05-05: Budget UI, Notifications, Financial Widget (budget list/form, notification bell, donut chart, financial dashboard widget, canViewFinancials toggle)
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-01-PLAN.md (Data Foundation for Expenses & Budgets)
+Stopped at: Completed 05-05-PLAN.md (Budget UI, Notifications, Financial Widget) -- Phase 5 COMPLETE
 Resume file: none

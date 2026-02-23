@@ -1,12 +1,18 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, ForbiddenException } from '@nestjs/common';
 import { DashboardService } from './dashboard.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { TenantId } from '../auth/decorators/tenant-id.decorator.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import type { AuthenticatedUser } from '../auth/guards/jwt-auth.guard.js';
+import { PrismaService } from '../common/prisma/prisma.service.js';
 
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard)
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(
+    private readonly dashboardService: DashboardService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
    * GET /api/dashboard/summary
@@ -52,5 +58,34 @@ export class DashboardController {
   @Get('premium-income')
   async getPremiumIncome(@TenantId() tenantId: string) {
     return this.dashboardService.getPremiumIncome(tenantId);
+  }
+
+  /**
+   * GET /api/dashboard/financial
+   * Returns financial summary for the dashboard widget.
+   * Access: admin users OR users with canViewFinancials=true.
+   * NOTE: canViewFinancials is not on AuthenticatedUser interface, so we query the DB.
+   */
+  @Get('financial')
+  async getFinancialSummary(
+    @TenantId() tenantId: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    // Admin always has access
+    if (user.role !== 'admin') {
+      // Check canViewFinancials from DB
+      const dbUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        select: { canViewFinancials: true },
+      });
+
+      if (!dbUser?.canViewFinancials) {
+        throw new ForbiddenException(
+          'You do not have permission to view financial data',
+        );
+      }
+    }
+
+    return this.dashboardService.getFinancialSummary(tenantId);
   }
 }

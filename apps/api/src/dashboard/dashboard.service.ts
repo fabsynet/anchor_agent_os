@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service.js';
+import { BudgetsService } from '../budgets/budgets.service.js';
 import {
   startOfDay,
   addDays,
@@ -14,7 +15,10 @@ import {
 export class DashboardService {
   private readonly logger = new Logger(DashboardService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly budgetsService: BudgetsService,
+  ) {}
 
   /**
    * Get summary counts for the dashboard.
@@ -241,5 +245,109 @@ export class DashboardService {
       Number(withStartDate._sum.premium ?? 0) +
       Number(withoutStartDate._sum.premium ?? 0)
     );
+  }
+
+  /**
+   * Get financial summary for the dashboard widget.
+   * Includes: total spent, expense count, top category, budget usage, per-category breakdown.
+   * Uses raw this.prisma for count/aggregate (not tenant extension).
+   */
+  async getFinancialSummary(tenantId: string) {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    const monthStart = startOfMonth(now);
+    const monthEnd = endOfMonth(now);
+
+    // Get current month budget (or null)
+    const budget = await this.budgetsService.findCurrentMonth(tenantId);
+
+    // Get spending summary for current month
+    const spending = await this.budgetsService.getSpendingSummary(
+      tenantId,
+      month,
+      year,
+    );
+
+    // Count of approved expenses this month
+    const expenseCount = await this.prisma.expense.count({
+      where: {
+        tenantId,
+        status: 'approved',
+        date: { gte: monthStart, lte: monthEnd },
+      },
+    });
+
+    // Top category (highest spend)
+    const topCategory =
+      spending.byCategory.length > 0
+        ? spending.byCategory.reduce((max, cat) =>
+            cat.spent > max.spent ? cat : max,
+          ).category
+        : null;
+
+    // Budget calculations
+    const budgetTotal = budget ? Number(budget.totalLimit) : null;
+    const budgetUsedPercentage =
+      budgetTotal && budgetTotal > 0
+        ? Math.round((spending.totalSpent / budgetTotal) * 100)
+        : null;
+
+    // Per-category breakdown: merge budget category limits with actual spending
+    const categoryMap = new Map<
+      string,
+      { name: string; spent: number; limit: number | null; percentage: number }
+    >();
+
+    // Add all spending categories
+    for (const cat of spending.byCategory) {
+      categoryMap.set(cat.category, {
+        name: cat.category,
+        spent: cat.spent,
+        limit: null,
+        percentage: 0,
+      });
+    }
+
+    // Merge budget category limits
+    if (budget?.categories) {
+      for (const budgetCat of budget.categories) {
+        const existing = categoryMap.get(budgetCat.category);
+        const limit = Number(budgetCat.limitAmount);
+        const spent = existing?.spent ?? 0;
+
+        categoryMap.set(budgetCat.category, {
+          name: budgetCat.category,
+          spent,
+          limit,
+          percentage: limit > 0 ? Math.round((spent / limit) * 100) : 0,
+        });
+      }
+    }
+
+    // Update percentage for categories that now have limits
+    for (const [key, cat] of categoryMap) {
+      if (cat.limit && cat.limit > 0 && cat.percentage === 0) {
+        categoryMap.set(key, {
+          ...cat,
+          percentage: Math.round((cat.spent / cat.limit) * 100),
+        });
+      }
+    }
+
+    const categories = Array.from(categoryMap.values()).sort(
+      (a, b) => b.spent - a.spent,
+    );
+
+    return {
+      totalSpent: spending.totalSpent,
+      expenseCount,
+      topCategory,
+      budgetTotal,
+      budgetUsedPercentage,
+      categories,
+      month,
+      year,
+    };
   }
 }

@@ -3,6 +3,7 @@ import {
   Get,
   Patch,
   Param,
+  Body,
   UseGuards,
   ParseUUIDPipe,
 } from '@nestjs/common';
@@ -33,5 +34,18 @@ export class UsersController {
   @Patch(':id/setup-complete')
   async markSetupComplete(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.updateSetupCompleted(id);
+  }
+
+  /**
+   * PATCH /api/users/:id/financial-access
+   * Admin-only: Toggle canViewFinancials for a team member.
+   */
+  @Patch(':id/financial-access')
+  @Roles('admin')
+  async updateFinancialAccess(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { canViewFinancials: boolean },
+  ) {
+    return this.usersService.updateFinancialAccess(id, body.canViewFinancials);
   }
 }
