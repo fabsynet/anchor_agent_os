@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   DollarSign,
   Clock,
@@ -134,15 +134,22 @@ export function AnalyticsExpensesTab({
     };
   }, [startDate, endDate]);
 
-  // Chart data for donut
-  const chartData = (summary?.byCategory ?? [])
-    .filter((c) => c.amount > 0)
-    .map((c) => ({
-      name: c.category.charAt(0).toUpperCase() + c.category.slice(1),
-      value: c.amount,
-    }));
+  // Chart data for donut (memoized to avoid re-computation on re-renders)
+  const chartData = useMemo(
+    () =>
+      (summary?.byCategory ?? [])
+        .filter((c) => c.amount > 0)
+        .map((c) => ({
+          name: c.category.charAt(0).toUpperCase() + c.category.slice(1),
+          value: c.amount,
+        })),
+    [summary],
+  );
 
-  const totalExpenses = chartData.reduce((sum, d) => sum + d.value, 0);
+  const totalExpenses = useMemo(
+    () => chartData.reduce((sum, d) => sum + d.value, 0),
+    [chartData],
+  );
 
   const handleExportCsv = async () => {
     if (!summary) return;

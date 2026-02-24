@@ -277,6 +277,8 @@ model Policy {
   @@index([tenantId])
   @@index([clientId])
   @@index([tenantId, status])
+  @@index([tenantId, type])
+  @@index([tenantId, endDate])
   @@map("policies")
 }
 

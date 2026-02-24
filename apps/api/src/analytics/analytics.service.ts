@@ -362,7 +362,10 @@ export class AnalyticsService {
   async getCrossSellOpportunities(tenantId: string) {
     const clients = await this.prisma.client.findMany({
       where: { tenantId, status: 'client' },
-      include: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
         policies: {
           where: { status: { in: ['active', 'pending_renewal'] as any } },
           select: { type: true },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { CalendarClock } from 'lucide-react';
 import {
   BarChart,
@@ -120,14 +120,18 @@ export function AnalyticsRenewalsTab({
     };
   }, [startDate, endDate]);
 
-  // Compute totals
-  const totals = pipeline.reduce(
-    (acc, month) => ({
-      active: acc.active + month.active,
-      expiring: acc.expiring + month.expiring,
-      expired: acc.expired + month.expired,
-    }),
-    { active: 0, expiring: 0, expired: 0 },
+  // Compute totals (memoized)
+  const totals = useMemo(
+    () =>
+      pipeline.reduce(
+        (acc, month) => ({
+          active: acc.active + month.active,
+          expiring: acc.expiring + month.expiring,
+          expired: acc.expired + month.expired,
+        }),
+        { active: 0, expiring: 0, expired: 0 },
+      ),
+    [pipeline],
   );
 
   const handleExportCsv = async () => {

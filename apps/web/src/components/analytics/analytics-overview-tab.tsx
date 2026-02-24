@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Users,
   Shield,
@@ -141,16 +141,23 @@ export function AnalyticsOverviewTab({
     };
   }, [startDate, endDate]);
 
-  // Prepare chart data
-  const chartData = breakdown
-    .filter((b) => b.totalPremium > 0 || b.count > 0)
-    .map((b) => ({
-      name: b.type.charAt(0).toUpperCase() + b.type.slice(1),
-      value: b.totalPremium,
-      count: b.count,
-    }));
+  // Prepare chart data (memoized to avoid re-computation on re-renders)
+  const chartData = useMemo(
+    () =>
+      breakdown
+        .filter((b) => b.totalPremium > 0 || b.count > 0)
+        .map((b) => ({
+          name: b.type.charAt(0).toUpperCase() + b.type.slice(1),
+          value: b.totalPremium,
+          count: b.count,
+        })),
+    [breakdown],
+  );
 
-  const totalPremium = chartData.reduce((sum, d) => sum + d.value, 0);
+  const totalPremium = useMemo(
+    () => chartData.reduce((sum, d) => sum + d.value, 0),
+    [chartData],
+  );
 
   const handleExportCsv = async () => {
     if (!overview) return;
