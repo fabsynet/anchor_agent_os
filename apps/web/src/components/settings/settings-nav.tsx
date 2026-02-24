@@ -8,6 +8,7 @@ const SETTINGS_TABS = [
   { label: 'Team', href: '/settings/team' },
   { label: 'Profile', href: '/settings/profile' },
   { label: 'Badge', href: '/settings/badge' },
+  { label: 'Import', href: '/settings/import' },
 ];
 
 export function SettingsNav() {
