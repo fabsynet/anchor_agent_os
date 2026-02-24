@@ -174,6 +174,7 @@ export function ClientTable({ data, onDelete }: ClientTableProps) {
 
   return (
     <>
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -214,6 +215,7 @@ export function ClientTable({ data, onDelete }: ClientTableProps) {
           )}
         </TableBody>
       </Table>
+      </div>
 
       <AlertDialog
         open={!!deleteTarget}

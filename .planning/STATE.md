@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 6 -- Trust & Reputation (COMPLETE)
+**Current focus:** Phase 7 -- Analytics, Import & Polish (in progress)
 
 ## Current Position
 
-Phase: 6 of 7 (Trust & Reputation)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-02-23 -- Completed 06-04-PLAN.md (Badge Management UI)
+Phase: 7 of 7 (Analytics, Import & Polish)
+Plan: 5 of 5 in current phase
+Status: In progress
+Last activity: 2026-02-24 -- Completed 07-03-PLAN.md (Remaining Analytics Tabs + Cross-Sell Badge)
 
-Progress: ██████████████████████████ 100% (25/25 plans complete; 01-04, 01-05 at checkpoint)
+Progress: █████████████████████████████░ 97% (29/30 plans complete; 01-04, 01-05 at checkpoint, 07-05 remaining)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -156,6 +156,11 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Explicit TestimonialFormValues interface (not z.input) | Phase 6 | z.coerce.number() in Zod v4 produces unknown input type; manual type + resolver cast |
 | hexToRgba helper for accent color tinting | Phase 6 | Generates rgba from hex for product badges and featured borders |
 | Public pages use plain fetch (no auth) | Phase 6 | Server components fetch from API without Supabase session context |
+| Cross-sell uses Life+Health (not Life+Disability) | Phase 7 | Schema uses health type not disability; Life+Health is closest match |
+| Analytics/import constants inlined in API services | Phase 7 | API has no @anchor/shared dep; follows Phase 6 badge pattern |
+| Import dedup via normalized name+email composite key | Phase 7 | More robust than name-only or email-only matching |
+| Unrecognized import types default to other with customType | Phase 7 | Preserves original value while normalizing to valid enum |
+| Single $transaction for batch imports | Phase 7 | Atomic client+policy creation with per-row error capture |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -209,8 +214,28 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 06-03: Public Badge Page UI (public badge page, testimonial submission form, public layout)
 - 06-04: Badge Management UI (profile editor, cover photo upload, testimonial manager, settings sub-nav)
 
+## Phase 7: Analytics, Import & Polish -- IN PROGRESS
+
+### Plans completed:
+- 07-01: Data Foundation & Backend (shared types/constants/validation, 8 analytics endpoints, import endpoint with dedup)
+- 07-02: Analytics Frontend Part 1 (analytics page with time range selector, export utils, Overview/Clients/Policies tabs)
+- 07-03: Remaining Analytics Tabs + Cross-Sell Badge (Renewals stacked bar, Expenses donut, Compliance horizontal bar, Cross-Sell detail table, client profile coverage gap badge)
+- 07-04: CSV Import Wizard (4-step wizard: upload/map/preview/summary, PapaParse, fuzzy column detection)
+
+| Decision | When | Rationale |
+|----------|------|-----------|
+| Dynamic import for jsPDF/jspdf-autotable | Phase 7 | Keeps ~300KB out of main bundle; loads only on export click |
+| getDateRange returns null for 'all' | Phase 7 | No date filter sent to API when All Time selected |
+| Import wizard stubs for parallel plan | Phase 7 | Unblock build while 07-04 completes import wizard components |
+| Fuzzy auto-detect with 30+ header aliases | Phase 7 | Normalized comparison maps common header variations to 15 expected fields |
+| __skip__ sentinel for unmapped columns | Phase 7 | Consistent with _none sentinel pattern used elsewhere for Radix Select |
+| Client-side policy type normalization in preview | Phase 7 | Visual feedback on type mapping before sending to API |
+| Cross-sell badge uses loaded policies, not API call | Phase 7 | Client profile already fetches policies; avoid redundant network request |
+| Coverage gaps only for partial bundle matches | Phase 7 | More useful than flagging every missing type; highlights actionable cross-sell |
+| CROSS_SELL_BUNDLES defined inline in client page | Phase 7 | Page component uses 'use client' directive; keeps dependency graph simple |
+
 ## Session Continuity
 
-Last session: 2026-02-23
-Stopped at: Completed 06-04-PLAN.md (Badge Management UI) -- Phase 6 complete (4/4 plans)
+Last session: 2026-02-24
+Stopped at: Completed 07-03-PLAN.md (Remaining Analytics Tabs + Cross-Sell Badge)
 Resume file: none

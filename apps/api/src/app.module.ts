@@ -21,6 +21,8 @@ import { ExpensesModule } from './expenses/expenses.module.js';
 import { AlertsModule } from './alerts/alerts.module.js';
 import { BudgetsModule } from './budgets/budgets.module.js';
 import { BadgeModule } from './badge/badge.module.js';
+import { AnalyticsModule } from './analytics/analytics.module.js';
+import { ImportModule } from './import/import.module.js';
 
 @Module({
   imports: [
@@ -52,6 +54,8 @@ import { BadgeModule } from './badge/badge.module.js';
     AlertsModule,
     BudgetsModule,
     BadgeModule,
+    AnalyticsModule,
+    ImportModule,
   ],
 })
 export class AppModule {}

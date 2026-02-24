@@ -142,6 +142,7 @@ export function AllPolicyTable({ policies }: AllPolicyTableProps) {
   });
 
   return (
+    <div className="overflow-x-auto">
     <Table>
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
@@ -182,5 +183,6 @@ export function AllPolicyTable({ policies }: AllPolicyTableProps) {
         )}
       </TableBody>
     </Table>
+    </div>
   );
 }

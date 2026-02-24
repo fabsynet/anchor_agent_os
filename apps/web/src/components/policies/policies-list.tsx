@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Shield } from "lucide-react";
 import { toast } from "sonner";
 import type { PolicyWithClient, PolicyStatus } from "@anchor/shared";
 
@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ViewToggle, type ViewMode } from "@/components/clients/view-toggle";
 import { AllPolicyTable } from "./all-policy-table";
 import { AllPolicyCards } from "./all-policy-cards";
@@ -115,13 +116,15 @@ export function PoliciesList() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <div className="flex items-center justify-between gap-4">
-          <TabsList>
-            {STATUS_TABS.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value}>
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="overflow-x-auto">
+            <TabsList className="flex-nowrap">
+              {STATUS_TABS.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value}>
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </div>
 
         {/* Controls row */}
@@ -142,8 +145,10 @@ export function PoliciesList() {
         {STATUS_TABS.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="pt-2">
             {loading ? (
-              <div className="flex h-48 items-center justify-center">
-                <Loader2 className="size-6 animate-spin text-muted-foreground" />
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
               </div>
             ) : data.length === 0 ? (
               <EmptyState message={emptyMessage()} />
@@ -187,6 +192,9 @@ export function PoliciesList() {
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+      <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+        <Shield className="size-6 text-muted-foreground" />
+      </div>
       <p className="text-muted-foreground">{message}</p>
     </div>
   );
