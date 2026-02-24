@@ -141,3 +141,32 @@ export type {
   SubmitTestimonialInput,
   UpdateAgentProfileInput,
 } from './validation/badge.schema';
+
+// Types - Analytics
+export type {
+  TimeRange,
+  PolicyBreakdown,
+  RenewalPipelineMonth,
+  CrossSellOpportunity,
+  ClientStats,
+  ExpenseSummary,
+  ComplianceSummary,
+  OverviewStats,
+  ImportRow,
+  ImportResult,
+} from './types/analytics';
+
+// Constants - Analytics
+export {
+  CROSS_SELL_BUNDLES,
+  MIN_POLICY_TYPES_FOR_CROSSSELL,
+  TIME_RANGES,
+  IMPORT_POLICY_TYPE_MAP,
+  IMPORT_EXPECTED_FIELDS,
+} from './constants/analytics';
+
+// Validation schemas - Analytics & Import
+export { analyticsQuerySchema } from './validation/analytics.schema';
+export type { AnalyticsQueryInput } from './validation/analytics.schema';
+export { importRowSchema, importBatchSchema } from './validation/import.schema';
+export type { ImportRowInput, ImportBatchInput } from './validation/import.schema';

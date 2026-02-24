@@ -20,6 +20,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'tasks', label: 'Tasks', href: '/tasks', icon: 'CheckSquare', adminOnly: false },
   { id: 'compliance', label: 'Compliance', href: '/compliance', icon: 'FileText', adminOnly: false },
   { id: 'expenses', label: 'Expenses', href: '/expenses', icon: 'DollarSign', adminOnly: false },
+  { id: 'analytics', label: 'Analytics', href: '/analytics', icon: 'BarChart3', adminOnly: false },
   { id: 'settings', label: 'Settings', href: '/settings', icon: 'Settings', adminOnly: true },
 ];
 
