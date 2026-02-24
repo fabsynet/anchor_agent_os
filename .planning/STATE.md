@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 6 -- Trust & Reputation (COMPLETE)
+**Current focus:** Phase 7 -- Analytics, Import & Polish (in progress)
 
 ## Current Position
 
-Phase: 6 of 7 (Trust & Reputation)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-02-23 -- Completed 06-04-PLAN.md (Badge Management UI)
+Phase: 7 of 7 (Analytics, Import & Polish)
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-02-24 -- Completed 07-01-PLAN.md (Data Foundation & Backend)
 
-Progress: ██████████████████████████ 100% (25/25 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ███████████████████████████░░ 89% (26/29 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -156,6 +156,11 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Explicit TestimonialFormValues interface (not z.input) | Phase 6 | z.coerce.number() in Zod v4 produces unknown input type; manual type + resolver cast |
 | hexToRgba helper for accent color tinting | Phase 6 | Generates rgba from hex for product badges and featured borders |
 | Public pages use plain fetch (no auth) | Phase 6 | Server components fetch from API without Supabase session context |
+| Cross-sell uses Life+Health (not Life+Disability) | Phase 7 | Schema uses health type not disability; Life+Health is closest match |
+| Analytics/import constants inlined in API services | Phase 7 | API has no @anchor/shared dep; follows Phase 6 badge pattern |
+| Import dedup via normalized name+email composite key | Phase 7 | More robust than name-only or email-only matching |
+| Unrecognized import types default to other with customType | Phase 7 | Preserves original value while normalizing to valid enum |
+| Single $transaction for batch imports | Phase 7 | Atomic client+policy creation with per-row error capture |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -209,8 +214,13 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - 06-03: Public Badge Page UI (public badge page, testimonial submission form, public layout)
 - 06-04: Badge Management UI (profile editor, cover photo upload, testimonial manager, settings sub-nav)
 
+## Phase 7: Analytics, Import & Polish -- IN PROGRESS
+
+### Plans completed:
+- 07-01: Data Foundation & Backend (shared types/constants/validation, 8 analytics endpoints, import endpoint with dedup)
+
 ## Session Continuity
 
-Last session: 2026-02-23
-Stopped at: Completed 06-04-PLAN.md (Badge Management UI) -- Phase 6 complete (4/4 plans)
+Last session: 2026-02-24
+Stopped at: Completed 07-01-PLAN.md (Data Foundation & Backend)
 Resume file: none
