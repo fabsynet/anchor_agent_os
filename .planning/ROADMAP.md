@@ -10,9 +10,9 @@ Anchor's MVP delivers a complete insurance agent operating system in 7 phases, s
 - [x] **Phase 2: Client & Policy Management** - Client CRM, policy records, lead/client workflow
 - [x] **Phase 3: Tasks, Renewals & Dashboard** - Task system, renewal automation, Today Dashboard, email notifications
 - [x] **Phase 4: Documents & Compliance** - Document upload/linking, compliance activity log
-- [ ] **Phase 5: Expenses & Budgets** - Expense tracking, receipt uploads, budgets, alerts, financial dashboard widget
-- [ ] **Phase 6: Trust & Reputation** - Testimonials, public Agent Badge page
-- [ ] **Phase 7: Analytics, Import & Polish** - Light analytics, CSV import, performance optimization
+- [x] **Phase 5: Expenses & Budgets** - Expense tracking, receipt uploads, budgets, alerts, financial dashboard widget
+- [x] **Phase 6: Trust & Reputation** - Testimonials, public Agent Badge page
+- [ ] **Phase 7: Analytics, Import & Polish** - Analytics dashboards, CSV import, cross-sell intelligence, performance optimization
 
 ## Phase Details
 
@@ -105,11 +105,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Data foundation (Prisma schema, shared types/schemas/constants, Recharts install)
-- [ ] 05-02-PLAN.md -- Expense backend (CRUD, approval workflow, receipt upload, recurring cron)
-- [ ] 05-03-PLAN.md -- Budget & alerts backend (budget CRUD, auto-renewal cron, threshold alerts, dashboard financial endpoint)
-- [ ] 05-04-PLAN.md -- Expense UI (list with status tabs, form dialog, receipt upload/preview, inline approval)
-- [ ] 05-05-PLAN.md -- Budget UI, notification bell, donut chart, and dashboard financial widget
+- [x] 05-01-PLAN.md -- Data foundation (Prisma schema, shared types/schemas/constants, Recharts install)
+- [x] 05-02-PLAN.md -- Expense backend (CRUD, approval workflow, receipt upload, recurring cron)
+- [x] 05-03-PLAN.md -- Budget & alerts backend (budget CRUD, auto-renewal cron, threshold alerts, dashboard financial endpoint)
+- [x] 05-04-PLAN.md -- Expense UI (list with status tabs, form dialog, receipt upload/preview, inline approval)
+- [x] 05-05-PLAN.md -- Budget UI, notification bell, donut chart, and dashboard financial widget
 
 ### Phase 6: Trust & Reputation
 **Goal**: Agents can build and showcase their professional reputation through client testimonials and a public digital presence
@@ -124,10 +124,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 06-01-PLAN.md -- Data foundation (AgentProfile + Testimonial schema, shared types/schemas/constants)
-- [ ] 06-02-PLAN.md -- Backend badge module (profile CRUD, testimonial submission, curation, image upload, notifications)
-- [ ] 06-03-PLAN.md -- Public pages (testimonial form, badge page, middleware update, display components)
-- [ ] 06-04-PLAN.md -- Badge management UI (Settings > Badge, profile editor, testimonial curation, link sharing)
+- [x] 06-01-PLAN.md -- Data foundation (AgentProfile + Testimonial schema, shared types/schemas/constants)
+- [x] 06-02-PLAN.md -- Backend badge module (profile CRUD, testimonial submission, curation, image upload, notifications)
+- [x] 06-03-PLAN.md -- Public pages (testimonial form, badge page, middleware update, display components)
+- [x] 06-04-PLAN.md -- Badge management UI (Settings > Badge, profile editor, testimonial curation, link sharing)
 
 ### Phase 7: Analytics, Import & Polish
 **Goal**: Agents can understand their book of business, import existing data, and experience a polished, performant app
@@ -139,12 +139,14 @@ Plans:
   3. System identifies cross-sell opportunities (e.g., client has auto but no home insurance)
   4. User can import clients from a CSV file with column mapping
   5. Dashboard loads within 2 seconds for agencies with up to 200 clients
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 07-01: Analytics dashboards (policy type breakdown, renewal pipeline, cross-sell signals)
-- [ ] 07-02: CSV import with column mapping
-- [ ] 07-03: Performance optimization, testing, polish
+- [ ] 07-01-PLAN.md -- Data foundation + backend (shared types/constants, analytics module with 8 endpoints, import module)
+- [ ] 07-02-PLAN.md -- Analytics frontend part 1 (page shell, time range selector, export utils, Overview/Clients/Policies tabs)
+- [ ] 07-03-PLAN.md -- Analytics frontend part 2 (Renewals/Expenses/Compliance/Cross-Sell tabs, client profile cross-sell badge)
+- [ ] 07-04-PLAN.md -- CSV import wizard (4-step wizard: upload, column mapping, preview, summary)
+- [ ] 07-05-PLAN.md -- Performance optimization, mobile responsive audit, UX polish
 
 ## Progress
 
@@ -155,5 +157,5 @@ Plans:
 | 3. Tasks, Renewals & Dashboard | 5/5 | Verified | 2026-02-22 |
 | 4. Documents & Compliance | 4/4 | Verified | 2026-02-23 |
 | 5. Expenses & Budgets | 5/5 | Complete | 2026-02-23 |
-| 6. Trust & Reputation | 0/4 | Planning complete | - |
-| 7. Analytics, Import & Polish | 0/3 | Not started | - |
+| 6. Trust & Reputation | 4/4 | Complete | 2026-02-23 |
+| 7. Analytics, Import & Polish | 0/5 | Planning complete | - |
