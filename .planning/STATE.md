@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 7 of 7 (Analytics, Import & Polish)
-Plan: 2 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-24 -- Completed 07-02-PLAN.md (Analytics Frontend: Overview, Clients, Policies)
+Last activity: 2026-02-24 -- Completed 07-04-PLAN.md (CSV Import Wizard)
 
-Progress: ████████████████████████████░░ 93% (27/29 plans complete; 01-04, 01-05 at checkpoint)
+Progress: █████████████████████████████░ 97% (28/29 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -219,15 +219,19 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ### Plans completed:
 - 07-01: Data Foundation & Backend (shared types/constants/validation, 8 analytics endpoints, import endpoint with dedup)
 - 07-02: Analytics Frontend Part 1 (analytics page with time range selector, export utils, Overview/Clients/Policies tabs)
+- 07-04: CSV Import Wizard (4-step wizard: upload/map/preview/summary, PapaParse, fuzzy column detection)
 
 | Decision | When | Rationale |
 |----------|------|-----------|
 | Dynamic import for jsPDF/jspdf-autotable | Phase 7 | Keeps ~300KB out of main bundle; loads only on export click |
 | getDateRange returns null for 'all' | Phase 7 | No date filter sent to API when All Time selected |
 | Import wizard stubs for parallel plan | Phase 7 | Unblock build while 07-04 completes import wizard components |
+| Fuzzy auto-detect with 30+ header aliases | Phase 7 | Normalized comparison maps common header variations to 15 expected fields |
+| __skip__ sentinel for unmapped columns | Phase 7 | Consistent with _none sentinel pattern used elsewhere for Radix Select |
+| Client-side policy type normalization in preview | Phase 7 | Visual feedback on type mapping before sending to API |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 07-02-PLAN.md (Analytics Frontend: Overview, Clients, Policies)
+Stopped at: Completed 07-04-PLAN.md (CSV Import Wizard)
 Resume file: none
