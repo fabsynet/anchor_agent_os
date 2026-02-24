@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 7 of 7 (Analytics, Import & Polish)
-Plan: 4 of 5 in current phase
+Plan: 5 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-24 -- Completed 07-04-PLAN.md (CSV Import Wizard)
+Last activity: 2026-02-24 -- Completed 07-03-PLAN.md (Remaining Analytics Tabs + Cross-Sell Badge)
 
-Progress: █████████████████████████████░ 97% (28/29 plans complete; 01-04, 01-05 at checkpoint)
+Progress: █████████████████████████████░ 97% (29/30 plans complete; 01-04, 01-05 at checkpoint, 07-05 remaining)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -219,6 +219,7 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ### Plans completed:
 - 07-01: Data Foundation & Backend (shared types/constants/validation, 8 analytics endpoints, import endpoint with dedup)
 - 07-02: Analytics Frontend Part 1 (analytics page with time range selector, export utils, Overview/Clients/Policies tabs)
+- 07-03: Remaining Analytics Tabs + Cross-Sell Badge (Renewals stacked bar, Expenses donut, Compliance horizontal bar, Cross-Sell detail table, client profile coverage gap badge)
 - 07-04: CSV Import Wizard (4-step wizard: upload/map/preview/summary, PapaParse, fuzzy column detection)
 
 | Decision | When | Rationale |
@@ -229,9 +230,12 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Fuzzy auto-detect with 30+ header aliases | Phase 7 | Normalized comparison maps common header variations to 15 expected fields |
 | __skip__ sentinel for unmapped columns | Phase 7 | Consistent with _none sentinel pattern used elsewhere for Radix Select |
 | Client-side policy type normalization in preview | Phase 7 | Visual feedback on type mapping before sending to API |
+| Cross-sell badge uses loaded policies, not API call | Phase 7 | Client profile already fetches policies; avoid redundant network request |
+| Coverage gaps only for partial bundle matches | Phase 7 | More useful than flagging every missing type; highlights actionable cross-sell |
+| CROSS_SELL_BUNDLES defined inline in client page | Phase 7 | Page component uses 'use client' directive; keeps dependency graph simple |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 07-04-PLAN.md (CSV Import Wizard)
+Stopped at: Completed 07-03-PLAN.md (Remaining Analytics Tabs + Cross-Sell Badge)
 Resume file: none
