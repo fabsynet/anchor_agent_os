@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 7 of 7 (Analytics, Import & Polish)
-Plan: 1 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-24 -- Completed 07-01-PLAN.md (Data Foundation & Backend)
+Last activity: 2026-02-24 -- Completed 07-02-PLAN.md (Analytics Frontend: Overview, Clients, Policies)
 
-Progress: ███████████████████████████░░ 89% (26/29 plans complete; 01-04, 01-05 at checkpoint)
+Progress: ████████████████████████████░░ 93% (27/29 plans complete; 01-04, 01-05 at checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -218,9 +218,16 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 
 ### Plans completed:
 - 07-01: Data Foundation & Backend (shared types/constants/validation, 8 analytics endpoints, import endpoint with dedup)
+- 07-02: Analytics Frontend Part 1 (analytics page with time range selector, export utils, Overview/Clients/Policies tabs)
+
+| Decision | When | Rationale |
+|----------|------|-----------|
+| Dynamic import for jsPDF/jspdf-autotable | Phase 7 | Keeps ~300KB out of main bundle; loads only on export click |
+| getDateRange returns null for 'all' | Phase 7 | No date filter sent to API when All Time selected |
+| Import wizard stubs for parallel plan | Phase 7 | Unblock build while 07-04 completes import wizard components |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 07-01-PLAN.md (Data Foundation & Backend)
+Stopped at: Completed 07-02-PLAN.md (Analytics Frontend: Overview, Clients, Policies)
 Resume file: none
