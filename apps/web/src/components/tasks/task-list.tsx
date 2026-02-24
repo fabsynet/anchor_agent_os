@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Plus, Search, Loader2 } from "lucide-react";
+import { Plus, Search, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 import type {
   TaskWithRelations,
@@ -14,6 +14,7 @@ import { TASK_STATUSES, TASK_PRIORITIES } from "@anchor/shared";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -266,8 +267,10 @@ export function TaskList() {
 
       {/* Content */}
       {loading ? (
-        <div className="flex h-48 items-center justify-center">
-          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
         </div>
       ) : tasks.length === 0 ? (
         <EmptyState
@@ -334,6 +337,9 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+      <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+        <CheckSquare className="size-6 text-muted-foreground" />
+      </div>
       <p className="text-muted-foreground">
         {hasFilters
           ? "No tasks match your filters."

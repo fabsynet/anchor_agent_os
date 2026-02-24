@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import {
   SummaryCards,
@@ -62,6 +63,7 @@ export default function DashboardPage() {
         setPremiumIncome(incomeData);
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
+        toast.error('Failed to load dashboard data');
       } finally {
         setLoading(false);
       }

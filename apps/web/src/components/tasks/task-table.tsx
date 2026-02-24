@@ -242,6 +242,7 @@ export function TaskTable({ data, onEdit, onDelete, onStatusChange }: TaskTableP
 
   return (
     <>
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -282,6 +283,7 @@ export function TaskTable({ data, onEdit, onDelete, onStatusChange }: TaskTableP
           )}
         </TableBody>
       </Table>
+      </div>
 
       <AlertDialog
         open={!!deleteTarget}

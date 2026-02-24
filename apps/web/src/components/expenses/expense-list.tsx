@@ -388,6 +388,7 @@ export function ExpenseList({ onView, onEdit, refreshKey }: ExpenseListProps) {
   };
 
   const renderTable = () => (
+    <div className="overflow-x-auto">
     <Table>
       <TableHeader>
         <TableRow>
@@ -439,6 +440,7 @@ export function ExpenseList({ onView, onEdit, refreshKey }: ExpenseListProps) {
         ))}
       </TableBody>
     </Table>
+    </div>
   );
 
   const tabContent = loading ? renderSkeleton() : data.length === 0 ? renderEmpty() : renderTable();

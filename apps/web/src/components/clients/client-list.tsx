@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Plus, Search, Loader2 } from "lucide-react";
+import { Plus, Search, Users } from "lucide-react";
 import { toast } from "sonner";
 import type { ClientListItem } from "@anchor/shared";
 
@@ -10,6 +10,7 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ViewToggle, type ViewMode } from "./view-toggle";
 import { ClientTable } from "./client-table";
 import { ClientCards } from "./client-cards";
@@ -145,8 +146,10 @@ export function ClientList() {
         {/* Content */}
         <TabsContent value="clients" className="pt-2">
           {loading ? (
-            <div className="flex h-48 items-center justify-center">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+              ))}
             </div>
           ) : data.length === 0 ? (
             <EmptyState
@@ -162,8 +165,10 @@ export function ClientList() {
 
         <TabsContent value="leads" className="pt-2">
           {loading ? (
-            <div className="flex h-48 items-center justify-center">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-12 w-full" />
+              ))}
             </div>
           ) : data.length === 0 ? (
             <EmptyState
@@ -215,6 +220,9 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+      <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+        <Users className="size-6 text-muted-foreground" />
+      </div>
       <p className="text-muted-foreground">{message}</p>
       {showCta && (
         <Button asChild>
