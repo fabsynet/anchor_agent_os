@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
-import type { Client } from "@anchor/shared";
+import type { Client, PolicyType } from "@anchor/shared";
 import { api } from "@/lib/api";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +15,14 @@ import { ClientPoliciesTab } from "@/components/clients/client-policies-tab";
 import { ClientDocumentsTab } from "@/components/clients/client-documents-tab";
 import { ClientComplianceTab } from "@/components/clients/client-compliance-tab";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
+
+/** Cross-sell bundle definitions (matching @anchor/shared) */
+const CROSS_SELL_BUNDLES = [
+  { name: 'Auto + Home', types: ['auto', 'home'] },
+  { name: 'Life + Health', types: ['life', 'health'] },
+  { name: 'Home + Umbrella', types: ['home', 'umbrella'] },
+] as const;
 
 /** Extended client type with computed fields from the API. */
 type ClientDetail = Client & {
@@ -25,10 +33,40 @@ type ClientDetail = Client & {
   };
   policies?: Array<{
     id: string;
+    type: PolicyType;
     endDate: string | null;
     status: string;
   }>;
 };
+
+/** Compute coverage gaps from loaded policies using cross-sell bundles. */
+function getCoverageGaps(
+  policies: ClientDetail['policies'],
+): string[] {
+  if (!policies || policies.length === 0) return [];
+  const activeTypes = new Set(
+    policies
+      .filter((p) => p.status === 'active' || p.status === 'pending_renewal')
+      .map((p) => p.type),
+  );
+  if (activeTypes.size === 0) return [];
+
+  const gaps: string[] = [];
+  for (const bundle of CROSS_SELL_BUNDLES) {
+    for (const type of bundle.types) {
+      if (!activeTypes.has(type as PolicyType) && !gaps.includes(type)) {
+        // Only flag as gap if client has at least one type from this bundle
+        const hasPartial = bundle.types.some((t) =>
+          activeTypes.has(t as PolicyType),
+        );
+        if (hasPartial) {
+          gaps.push(type);
+        }
+      }
+    }
+  }
+  return gaps;
+}
 
 function ClientProfileSkeleton() {
   return (
@@ -149,6 +187,18 @@ export default function ClientProfilePage({
 
       {/* Profile Header */}
       <ClientProfileHeader client={client} onRefresh={fetchClient} />
+
+      {/* Cross-sell coverage gap badge */}
+      {client.status === 'client' && (() => {
+        const gaps = getCoverageGaps(client.policies);
+        if (gaps.length === 0) return null;
+        return (
+          <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300">
+            <ShieldAlert className="mr-1 size-3.5" />
+            Coverage Gaps: {gaps.map((g) => g.charAt(0).toUpperCase() + g.slice(1)).join(', ')}
+          </Badge>
+        );
+      })()}
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview">

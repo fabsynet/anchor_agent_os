@@ -16,8 +16,10 @@ import {
 import { AnalyticsOverviewTab } from '@/components/analytics/analytics-overview-tab';
 import { AnalyticsClientsTab } from '@/components/analytics/analytics-clients-tab';
 import { AnalyticsPoliciesTab } from '@/components/analytics/analytics-policies-tab';
-
-const PLACEHOLDER_TABS = ['renewals', 'expenses', 'compliance', 'cross-sell'];
+import { AnalyticsRenewalsTab } from '@/components/analytics/analytics-renewals-tab';
+import { AnalyticsExpensesTab } from '@/components/analytics/analytics-expenses-tab';
+import { AnalyticsComplianceTab } from '@/components/analytics/analytics-compliance-tab';
+import { AnalyticsCrossSellTab } from '@/components/analytics/analytics-crosssell-tab';
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState('12mo');
@@ -69,13 +71,21 @@ export default function AnalyticsPage() {
           <AnalyticsPoliciesTab startDate={startDate} endDate={endDate} />
         </TabsContent>
 
-        {PLACEHOLDER_TABS.map((tab) => (
-          <TabsContent key={tab} value={tab}>
-            <div className="py-12 text-center text-muted-foreground">
-              Coming soon
-            </div>
-          </TabsContent>
-        ))}
+        <TabsContent value="renewals">
+          <AnalyticsRenewalsTab startDate={startDate} endDate={endDate} />
+        </TabsContent>
+
+        <TabsContent value="expenses">
+          <AnalyticsExpensesTab startDate={startDate} endDate={endDate} />
+        </TabsContent>
+
+        <TabsContent value="compliance">
+          <AnalyticsComplianceTab startDate={startDate} endDate={endDate} />
+        </TabsContent>
+
+        <TabsContent value="cross-sell">
+          <AnalyticsCrossSellTab />
+        </TabsContent>
       </Tabs>
     </div>
   );
