@@ -49,6 +49,7 @@ export function useUser(): UseUserReturn {
         tenantId: meta.tenant_id ?? '',
         avatarUrl: null,
         setupCompleted: false,
+        digestOptOut: false,
       });
 
       // Enrich from backend API (goes through NestJS, not direct DB)
@@ -62,6 +63,7 @@ export function useUser(): UseUserReturn {
           tenantId: string;
           avatarUrl: string | null;
           setupCompleted: boolean;
+          digestOptOut: boolean;
         }>('/api/auth/me');
 
         if (dbProfile) {
@@ -74,6 +76,7 @@ export function useUser(): UseUserReturn {
             tenantId: dbProfile.tenantId,
             avatarUrl: dbProfile.avatarUrl,
             setupCompleted: dbProfile.setupCompleted,
+            digestOptOut: dbProfile.digestOptOut ?? false,
           });
         }
       } catch {

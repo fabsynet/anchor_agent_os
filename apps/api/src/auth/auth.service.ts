@@ -27,7 +27,7 @@ export class AuthService {
    */
   async updateProfile(
     userId: string,
-    data: { firstName?: string; lastName?: string; avatarUrl?: string },
+    data: { firstName?: string; lastName?: string; avatarUrl?: string; digestOptOut?: boolean },
   ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

@@ -9,6 +9,7 @@ export interface UserProfile {
   role: UserRole;
   avatarUrl: string | null;
   setupCompleted: boolean;
+  digestOptOut: boolean;
 }
 
 export interface SessionUser {
