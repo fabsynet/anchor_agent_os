@@ -200,7 +200,7 @@ export class ExpensesService {
       this.prisma.expense.count({ where }),
     ]);
 
-    return { data, total, page, limit };
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   // ─── 3. FIND ONE ────────────────────────────────────────
