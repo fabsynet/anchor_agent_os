@@ -319,9 +319,9 @@ export class BudgetsService {
       return;
     }
 
-    // Find all admin users in the tenant
+    // Find all admin users in the tenant who have budget alerts enabled
     const adminUsers = await this.prisma.user.findMany({
-      where: { tenantId, role: 'admin' },
+      where: { tenantId, role: 'admin', notifyBudgetAlerts: true },
       select: { id: true },
     });
 

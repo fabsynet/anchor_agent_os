@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Loader2, Save, User } from 'lucide-react';
+import { Bell, Loader2, Mail, Save, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { UserProfile } from '@anchor/shared';
@@ -27,6 +27,10 @@ interface ProfileFormData {
   firstName: string;
   lastName: string;
   digestOptOut: boolean;
+  notifyBudgetAlerts: boolean;
+  notifyRenewalReminders: boolean;
+  notifyTaskReminders: boolean;
+  emailRenewalReminders: boolean;
 }
 
 interface ProfileFormProps {
@@ -48,12 +52,20 @@ export function ProfileForm({ profile, onSaved }: ProfileFormProps) {
       firstName: profile.firstName,
       lastName: profile.lastName,
       digestOptOut: profile.digestOptOut,
+      notifyBudgetAlerts: profile.notifyBudgetAlerts,
+      notifyRenewalReminders: profile.notifyRenewalReminders,
+      notifyTaskReminders: profile.notifyTaskReminders,
+      emailRenewalReminders: profile.emailRenewalReminders,
     },
   });
 
   const firstName = watch('firstName');
   const lastName = watch('lastName');
   const digestOptOut = watch('digestOptOut');
+  const notifyBudgetAlerts = watch('notifyBudgetAlerts');
+  const notifyRenewalReminders = watch('notifyRenewalReminders');
+  const notifyTaskReminders = watch('notifyTaskReminders');
+  const emailRenewalReminders = watch('emailRenewalReminders');
 
   const initials =
     (firstName?.charAt(0) ?? '') + (lastName?.charAt(0) ?? '') || '?';
@@ -153,40 +165,68 @@ export function ProfileForm({ profile, onSaved }: ProfileFormProps) {
         </CardContent>
       </Card>
 
-      {/* Preferences Card */}
+      {/* Notification Preferences Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Preferences</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="size-5" />
+            Notification Preferences
+          </CardTitle>
           <CardDescription>
-            Manage your notification and email preferences.
+            Control which in-app notifications you receive.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="digestOptOut">Weekly Digest Email</Label>
-              <p className="text-sm text-muted-foreground">
-                Receive a weekly summary of your agency&apos;s activity.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setValue('digestOptOut', !digestOptOut, { shouldDirty: true })}
-              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                !digestOptOut ? 'bg-primary' : 'bg-input'
-              }`}
-              role="switch"
-              aria-checked={!digestOptOut}
-              aria-label="Weekly digest email"
-              id="digestOptOut"
-            >
-              <span
-                className={`pointer-events-none block size-4 rounded-full bg-background shadow-lg ring-0 transition-transform ${
-                  !digestOptOut ? 'translate-x-4' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
+        <CardContent className="space-y-4">
+          <ToggleRow
+            id="notifyBudgetAlerts"
+            label="Budget Alerts"
+            description="Get notified when spending reaches budget thresholds."
+            checked={notifyBudgetAlerts}
+            onToggle={() => setValue('notifyBudgetAlerts', !notifyBudgetAlerts, { shouldDirty: true })}
+          />
+          <ToggleRow
+            id="notifyRenewalReminders"
+            label="Renewal Reminders"
+            description="Get notified about upcoming policy renewals."
+            checked={notifyRenewalReminders}
+            onToggle={() => setValue('notifyRenewalReminders', !notifyRenewalReminders, { shouldDirty: true })}
+          />
+          <ToggleRow
+            id="notifyTaskReminders"
+            label="Task Notifications"
+            description="Get notified when tasks are assigned to you."
+            checked={notifyTaskReminders}
+            onToggle={() => setValue('notifyTaskReminders', !notifyTaskReminders, { shouldDirty: true })}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Email Preferences Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="size-5" />
+            Email Preferences
+          </CardTitle>
+          <CardDescription>
+            Manage which emails you receive from Anchor.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <ToggleRow
+            id="digestOptOut"
+            label="Daily Digest Email"
+            description="Receive a daily summary of overdue tasks and upcoming renewals."
+            checked={!digestOptOut}
+            onToggle={() => setValue('digestOptOut', !digestOptOut, { shouldDirty: true })}
+          />
+          <ToggleRow
+            id="emailRenewalReminders"
+            label="Renewal Reminder Emails"
+            description="Include renewal reminders in your digest emails."
+            checked={emailRenewalReminders}
+            onToggle={() => setValue('emailRenewalReminders', !emailRenewalReminders, { shouldDirty: true })}
+          />
         </CardContent>
       </Card>
 
@@ -202,5 +242,45 @@ export function ProfileForm({ profile, onSaved }: ProfileFormProps) {
         </Button>
       </div>
     </form>
+  );
+}
+
+function ToggleRow({
+  id,
+  label,
+  description,
+  checked,
+  onToggle,
+}: {
+  id: string;
+  label: string;
+  description: string;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="space-y-0.5">
+        <Label htmlFor={id}>{label}</Label>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+          checked ? 'bg-primary' : 'bg-input'
+        }`}
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        id={id}
+      >
+        <span
+          className={`pointer-events-none block size-4 rounded-full bg-background shadow-lg ring-0 transition-transform ${
+            checked ? 'translate-x-4' : 'translate-x-0'
+          }`}
+        />
+      </button>
+    </div>
   );
 }

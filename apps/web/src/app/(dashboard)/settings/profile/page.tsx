@@ -5,6 +5,8 @@ import { Loader2 } from 'lucide-react';
 import { useUser } from '@/hooks/use-user';
 import { SettingsNav } from '@/components/settings/settings-nav';
 import { ProfileForm } from '@/components/settings/profile-form';
+import { ChangePasswordCard } from '@/components/settings/change-password-card';
+import { TwoFactorCard } from '@/components/settings/two-factor-card';
 
 export default function ProfileSettingsPage() {
   const { profile, isLoading, refresh } = useUser();
@@ -34,7 +36,11 @@ export default function ProfileSettingsPage() {
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
       ) : profile ? (
-        <ProfileForm profile={profile} onSaved={refresh} />
+        <>
+          <ProfileForm profile={profile} onSaved={refresh} />
+          <ChangePasswordCard />
+          <TwoFactorCard />
+        </>
       ) : (
         <div className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           Unable to load profile. Please try refreshing the page.

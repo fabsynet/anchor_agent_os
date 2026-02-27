@@ -27,7 +27,16 @@ export class AuthService {
    */
   async updateProfile(
     userId: string,
-    data: { firstName?: string; lastName?: string; avatarUrl?: string; digestOptOut?: boolean },
+    data: {
+      firstName?: string;
+      lastName?: string;
+      avatarUrl?: string;
+      digestOptOut?: boolean;
+      notifyBudgetAlerts?: boolean;
+      notifyRenewalReminders?: boolean;
+      notifyTaskReminders?: boolean;
+      emailRenewalReminders?: boolean;
+    },
   ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
