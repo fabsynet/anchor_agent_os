@@ -19,7 +19,7 @@ export default function BudgetsPage() {
       </div>
 
       {/* Sub-navigation */}
-      <div className="flex gap-4 border-b">
+      <div className="flex gap-4 border-b overflow-x-auto">
         <Link
           href="/expenses"
           className={cn(

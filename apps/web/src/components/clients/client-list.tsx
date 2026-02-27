@@ -110,9 +110,9 @@ export function ClientList() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Clients</h1>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/clients/new">
             <Plus className="size-4" />
             New Client
@@ -131,7 +131,7 @@ export function ClientList() {
 
         {/* Controls row */}
         <div className="flex items-center justify-between gap-4 pt-4">
-          <div className="relative max-w-sm flex-1">
+          <div className="relative w-full sm:max-w-sm sm:flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by name, email, or phone..."

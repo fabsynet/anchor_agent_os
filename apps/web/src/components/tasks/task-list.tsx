@@ -177,9 +177,9 @@ export function TaskList() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Tasks</h1>
-        <Button onClick={() => setIsFormOpen(true)}>
+        <Button onClick={() => setIsFormOpen(true)} className="w-full sm:w-auto">
           <Plus className="size-4" />
           New Task
         </Button>
@@ -187,7 +187,7 @@ export function TaskList() {
 
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative max-w-sm flex-1">
+        <div className="relative w-full sm:max-w-sm sm:flex-1">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search tasks..."
@@ -204,7 +204,7 @@ export function TaskList() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-[140px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -224,7 +224,7 @@ export function TaskList() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-[140px]">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
           <SelectContent>
@@ -244,7 +244,7 @@ export function TaskList() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[130px]">
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-[130px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>

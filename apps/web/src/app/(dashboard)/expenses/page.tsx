@@ -49,21 +49,21 @@ export default function ExpensesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Expenses</h1>
           <p className="text-muted-foreground">
             Track and manage agency expenses
           </p>
         </div>
-        <Button onClick={handleAddExpense}>
+        <Button onClick={handleAddExpense} className="w-full sm:w-auto">
           <Plus className="size-4" />
           Add Expense
         </Button>
       </div>
 
       {/* Sub-navigation */}
-      <div className="flex gap-4 border-b">
+      <div className="flex gap-4 border-b overflow-x-auto">
         <Link
           href="/expenses"
           className={cn(
