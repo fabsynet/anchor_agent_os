@@ -67,8 +67,8 @@ export default function CompliancePage() {
       try {
         const [actionTypesRes, clientsRes, policiesRes] = await Promise.all([
           api.get<ActionType[]>("/api/compliance/action-types"),
-          api.get<{ data: ClientItem[] }>("/api/clients?limit=500"),
-          api.get<{ data: PolicyItem[] }>("/api/policies?limit=500"),
+          api.get<{ data: ClientItem[] }>("/api/clients?limit=100"),
+          api.get<{ data: PolicyItem[] }>("/api/policies?limit=100"),
         ]);
         setActionTypes(actionTypesRes);
         setClients(clientsRes.data ?? []);

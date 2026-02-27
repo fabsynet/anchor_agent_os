@@ -244,7 +244,8 @@ export function TestimonialManager({ slug }: TestimonialManagerProps) {
   const fetchTestimonials = useCallback(async () => {
     try {
       setError(null);
-      const data = await api.get<Testimonial[]>('/api/badge/testimonials');
+      const res = await api.get<{ data: Testimonial[]; count: number }>('/api/badge/testimonials');
+      const data = res.data ?? [];
       // Sort: featured first, then by createdAt DESC
       const sorted = [...data].sort((a, b) => {
         if (a.isFeatured && !b.isFeatured) return -1;

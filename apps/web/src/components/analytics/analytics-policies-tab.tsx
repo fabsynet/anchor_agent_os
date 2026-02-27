@@ -23,11 +23,11 @@ import { ChartCard } from './chart-card';
 import { ExportButtons } from './export-buttons';
 
 const CHART_COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
 ];
 
 const currencyFormatter = new Intl.NumberFormat('en-CA', {
@@ -342,7 +342,7 @@ export function AnalyticsPoliciesTab({
                 <Tooltip content={<BarTooltip />} />
                 <Bar
                   dataKey="premium"
-                  fill="hsl(var(--chart-1))"
+                  fill="var(--chart-1)"
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>

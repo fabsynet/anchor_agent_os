@@ -35,7 +35,7 @@ export default function ImportSettingsPage() {
         headers['Authorization'] = `Bearer ${session.access_token}`;
       }
 
-      const res = await fetch(`${API_BASE_URL}/import/template`, { headers });
+      const res = await fetch(`${API_BASE_URL}/api/import/template`, { headers });
       if (!res.ok) throw new Error('Failed to download template');
 
       const blob = await res.blob();

@@ -293,27 +293,29 @@ export function TaskList() {
       )}
 
       {/* Pagination (table view only) */}
-      {viewMode === "table" && totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            Previous
-          </Button>
+      {viewMode === "table" && !loading && tasks.length > 0 && (
+        <div className="flex items-center justify-between pt-2">
           <span className="text-sm text-muted-foreground">
             Page {page} of {totalPages}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
 
