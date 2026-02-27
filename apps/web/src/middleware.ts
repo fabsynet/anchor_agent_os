@@ -14,7 +14,17 @@ const PUBLIC_ROUTES = [
   '/testimonial',  // Public testimonial submission
 ];
 
+// Fully public routes that never need auth checks — skip Supabase entirely
+const PASSTHROUGH_ROUTES = ['/agent', '/testimonial'];
+
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Fully public pages: skip all auth checks for best performance and resilience
+  if (PASSTHROUGH_ROUTES.some((route) => pathname.startsWith(route))) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -44,7 +54,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
     pathname.startsWith(route),
   );
@@ -68,9 +77,7 @@ export async function middleware(request: NextRequest) {
     pathname !== '/verify' &&
     pathname !== '/update-password' &&
     !pathname.startsWith('/accept-invite') &&
-    !pathname.startsWith('/auth/callback') &&
-    !pathname.startsWith('/agent') &&
-    !pathname.startsWith('/testimonial')
+    !pathname.startsWith('/auth/callback')
   ) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
