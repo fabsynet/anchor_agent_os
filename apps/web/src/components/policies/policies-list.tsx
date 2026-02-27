@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, Shield } from "lucide-react";
 import { toast } from "sonner";
 import type { PolicyWithClient, PolicyStatus } from "@anchor/shared";
@@ -33,9 +34,18 @@ const STATUS_TABS: { value: StatusTab; label: string }[] = [
   { value: "cancelled", label: "Cancelled" },
 ];
 
+const VALID_STATUS_TABS = new Set<string>(STATUS_TABS.map((t) => t.value));
+
 export function PoliciesList() {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get("status");
+
   const [viewMode, setViewMode] = useState<ViewMode>("table");
-  const [activeTab, setActiveTab] = useState<StatusTab>("all");
+  const [activeTab, setActiveTab] = useState<StatusTab>(
+    initialStatus && VALID_STATUS_TABS.has(initialStatus)
+      ? (initialStatus as StatusTab)
+      : "all"
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
