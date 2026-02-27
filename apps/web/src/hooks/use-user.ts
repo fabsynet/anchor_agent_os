@@ -50,34 +50,18 @@ export function useUser(): UseUserReturn {
         avatarUrl: null,
         setupCompleted: false,
         digestOptOut: false,
+        notifyBudgetAlerts: true,
+        notifyRenewalReminders: true,
+        notifyTaskReminders: true,
+        emailRenewalReminders: true,
       });
 
       // Enrich from backend API (goes through NestJS, not direct DB)
       try {
-        const dbProfile = await api.get<{
-          id: string;
-          email: string;
-          firstName: string;
-          lastName: string;
-          role: UserRole;
-          tenantId: string;
-          avatarUrl: string | null;
-          setupCompleted: boolean;
-          digestOptOut: boolean;
-        }>('/api/auth/me');
+        const dbProfile = await api.get<UserProfile>('/api/auth/me');
 
         if (dbProfile) {
-          setProfile({
-            id: dbProfile.id,
-            email: dbProfile.email,
-            firstName: dbProfile.firstName,
-            lastName: dbProfile.lastName,
-            role: dbProfile.role,
-            tenantId: dbProfile.tenantId,
-            avatarUrl: dbProfile.avatarUrl,
-            setupCompleted: dbProfile.setupCompleted,
-            digestOptOut: dbProfile.digestOptOut ?? false,
-          });
+          setProfile(dbProfile);
         }
       } catch {
         // Backend unreachable — keep metadata-derived profile

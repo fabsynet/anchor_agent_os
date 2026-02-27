@@ -88,6 +88,7 @@ export class NotificationsService {
         email: true,
         firstName: true,
         lastName: true,
+        emailRenewalReminders: true,
       },
     });
 
@@ -102,6 +103,11 @@ export class NotificationsService {
           tenantId,
           user.id,
         );
+
+        // Strip renewal milestones if user opted out of email renewal reminders
+        if (!user.emailRenewalReminders) {
+          digestData.renewalMilestones = [];
+        }
 
         // Skip empty digests
         if (

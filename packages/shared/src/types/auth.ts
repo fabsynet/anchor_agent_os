@@ -10,6 +10,10 @@ export interface UserProfile {
   avatarUrl: string | null;
   setupCompleted: boolean;
   digestOptOut: boolean;
+  notifyBudgetAlerts: boolean;
+  notifyRenewalReminders: boolean;
+  notifyTaskReminders: boolean;
+  emailRenewalReminders: boolean;
 }
 
 export interface SessionUser {

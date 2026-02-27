@@ -19,4 +19,20 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsBoolean()
   digestOptOut?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  notifyBudgetAlerts?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  notifyRenewalReminders?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  notifyTaskReminders?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  emailRenewalReminders?: boolean;
 }
