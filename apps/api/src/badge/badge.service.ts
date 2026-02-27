@@ -308,15 +308,10 @@ export class BadgeService {
         id: true,
         userId: true,
         tenantId: true,
-        isPublished: true,
       },
     });
 
     if (!profile) {
-      throw new NotFoundException(`Agent profile not found for slug: ${slug}`);
-    }
-
-    if (!profile.isPublished) {
       throw new NotFoundException(`Agent profile not found for slug: ${slug}`);
     }
 
