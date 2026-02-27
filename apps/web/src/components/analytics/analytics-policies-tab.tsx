@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   PieChart,
   Pie,
@@ -28,6 +28,19 @@ const CHART_COLORS = [
   'var(--chart-3)',
   'var(--chart-4)',
   'var(--chart-5)',
+];
+
+const BAR_COLORS = [
+  '#2563eb', // blue-600
+  '#16a34a', // green-600
+  '#ea580c', // orange-600
+  '#8b5cf6', // violet-500
+  '#e11d48', // rose-600
+  '#0891b2', // cyan-600
+  '#ca8a04', // yellow-600
+  '#6d28d9', // violet-700
+  '#059669', // emerald-600
+  '#dc2626', // red-600
 ];
 
 const currencyFormatter = new Intl.NumberFormat('en-CA', {
@@ -132,27 +145,38 @@ export function AnalyticsPoliciesTab({
     };
   }, [startDate, endDate]);
 
-  // Chart data for donut
-  const donutData = breakdown
-    .filter((b) => b.count > 0)
-    .map((b) => ({
-      name: b.type.charAt(0).toUpperCase() + b.type.slice(1),
-      value: b.totalPremium,
-      count: b.count,
-    }));
+  // Chart data for donut (memoized to avoid re-computation on re-renders)
+  const donutData = useMemo(
+    () =>
+      breakdown
+        .filter((b) => b.count > 0)
+        .map((b) => ({
+          name: b.type.charAt(0).toUpperCase() + b.type.slice(1),
+          value: b.totalPremium,
+          count: b.count,
+        })),
+    [breakdown],
+  );
 
-  const totalPolicies = donutData.reduce((sum, d) => sum + d.count, 0);
+  const totalPolicies = useMemo(
+    () => donutData.reduce((sum, d) => sum + d.count, 0),
+    [donutData],
+  );
 
-  // Bar chart data
-  const barData = premiumByProduct
-    .filter((p) => p.totalPremium > 0)
-    .map((p) => ({
-      name:
-        p.customType ||
-        p.type.charAt(0).toUpperCase() + p.type.slice(1),
-      premium: p.totalPremium,
-    }))
-    .sort((a, b) => b.premium - a.premium);
+  // Bar chart data (memoized)
+  const barData = useMemo(
+    () =>
+      premiumByProduct
+        .filter((p) => p.totalPremium > 0)
+        .map((p) => ({
+          name:
+            p.customType ||
+            p.type.charAt(0).toUpperCase() + p.type.slice(1),
+          premium: p.totalPremium,
+        }))
+        .sort((a, b) => b.premium - a.premium),
+    [premiumByProduct],
+  );
 
   const handleExportCsv = async () => {
     const rows = breakdown.map((b) => ({
@@ -340,11 +364,14 @@ export function AnalyticsPoliciesTab({
                   className="text-xs capitalize"
                 />
                 <Tooltip content={<BarTooltip />} />
-                <Bar
-                  dataKey="premium"
-                  fill="var(--chart-1)"
-                  radius={[0, 4, 4, 0]}
-                />
+                <Bar dataKey="premium" radius={[0, 4, 4, 0]}>
+                  {barData.map((_, index) => (
+                    <Cell
+                      key={`bar-${index}`}
+                      fill={BAR_COLORS[index % BAR_COLORS.length]}
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           )}

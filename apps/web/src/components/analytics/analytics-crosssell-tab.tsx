@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   ShieldAlert,
@@ -81,16 +81,22 @@ export function AnalyticsCrossSellTab() {
     };
   }, []);
 
-  // Aggregate: count clients missing each policy type
-  const gapCounts: Record<string, number> = {};
-  for (const type of ALL_POLICY_TYPES) {
-    gapCounts[type] = opportunities.filter((o) =>
-      o.gaps.includes(type),
-    ).length;
-  }
+  // Aggregate: count clients missing each policy type (memoized)
+  const gapCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const type of ALL_POLICY_TYPES) {
+      counts[type] = opportunities.filter((o) =>
+        o.gaps.includes(type),
+      ).length;
+    }
+    return counts;
+  }, [opportunities]);
 
-  // Clients with < 2 policy types
-  const fewPoliciesCount = opportunities.filter((o) => o.fewPolicies).length;
+  // Clients with < 2 policy types (memoized)
+  const fewPoliciesCount = useMemo(
+    () => opportunities.filter((o) => o.fewPolicies).length,
+    [opportunities],
+  );
 
   const handleExportCsv = async () => {
     const rows = opportunities.map((o) => ({

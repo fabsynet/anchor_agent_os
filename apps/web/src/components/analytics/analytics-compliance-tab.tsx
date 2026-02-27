@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Activity, ClipboardList } from 'lucide-react';
 import {
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -24,6 +25,19 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartCard } from './chart-card';
 import { ExportButtons } from './export-buttons';
+
+const BAR_COLORS = [
+  '#2563eb', // blue-600
+  '#16a34a', // green-600
+  '#ea580c', // orange-600
+  '#8b5cf6', // violet-500
+  '#e11d48', // rose-600
+  '#0891b2', // cyan-600
+  '#ca8a04', // yellow-600
+  '#6d28d9', // violet-700
+  '#059669', // emerald-600
+  '#dc2626', // red-600
+];
 
 interface AnalyticsComplianceTabProps {
   startDate?: string;
@@ -87,21 +101,29 @@ export function AnalyticsComplianceTab({
     };
   }, [startDate, endDate]);
 
-  // Chart data for horizontal bar chart
-  const byTypeData = (summary?.byType ?? [])
-    .filter((t) => t.count > 0)
-    .sort((a, b) => b.count - a.count)
-    .map((t) => ({
-      name: t.type
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
-      count: t.count,
-    }));
+  // Chart data for horizontal bar chart (memoized to avoid re-computation on re-renders)
+  const byTypeData = useMemo(
+    () =>
+      (summary?.byType ?? [])
+        .filter((t) => t.count > 0)
+        .sort((a, b) => b.count - a.count)
+        .map((t) => ({
+          name: t.type
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase()),
+          count: t.count,
+        })),
+    [summary],
+  );
 
-  // Per-user data sorted by count desc
-  const byUserData = (summary?.byUser ?? [])
-    .filter((u) => u.count > 0)
-    .sort((a, b) => b.count - a.count);
+  // Per-user data sorted by count desc (memoized)
+  const byUserData = useMemo(
+    () =>
+      (summary?.byUser ?? [])
+        .filter((u) => u.count > 0)
+        .sort((a, b) => b.count - a.count),
+    [summary],
+  );
 
   const handleExportCsv = async () => {
     if (!summary) return;
@@ -227,11 +249,14 @@ export function AnalyticsComplianceTab({
                 tickLine={false}
               />
               <Tooltip content={<HorizontalBarTooltip />} />
-              <Bar
-                dataKey="count"
-                fill="var(--chart-1)"
-                radius={[0, 4, 4, 0]}
-              />
+              <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                {byTypeData.map((_, index) => (
+                  <Cell
+                    key={`bar-${index}`}
+                    fill={BAR_COLORS[index % BAR_COLORS.length]}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
