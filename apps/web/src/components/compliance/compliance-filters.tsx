@@ -88,7 +88,7 @@ export function ComplianceFilters({
   };
 
   return (
-    <div className="flex flex-wrap items-end gap-3">
+    <div className="flex flex-wrap items-end gap-3 overflow-x-auto pb-1">
       {/* Client filter */}
       <div className="space-y-1">
         <label className="text-xs font-medium text-muted-foreground">

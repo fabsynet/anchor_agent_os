@@ -15,7 +15,7 @@ export function SettingsNav() {
   const pathname = usePathname();
 
   return (
-    <div className="flex gap-4 border-b">
+    <div className="flex gap-4 border-b overflow-x-auto">
       {SETTINGS_TABS.map((tab) => (
         <Link
           key={tab.href}

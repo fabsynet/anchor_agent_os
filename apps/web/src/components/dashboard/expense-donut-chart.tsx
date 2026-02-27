@@ -3,11 +3,16 @@
 import { PieChart, Pie, Cell, Label, ResponsiveContainer, Tooltip } from 'recharts';
 
 const CHART_COLORS = [
-  'var(--chart-1)',
-  'var(--chart-2)',
-  'var(--chart-3)',
-  'var(--chart-4)',
-  'var(--chart-5)',
+  '#2563eb', // blue-600
+  '#16a34a', // green-600
+  '#ea580c', // orange-600
+  '#8b5cf6', // violet-500
+  '#e11d48', // rose-600
+  '#0891b2', // cyan-600
+  '#ca8a04', // yellow-600
+  '#6d28d9', // violet-700
+  '#059669', // emerald-600
+  '#dc2626', // red-600
 ];
 
 const currencyFormatter = new Intl.NumberFormat('en-CA', {

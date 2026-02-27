@@ -139,7 +139,7 @@ export function PoliciesList() {
 
         {/* Controls row */}
         <div className="flex items-center justify-between gap-4 pt-4">
-          <div className="relative max-w-sm flex-1">
+          <div className="relative w-full sm:max-w-sm sm:flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by client, carrier, or policy #..."

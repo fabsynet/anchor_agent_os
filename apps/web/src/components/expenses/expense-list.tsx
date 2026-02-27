@@ -450,20 +450,22 @@ export function ExpenseList({ onView, onEdit, refreshKey }: ExpenseListProps) {
       {/* Status Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="pending_approval" className="gap-1">
-              Pending
-              {pendingCount > 0 && (
-                <Badge className="ml-1 size-5 items-center justify-center rounded-full p-0 text-[10px]">
-                  {pendingCount}
-                </Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="approved">Approved</TabsTrigger>
-            <TabsTrigger value="rejected">Rejected</TabsTrigger>
-            <TabsTrigger value="draft">Draft</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto">
+            <TabsList className="flex-nowrap">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="pending_approval" className="gap-1">
+                Pending
+                {pendingCount > 0 && (
+                  <Badge className="ml-1 size-5 items-center justify-center rounded-full p-0 text-[10px]">
+                    {pendingCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="approved">Approved</TabsTrigger>
+              <TabsTrigger value="rejected">Rejected</TabsTrigger>
+              <TabsTrigger value="draft">Draft</TabsTrigger>
+            </TabsList>
+          </div>
         </div>
 
         {/* Filters row */}
