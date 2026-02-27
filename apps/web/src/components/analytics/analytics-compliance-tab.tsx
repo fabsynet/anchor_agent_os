@@ -229,7 +229,7 @@ export function AnalyticsComplianceTab({
               <Tooltip content={<HorizontalBarTooltip />} />
               <Bar
                 dataKey="count"
-                fill="hsl(var(--chart-1))"
+                fill="var(--chart-1)"
                 radius={[0, 4, 4, 0]}
               />
             </BarChart>

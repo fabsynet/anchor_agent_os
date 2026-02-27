@@ -221,21 +221,21 @@ export function AnalyticsRenewalsTab({
             <Bar
               dataKey="active"
               stackId="a"
-              fill="hsl(var(--chart-1))"
+              fill="var(--chart-1)"
               name="Active"
               radius={[0, 0, 0, 0]}
             />
             <Bar
               dataKey="expiring"
               stackId="a"
-              fill="hsl(var(--chart-2))"
+              fill="var(--chart-2)"
               name="Expiring"
               radius={[0, 0, 0, 0]}
             />
             <Bar
               dataKey="expired"
               stackId="a"
-              fill="hsl(var(--chart-3))"
+              fill="var(--chart-3)"
               name="Expired"
               radius={[4, 4, 0, 0]}
             />
@@ -248,19 +248,19 @@ export function AnalyticsRenewalsTab({
         <SummaryCard
           title="Total Active"
           value={totals.active}
-          color="hsl(var(--chart-1))"
+          color="var(--chart-1)"
           loading={false}
         />
         <SummaryCard
           title="Total Expiring"
           value={totals.expiring}
-          color="hsl(var(--chart-2))"
+          color="var(--chart-2)"
           loading={false}
         />
         <SummaryCard
           title="Total Expired"
           value={totals.expired}
-          color="hsl(var(--chart-3))"
+          color="var(--chart-3)"
           loading={false}
         />
       </div>
