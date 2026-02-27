@@ -4,6 +4,7 @@ import {
   BadRequestException,
   Logger,
 } from '@nestjs/common';
+import { startOfDay, addDays } from 'date-fns';
 import { PrismaService } from '../common/prisma/prisma.service.js';
 import { TimelineService } from '../timeline/timeline.service.js';
 import { RenewalsService } from '../renewals/renewals.service.js';
@@ -168,8 +169,20 @@ export class PoliciesService {
     const limit = query.limit ?? 20;
 
     const where: Record<string, unknown> = {};
+    const andConditions: Record<string, unknown>[] = [];
 
-    if (query.status) {
+    if (query.status === 'pending_renewal') {
+      // "Pending Renewal" includes both formally-marked pending_renewal policies
+      // AND active policies expiring within 60 days (matching the dashboard widget)
+      const today = startOfDay(new Date());
+      const in60Days = addDays(today, 60);
+      andConditions.push({
+        OR: [
+          { status: 'pending_renewal' },
+          { status: 'active', endDate: { gte: today, lte: in60Days } },
+        ],
+      });
+    } else if (query.status) {
       where.status = query.status;
     }
 
@@ -178,20 +191,26 @@ export class PoliciesService {
     }
 
     if (query.search) {
-      where.OR = [
-        {
-          client: {
-            firstName: { contains: query.search, mode: 'insensitive' },
+      andConditions.push({
+        OR: [
+          {
+            client: {
+              firstName: { contains: query.search, mode: 'insensitive' },
+            },
           },
-        },
-        {
-          client: {
-            lastName: { contains: query.search, mode: 'insensitive' },
+          {
+            client: {
+              lastName: { contains: query.search, mode: 'insensitive' },
+            },
           },
-        },
-        { carrier: { contains: query.search, mode: 'insensitive' } },
-        { policyNumber: { contains: query.search, mode: 'insensitive' } },
-      ];
+          { carrier: { contains: query.search, mode: 'insensitive' } },
+          { policyNumber: { contains: query.search, mode: 'insensitive' } },
+        ],
+      });
+    }
+
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
     }
 
     const [policies, total] = await Promise.all([
