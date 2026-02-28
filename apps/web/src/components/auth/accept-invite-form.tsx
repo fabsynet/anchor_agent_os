@@ -9,6 +9,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
+import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -58,6 +59,13 @@ export function AcceptInviteForm({ agencyName }: AcceptInviteFormProps) {
       if (error) {
         toast.error(error.message);
         return;
+      }
+
+      // Mark the invitation as accepted in the database
+      try {
+        await api.post("/api/invitations/accept-mine");
+      } catch {
+        // Non-blocking — invitation status update is best-effort
       }
 
       toast.success("Account setup complete! Welcome aboard.");
