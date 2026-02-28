@@ -49,38 +49,43 @@ export class BudgetsController {
   }
 
   /**
-   * GET /api/budgets/current
-   * Get current month's budget with spending summary.
-   * Available to all authenticated users.
+   * GET /api/budgets/active
+   * Get active budgets with spending summaries.
    * NOTE: This route MUST be declared BEFORE GET /budgets/:id
-   * so NestJS doesn't interpret "current" as an :id param.
+   * so NestJS doesn't interpret "active" as an :id param.
    */
-  @Get('current')
-  async getCurrent(@TenantId() tenantId: string) {
-    const budget = await this.budgetsService.findCurrentMonth(tenantId);
-    if (!budget) {
-      return { budget: null, spending: null };
-    }
+  @Get('active')
+  async getActive(@TenantId() tenantId: string) {
+    const budgets = await this.budgetsService.findActiveBudgets(tenantId);
 
-    const spending = await this.budgetsService.getSpendingSummary(
-      tenantId,
-      budget.month,
-      budget.year,
+    const results = await Promise.all(
+      budgets.map(async (budget) => {
+        const spending = await this.budgetsService.getSpendingSummary(
+          tenantId,
+          budget.id,
+        );
+        return { budget, spending };
+      }),
     );
 
-    return { budget, spending };
+    return results;
   }
 
   /**
    * GET /api/budgets/:id
-   * Get a single budget with categories.
+   * Get a single budget with spending summary.
    */
   @Get(':id')
   async findOne(
     @TenantId() tenantId: string,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.budgetsService.findOne(tenantId, id);
+    const budget = await this.budgetsService.findOne(tenantId, id);
+    const spending = await this.budgetsService.getSpendingSummary(
+      tenantId,
+      id,
+    );
+    return { budget, spending };
   }
 
   /**
@@ -114,5 +119,21 @@ export class BudgetsController {
       throw new ForbiddenException('Only admins can delete budgets');
     }
     return this.budgetsService.delete(tenantId, id);
+  }
+
+  /**
+   * POST /api/budgets/:id/renew
+   * Admin-only: Manually renew a budget.
+   */
+  @Post(':id/renew')
+  async renew(
+    @TenantId() tenantId: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    if (user.role !== 'admin') {
+      throw new ForbiddenException('Only admins can renew budgets');
+    }
+    return this.budgetsService.renew(tenantId, user.id, id);
   }
 }

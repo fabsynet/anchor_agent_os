@@ -1,38 +1,19 @@
 import {
   IsNumber,
   IsOptional,
-  IsArray,
-  ValidateNested,
   IsString,
+  IsDateString,
   Min,
-  Max,
   MinLength,
+  MaxLength,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
-
-export class BudgetCategoryDto {
-  @IsString()
-  @MinLength(1, { message: 'Category name is required' })
-  category!: string;
-
-  @IsNumber()
-  @Min(0.01, { message: 'Limit amount must be positive' })
-  @Transform(({ value }) => (typeof value === 'string' ? parseFloat(value) : value))
-  limitAmount!: number;
-}
+import { Transform } from 'class-transformer';
 
 export class CreateBudgetDto {
-  @IsNumber()
-  @Min(1)
-  @Max(12)
-  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value, 10) : value))
-  month!: number;
-
-  @IsNumber()
-  @Min(2020)
-  @Max(2100)
-  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value, 10) : value))
-  year!: number;
+  @IsString()
+  @MinLength(1, { message: 'Budget name is required' })
+  @MaxLength(100)
+  name!: string;
 
   @IsNumber()
   @Min(0.01, { message: 'Total limit must be positive' })
@@ -40,8 +21,10 @@ export class CreateBudgetDto {
   totalLimit!: number;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => BudgetCategoryDto)
-  categories?: BudgetCategoryDto[];
+  @IsDateString()
+  startDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
 }

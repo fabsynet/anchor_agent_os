@@ -1,14 +1,22 @@
 import {
   IsNumber,
   IsOptional,
-  IsArray,
-  ValidateNested,
+  IsString,
+  IsDateString,
+  IsBoolean,
   Min,
+  MinLength,
+  MaxLength,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
-import { BudgetCategoryDto } from './create-budget.dto.js';
+import { Transform } from 'class-transformer';
 
 export class UpdateBudgetDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(1, { message: 'Budget name is required' })
+  @MaxLength(100)
+  name?: string;
+
   @IsOptional()
   @IsNumber()
   @Min(0.01, { message: 'Total limit must be positive' })
@@ -16,8 +24,14 @@ export class UpdateBudgetDto {
   totalLimit?: number;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => BudgetCategoryDto)
-  categories?: BudgetCategoryDto[];
+  @IsDateString()
+  startDate?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  endDate?: string | null;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

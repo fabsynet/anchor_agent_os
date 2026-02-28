@@ -398,6 +398,7 @@ model Expense {
   recurrence      RecurrenceFrequency?
   nextOccurrence  DateTime?           @map("next_occurrence") @db.Date
   parentExpenseId String?             @map("parent_expense_id") @db.Uuid
+  budgetId        String?             @map("budget_id") @db.Uuid
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
@@ -407,12 +408,14 @@ model Expense {
   parentExpense Expense?  @relation("recurringExpenses", fields: [parentExpenseId], references: [id])
   childExpenses Expense[] @relation("recurringExpenses")
   receipts      ExpenseReceipt[]
+  budget        Budget?   @relation(fields: [budgetId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([tenantId, date])
   @@index([tenantId, category])
   @@index([tenantId, isRecurring, nextOccurrence])
+  @@index([budgetId])
   @@map("expenses")
 }
 
@@ -435,37 +438,24 @@ model ExpenseReceipt {
 }
 
 model Budget {
-  id         String   @id @default(uuid()) @db.Uuid
-  tenantId   String   @map("tenant_id") @db.Uuid
-  month      Int
-  year       Int
-  totalLimit Decimal  @map("total_limit") @db.Decimal(12, 2)
-  isActive   Boolean  @default(true) @map("is_active")
-  createdById String  @map("created_by_id") @db.Uuid
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  id         String    @id @default(uuid()) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  name       String
+  totalLimit Decimal   @map("total_limit") @db.Decimal(12, 2)
+  startDate  DateTime? @map("start_date") @db.Date
+  endDate    DateTime? @map("end_date") @db.Date
+  isActive   Boolean   @default(true) @map("is_active")
+  createdById String   @map("created_by_id") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  tenant     Tenant           @relation(fields: [tenantId], references: [id])
-  createdBy  User             @relation("budgetCreatedBy", fields: [createdById], references: [id])
-  categories BudgetCategory[]
+  tenant     Tenant    @relation(fields: [tenantId], references: [id])
+  createdBy  User      @relation("budgetCreatedBy", fields: [createdById], references: [id])
+  expenses   Expense[]
 
-  @@unique([tenantId, month, year])
   @@index([tenantId])
   @@index([tenantId, isActive])
   @@map("budgets")
-}
-
-model BudgetCategory {
-  id          String  @id @default(uuid()) @db.Uuid
-  budgetId    String  @map("budget_id") @db.Uuid
-  category    String
-  limitAmount Decimal @map("limit_amount") @db.Decimal(12, 2)
-
-  budget Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-
-  @@unique([budgetId, category])
-  @@index([budgetId])
-  @@map("budget_categories")
 }
 
 model InAppNotification {

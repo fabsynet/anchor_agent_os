@@ -208,17 +208,14 @@ export class ExpensesController {
     }
     const expense = await this.expensesService.approve(tenantId, user.id, id);
 
-    // Trigger budget threshold check (fire-and-forget)
-    this.budgetsService
-      .checkBudgetThreshold(
-        tenantId,
-        expense.category,
-        new Date(expense.date).getMonth() + 1,
-        new Date(expense.date).getFullYear(),
-      )
-      .catch((err) =>
-        this.logger.warn('Budget threshold check failed', err),
-      );
+    // Trigger budget threshold check (fire-and-forget) — only if expense has a budget
+    if (expense.budgetId) {
+      this.budgetsService
+        .checkBudgetThreshold(tenantId, expense.budgetId)
+        .catch((err) =>
+          this.logger.warn('Budget threshold check failed', err),
+        );
+    }
 
     return expense;
   }

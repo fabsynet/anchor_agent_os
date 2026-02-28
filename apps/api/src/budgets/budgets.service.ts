@@ -2,11 +2,9 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service.js';
 import { AlertsService } from '../alerts/alerts.service.js';
-import { startOfMonth, endOfMonth } from 'date-fns';
 import type { CreateBudgetDto } from './dto/create-budget.dto.js';
 import type { UpdateBudgetDto } from './dto/update-budget.dto.js';
 
@@ -20,63 +18,38 @@ export class BudgetsService {
   ) {}
 
   /**
-   * Create a budget with optional BudgetCategory children in a $transaction.
-   * Enforces @@unique([tenantId, month, year]) by catching Prisma unique constraint error.
+   * Create a budget with name, totalLimit, and optional date range.
    */
   async create(tenantId: string, userId: string, dto: CreateBudgetDto) {
-    try {
-      return await this.prisma.$transaction(async (tx) => {
-        const budget = await tx.budget.create({
-          data: {
-            tenantId,
-            month: dto.month,
-            year: dto.year,
-            totalLimit: dto.totalLimit,
-            isActive: true,
-            createdById: userId,
-            categories: dto.categories?.length
-              ? {
-                  create: dto.categories.map((cat) => ({
-                    category: cat.category,
-                    limitAmount: cat.limitAmount,
-                  })),
-                }
-              : undefined,
-          } as any,
-          include: { categories: true },
-        });
-        return budget;
-      });
-    } catch (error: any) {
-      // P2002 = Unique constraint violation
-      if (error.code === 'P2002') {
-        throw new ConflictException(
-          `A budget already exists for ${dto.month}/${dto.year}`,
-        );
-      }
-      throw error;
-    }
-  }
-
-  /**
-   * List all budgets for a tenant, ordered by year DESC, month DESC.
-   * Includes categories.
-   */
-  async findAll(tenantId: string) {
-    return this.prisma.budget.findMany({
-      where: { tenantId },
-      include: { categories: true },
-      orderBy: [{ year: 'desc' }, { month: 'desc' }],
+    return this.prisma.budget.create({
+      data: {
+        tenantId,
+        name: dto.name,
+        totalLimit: dto.totalLimit,
+        startDate: dto.startDate ? new Date(dto.startDate) : null,
+        endDate: dto.endDate ? new Date(dto.endDate) : null,
+        isActive: true,
+        createdById: userId,
+      },
     });
   }
 
   /**
-   * Get a single budget with categories. Validates tenantId ownership.
+   * List all budgets for a tenant, ordered by createdAt DESC.
+   */
+  async findAll(tenantId: string) {
+    return this.prisma.budget.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Get a single budget. Validates tenantId ownership.
    */
   async findOne(tenantId: string, budgetId: string) {
     const budget = await this.prisma.budget.findFirst({
       where: { id: budgetId, tenantId },
-      include: { categories: true },
     });
 
     if (!budget) {
@@ -87,24 +60,19 @@ export class BudgetsService {
   }
 
   /**
-   * Find the budget for the current month/year. Returns null if none exists.
+   * Find all active budgets for a tenant.
    */
-  async findCurrentMonth(tenantId: string) {
-    const now = new Date();
-    const month = now.getMonth() + 1; // JS months are 0-based
-    const year = now.getFullYear();
-
-    return this.prisma.budget.findFirst({
-      where: { tenantId, month, year },
-      include: { categories: true },
+  async findActiveBudgets(tenantId: string) {
+    return this.prisma.budget.findMany({
+      where: { tenantId, isActive: true },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   /**
-   * Update totalLimit and/or categories. For categories: delete existing and recreate.
+   * Update a budget's fields.
    */
   async update(tenantId: string, budgetId: string, dto: UpdateBudgetDto) {
-    // Verify budget exists and belongs to tenant
     const existing = await this.prisma.budget.findFirst({
       where: { id: budgetId, tenantId },
     });
@@ -113,45 +81,27 @@ export class BudgetsService {
       throw new NotFoundException('Budget not found');
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      // Update budget fields
-      const updateData: any = {};
-      if (dto.totalLimit !== undefined) {
-        updateData.totalLimit = dto.totalLimit;
-      }
+    const updateData: Record<string, unknown> = {};
+    if (dto.name !== undefined) updateData.name = dto.name;
+    if (dto.totalLimit !== undefined) updateData.totalLimit = dto.totalLimit;
+    if (dto.isActive !== undefined) updateData.isActive = dto.isActive;
 
-      await tx.budget.update({
-        where: { id: budgetId },
-        data: updateData,
-      });
+    // Handle nullable date fields
+    if (dto.startDate !== undefined) {
+      updateData.startDate = dto.startDate ? new Date(dto.startDate) : null;
+    }
+    if (dto.endDate !== undefined) {
+      updateData.endDate = dto.endDate ? new Date(dto.endDate) : null;
+    }
 
-      // If categories provided, delete existing and recreate
-      if (dto.categories !== undefined) {
-        await tx.budgetCategory.deleteMany({
-          where: { budgetId },
-        });
-
-        if (dto.categories.length > 0) {
-          await tx.budgetCategory.createMany({
-            data: dto.categories.map((cat) => ({
-              budgetId,
-              category: cat.category,
-              limitAmount: cat.limitAmount,
-            })),
-          });
-        }
-      }
-
-      // Return updated budget with categories
-      return tx.budget.findUnique({
-        where: { id: budgetId },
-        include: { categories: true },
-      });
+    return this.prisma.budget.update({
+      where: { id: budgetId },
+      data: updateData,
     });
   }
 
   /**
-   * Delete a budget. onDelete: Cascade handles BudgetCategories.
+   * Delete a budget. SetNull on expenses handles FK cleanup.
    */
   async delete(tenantId: string, budgetId: string) {
     const existing = await this.prisma.budget.findFirst({
@@ -170,114 +120,53 @@ export class BudgetsService {
   }
 
   /**
-   * Calculate total approved spending for a given month.
-   * CRITICAL: Only approved expenses count toward budgets.
-   * Uses raw this.prisma for aggregate/groupBy (not tenant extension).
+   * Calculate total approved spending for a given budget.
+   * Aggregates by budgetId on approved expenses.
    */
   async getSpendingSummary(
     tenantId: string,
-    month: number,
-    year: number,
-  ): Promise<{
-    totalSpent: number;
-    byCategory: { category: string; spent: number }[];
-  }> {
-    const dateStart = startOfMonth(new Date(year, month - 1));
-    const dateEnd = endOfMonth(new Date(year, month - 1));
-
-    // Total approved spending for the month
+    budgetId: string,
+  ): Promise<{ totalSpent: number }> {
     const totalAgg = await this.prisma.expense.aggregate({
       where: {
         tenantId,
+        budgetId,
         status: 'approved',
-        date: { gte: dateStart, lte: dateEnd },
-      },
-      _sum: { amount: true },
-    });
-
-    // Group by category
-    const categoryGroups = await this.prisma.expense.groupBy({
-      by: ['category'],
-      where: {
-        tenantId,
-        status: 'approved',
-        date: { gte: dateStart, lte: dateEnd },
       },
       _sum: { amount: true },
     });
 
     return {
       totalSpent: Number(totalAgg._sum.amount ?? 0),
-      byCategory: categoryGroups.map((group) => ({
-        category: group.category,
-        spent: Number(group._sum.amount ?? 0),
-      })),
     };
   }
 
   /**
    * Check budget threshold after an expense is approved.
    * Creates in-app notification for ALL admin users when spending >= 80% of limit.
-   * Idempotent: checks hasExistingAlert before creating.
+   * Only fires if the expense has a budgetId.
    */
-  async checkBudgetThreshold(
-    tenantId: string,
-    category: string,
-    month: number,
-    year: number,
-  ) {
+  async checkBudgetThreshold(tenantId: string, budgetId: string) {
     const budget = await this.prisma.budget.findFirst({
-      where: { tenantId, month, year },
-      include: { categories: true },
+      where: { id: budgetId, tenantId },
     });
 
     if (!budget) {
-      return; // No budget for this month, nothing to check
+      return;
     }
 
-    const spending = await this.getSpendingSummary(tenantId, month, year);
-
-    // Check per-category threshold
-    const budgetCategory = budget.categories.find(
-      (c) => c.category === category,
-    );
-
-    if (budgetCategory) {
-      const categoryLimit = Number(budgetCategory.limitAmount);
-      const categorySpent =
-        spending.byCategory.find((c) => c.category === category)?.spent ?? 0;
-      const categoryPercentage =
-        categoryLimit > 0 ? (categorySpent / categoryLimit) * 100 : 0;
-
-      if (categoryPercentage >= 80) {
-        await this.createThresholdAlert(tenantId, {
-          budgetId: budget.id,
-          category,
-          month,
-          year,
-          spent: categorySpent,
-          limit: categoryLimit,
-          percentage: Math.round(categoryPercentage),
-          type: 'category',
-        });
-      }
-    }
-
-    // Check overall budget threshold
+    const spending = await this.getSpendingSummary(tenantId, budgetId);
     const totalLimit = Number(budget.totalLimit);
-    const overallPercentage =
+    const percentage =
       totalLimit > 0 ? (spending.totalSpent / totalLimit) * 100 : 0;
 
-    if (overallPercentage >= 80) {
+    if (percentage >= 80) {
       await this.createThresholdAlert(tenantId, {
         budgetId: budget.id,
-        category: '_overall',
-        month,
-        year,
+        budgetName: budget.name,
         spent: spending.totalSpent,
         limit: totalLimit,
-        percentage: Math.round(overallPercentage),
-        type: 'overall',
+        percentage: Math.round(percentage),
       });
     }
   }
@@ -289,21 +178,14 @@ export class BudgetsService {
     tenantId: string,
     metadata: {
       budgetId: string;
-      category: string;
-      month: number;
-      year: number;
+      budgetName: string;
       spent: number;
       limit: number;
       percentage: number;
-      type: string;
     },
   ) {
-    // Idempotent check: match on budgetId + category + month + year
     const alertMeta = {
       budgetId: metadata.budgetId,
-      category: metadata.category,
-      month: metadata.month,
-      year: metadata.year,
     };
 
     const exists = await this.alertsService.hasExistingAlert(
@@ -314,26 +196,19 @@ export class BudgetsService {
 
     if (exists) {
       this.logger.debug(
-        `Alert already exists for budget ${metadata.budgetId} category ${metadata.category}`,
+        `Alert already exists for budget ${metadata.budgetId}`,
       );
       return;
     }
 
-    // Find all admin users in the tenant who have budget alerts enabled
     const adminUsers = await this.prisma.user.findMany({
       where: { tenantId, role: 'admin', notifyBudgetAlerts: true },
       select: { id: true },
     });
 
-    const isOverall = metadata.type === 'overall';
-    const title = isOverall
-      ? `Overall budget at ${metadata.percentage}%`
-      : `${metadata.category} budget at ${metadata.percentage}%`;
-    const message = isOverall
-      ? `Overall spending has reached ${metadata.percentage}% of the $${metadata.limit.toFixed(2)} monthly budget ($${metadata.spent.toFixed(2)} spent).`
-      : `Spending in "${metadata.category}" has reached ${metadata.percentage}% of the $${metadata.limit.toFixed(2)} category limit ($${metadata.spent.toFixed(2)} spent).`;
+    const title = `"${metadata.budgetName}" budget at ${metadata.percentage}%`;
+    const message = `Spending on "${metadata.budgetName}" has reached ${metadata.percentage}% of the $${metadata.limit.toFixed(2)} limit ($${metadata.spent.toFixed(2)} spent).`;
 
-    // Create alert for each admin user
     for (const admin of adminUsers) {
       await this.alertsService.create(tenantId, admin.id, {
         type: 'budget_warning',
@@ -349,95 +224,36 @@ export class BudgetsService {
   }
 
   /**
-   * Auto-renew budgets for all tenants. Called by cron on 1st of month.
-   * Finds active budgets for previous month, creates new budgets for current month
-   * with same limits, and deactivates the old ones.
+   * Manually renew a budget: deactivate old, create copy with "(Renewed)" suffix.
    */
-  async autoRenewBudgetsForAllTenants() {
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
-
-    // Calculate previous month
-    let prevMonth = currentMonth - 1;
-    let prevYear = currentYear;
-    if (prevMonth === 0) {
-      prevMonth = 12;
-      prevYear = currentYear - 1;
-    }
-
-    this.logger.log(
-      `Auto-renewing budgets from ${prevMonth}/${prevYear} to ${currentMonth}/${currentYear}`,
-    );
-
-    // Find all active budgets for previous month
-    const previousBudgets = await this.prisma.budget.findMany({
-      where: {
-        month: prevMonth,
-        year: prevYear,
-        isActive: true,
-      },
-      include: { categories: true },
+  async renew(tenantId: string, userId: string, budgetId: string) {
+    const existing = await this.prisma.budget.findFirst({
+      where: { id: budgetId, tenantId },
     });
 
-    let renewed = 0;
-    let skipped = 0;
-
-    for (const budget of previousBudgets) {
-      try {
-        // Deactivate the old budget
-        await this.prisma.budget.update({
-          where: { id: budget.id },
-          data: { isActive: false },
-        });
-
-        // Check if a budget for the current month already exists
-        const existing = await this.prisma.budget.findFirst({
-          where: {
-            tenantId: budget.tenantId,
-            month: currentMonth,
-            year: currentYear,
-          },
-        });
-
-        if (existing) {
-          this.logger.debug(
-            `Budget already exists for tenant ${budget.tenantId} ${currentMonth}/${currentYear}, skipping`,
-          );
-          skipped++;
-          continue;
-        }
-
-        // Create new budget with same limits
-        await this.prisma.budget.create({
-          data: {
-            tenantId: budget.tenantId,
-            month: currentMonth,
-            year: currentYear,
-            totalLimit: budget.totalLimit,
-            isActive: true,
-            createdById: budget.createdById,
-            categories: budget.categories.length > 0
-              ? {
-                  create: budget.categories.map((cat) => ({
-                    category: cat.category,
-                    limitAmount: cat.limitAmount,
-                  })),
-                }
-              : undefined,
-          } as any,
-        });
-
-        renewed++;
-      } catch (error: any) {
-        this.logger.error(
-          `Failed to renew budget ${budget.id} for tenant ${budget.tenantId}: ${error.message}`,
-        );
-      }
+    if (!existing) {
+      throw new NotFoundException('Budget not found');
     }
 
-    this.logger.log(
-      `Budget auto-renewal complete: ${renewed} renewed, ${skipped} skipped, ${previousBudgets.length} total processed`,
-    );
+    // Deactivate old budget
+    await this.prisma.budget.update({
+      where: { id: budgetId },
+      data: { isActive: false },
+    });
+
+    // Create renewed copy
+    const newBudget = await this.prisma.budget.create({
+      data: {
+        tenantId,
+        name: `${existing.name} (Renewed)`,
+        totalLimit: existing.totalLimit,
+        startDate: existing.startDate,
+        endDate: existing.endDate,
+        isActive: true,
+        createdById: userId,
+      },
+    });
+
+    return newBudget;
   }
 }

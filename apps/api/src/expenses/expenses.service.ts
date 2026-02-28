@@ -124,6 +124,7 @@ export class ExpensesService {
       isRecurring: dto.isRecurring ?? false,
       recurrence: dto.recurrence || null,
       nextOccurrence: null,
+      budgetId: dto.budgetId || null,
     };
 
     if (dto.isRecurring && dto.recurrence) {
@@ -196,6 +197,9 @@ export class ExpensesService {
           submittedBy: {
             select: { id: true, firstName: true, lastName: true, email: true },
           },
+          budget: {
+            select: { id: true, name: true },
+          },
         },
       }),
       this.prisma.expense.count({ where }),
@@ -219,6 +223,9 @@ export class ExpensesService {
         },
         approvedBy: {
           select: { id: true, firstName: true, lastName: true, email: true },
+        },
+        budget: {
+          select: { id: true, name: true },
         },
       },
     });
@@ -264,6 +271,7 @@ export class ExpensesService {
     if (dto.description !== undefined) data.description = dto.description || null;
     if (dto.isRecurring !== undefined) data.isRecurring = dto.isRecurring;
     if (dto.recurrence !== undefined) data.recurrence = dto.recurrence || null;
+    if (dto.budgetId !== undefined) data.budgetId = dto.budgetId || null;
 
     // If editing a rejected expense, reset status to draft
     if (existing.status === 'rejected') {

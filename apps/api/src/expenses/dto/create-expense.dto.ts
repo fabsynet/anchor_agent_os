@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsEnum,
   IsDateString,
+  IsUUID,
   Min,
   MinLength,
 } from 'class-validator';
@@ -43,4 +44,8 @@ export class CreateExpenseDto {
     message: `Recurrence must be one of: ${RECURRENCE_VALUES.join(', ')}`,
   })
   recurrence?: (typeof RECURRENCE_VALUES)[number];
+
+  @IsOptional()
+  @IsUUID()
+  budgetId?: string;
 }
