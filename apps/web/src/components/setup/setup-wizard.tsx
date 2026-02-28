@@ -26,7 +26,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const TOTAL_STEPS = 3;
+type StepId = "agency" | "profile" | "invite";
+
+interface WizardStep {
+  id: StepId;
+  adminOnly: boolean;
+}
+
+const ALL_STEPS: WizardStep[] = [
+  { id: "agency", adminOnly: true },
+  { id: "profile", adminOnly: false },
+  { id: "invite", adminOnly: true },
+];
 
 const CANADIAN_PROVINCES = [
   { value: "AB", label: "Alberta" },
@@ -47,12 +58,17 @@ const CANADIAN_PROVINCES = [
 export function SetupWizard() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { profile } = useUser();
+  const { profile, isAdmin } = useUser();
+
+  const steps = ALL_STEPS.filter((s) => !s.adminOnly || isAdmin);
+  const totalSteps = steps.length;
 
   const initialStep = parseInt(searchParams.get("step") || "1", 10);
-  const [currentStep, setCurrentStep] = useState(
-    Math.min(Math.max(initialStep, 1), TOTAL_STEPS)
+  const [stepIndex, setStepIndex] = useState(
+    Math.min(Math.max(initialStep - 1, 0), totalSteps - 1)
   );
+  const currentStepId = steps[stepIndex]?.id ?? "profile";
+  const currentStep = stepIndex + 1;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Step 1: Agency details
@@ -67,18 +83,22 @@ export function SetupWizard() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"admin" | "agent">("agent");
 
-  function goToStep(step: number) {
-    setCurrentStep(step);
-    // Update URL for browser back support
-    const url = new URL(window.location.href);
-    url.searchParams.set("step", step.toString());
-    window.history.pushState({}, "", url.toString());
+  function goToNextStep() {
+    const next = stepIndex + 1;
+    if (next < totalSteps) {
+      setStepIndex(next);
+      const url = new URL(window.location.href);
+      url.searchParams.set("step", (next + 1).toString());
+      window.history.pushState({}, "", url.toString());
+    } else {
+      finishSetup();
+    }
   }
 
   async function handleAgencyDetails() {
     // Only submit if user filled in at least one field
     if (!phone && !address && !province) {
-      goToStep(2);
+      goToNextStep();
       return;
     }
 
@@ -90,7 +110,7 @@ export function SetupWizard() {
         province: province || undefined,
       });
       toast.success("Agency details saved");
-      goToStep(2);
+      goToNextStep();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to save agency details"
@@ -103,7 +123,7 @@ export function SetupWizard() {
   async function handleProfile() {
     // Only submit if user filled in a field
     if (!title) {
-      goToStep(3);
+      goToNextStep();
       return;
     }
 
@@ -115,7 +135,7 @@ export function SetupWizard() {
         avatarUrl: undefined,
       });
       toast.success("Profile updated");
-      goToStep(3);
+      goToNextStep();
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Failed to update profile"
@@ -162,18 +182,14 @@ export function SetupWizard() {
   }
 
   async function handleSkip() {
-    if (currentStep < TOTAL_STEPS) {
-      goToStep(currentStep + 1);
-    } else {
-      await finishSetup();
-    }
+    goToNextStep();
   }
 
   return (
     <div className="space-y-6">
       {/* Progress indicator */}
       <div className="flex items-center justify-center gap-2">
-        {Array.from({ length: TOTAL_STEPS }, (_, i) => {
+        {steps.map((_, i) => {
           const step = i + 1;
           const isComplete = step < currentStep;
           const isCurrent = step === currentStep;
@@ -191,7 +207,7 @@ export function SetupWizard() {
               >
                 {isComplete ? <Check className="size-4" /> : step}
               </div>
-              {step < TOTAL_STEPS && (
+              {step < totalSteps && (
                 <div
                   className={`h-0.5 w-8 transition-colors ${
                     isComplete ? "bg-primary" : "bg-muted"
@@ -204,11 +220,11 @@ export function SetupWizard() {
       </div>
 
       <p className="text-center text-sm text-muted-foreground">
-        Step {currentStep} of {TOTAL_STEPS}
+        Step {currentStep} of {totalSteps}
       </p>
 
-      {/* Step 1: Agency Details */}
-      {currentStep === 1 && (
+      {/* Step: Agency Details (admin only) */}
+      {currentStepId === "agency" && (
         <Card>
           <CardHeader>
             <CardTitle>Agency Details</CardTitle>
@@ -279,8 +295,8 @@ export function SetupWizard() {
         </Card>
       )}
 
-      {/* Step 2: Profile */}
-      {currentStep === 2 && (
+      {/* Step: Profile */}
+      {currentStepId === "profile" && (
         <Card>
           <CardHeader>
             <CardTitle>Your Profile</CardTitle>
@@ -316,17 +332,19 @@ export function SetupWizard() {
             >
               {isSubmitting ? (
                 <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : stepIndex === totalSteps - 1 ? (
+                <Check className="mr-2 size-4" />
               ) : (
                 <ArrowRight className="mr-2 size-4" />
               )}
-              Continue
+              {stepIndex === totalSteps - 1 ? "Finish" : "Continue"}
             </Button>
           </CardFooter>
         </Card>
       )}
 
-      {/* Step 3: Invite Team */}
-      {currentStep === 3 && (
+      {/* Step: Invite Team (admin only) */}
+      {currentStepId === "invite" && (
         <Card>
           <CardHeader>
             <CardTitle>Invite Team</CardTitle>
