@@ -83,24 +83,24 @@ export class JwtAuthGuard implements CanActivate {
       userRole = supabaseUser.user_metadata?.user_role || supabaseUser.user_metadata?.role;
     }
 
-    // Step 3: Query the users table via Prisma (direct DB connection)
-    if (!tenantId || !userRole) {
-      try {
-        const dbUser = await this.prisma.user.findUnique({
-          where: { id: supabaseUser.id },
-          select: { tenantId: true, role: true },
-        });
+    // Step 3: Always check if user exists in DB (fills gaps + ensures user record)
+    let dbUserExists = false;
+    try {
+      const dbUser = await this.prisma.user.findUnique({
+        where: { id: supabaseUser.id },
+        select: { tenantId: true, role: true },
+      });
 
-        if (dbUser) {
-          if (!tenantId) tenantId = dbUser.tenantId;
-          if (!userRole) userRole = dbUser.role;
-        }
-      } catch (err: any) {
-        this.logger.warn(`DB lookup failed for user ${supabaseUser.id}: ${err.message}`);
+      if (dbUser) {
+        dbUserExists = true;
+        if (!tenantId) tenantId = dbUser.tenantId;
+        if (!userRole) userRole = dbUser.role;
       }
+    } catch (err: any) {
+      this.logger.warn(`DB lookup failed for user ${supabaseUser.id}: ${err.message}`);
     }
 
-    // Step 4: Auto-provision tenant + user if no record exists
+    // Step 4: Auto-provision tenant + user if no tenant found at all
     if (!tenantId) {
       this.logger.warn(
         `No tenant found for user ${supabaseUser.id} (${supabaseUser.email}). Auto-provisioning...`,
@@ -142,6 +142,7 @@ export class JwtAuthGuard implements CanActivate {
 
         tenantId = tenant.id;
         userRole = role;
+        dbUserExists = true;
 
         this.logger.log(
           `Auto-provisioned tenant ${tenantId} and user ${supabaseUser.id}`,
@@ -151,6 +152,40 @@ export class JwtAuthGuard implements CanActivate {
         throw new UnauthorizedException(
           'Account setup incomplete. Please contact support.',
         );
+      }
+    }
+
+    // Step 5: Ensure user record exists in DB (handles invited users with tenantId from metadata but no DB row)
+    if (!dbUserExists && tenantId) {
+      try {
+        const email = supabaseUser.email || '';
+        const metadata = supabaseUser.user_metadata || {};
+        const firstName = metadata.first_name || metadata.full_name?.split(' ')[0] || email.split('@')[0];
+        const lastName = metadata.last_name || metadata.full_name?.split(' ').slice(1).join(' ') || '';
+        const role = userRole || (metadata.invitation_id ? 'agent' : 'admin');
+
+        await this.prisma.user.create({
+          data: {
+            id: supabaseUser.id,
+            tenantId,
+            email,
+            firstName,
+            lastName,
+            role: role as any,
+            setupCompleted: false,
+          },
+        });
+
+        if (!userRole) userRole = role;
+
+        this.logger.log(
+          `Created user record for ${supabaseUser.id} in tenant ${tenantId}`,
+        );
+      } catch (err: any) {
+        // Ignore unique constraint violation (race condition — another request created it)
+        if (!err.message?.includes('Unique constraint')) {
+          this.logger.warn(`Failed to create user record: ${err.message}`);
+        }
       }
     }
 
