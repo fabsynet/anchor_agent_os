@@ -52,6 +52,16 @@ export class InvitationsController {
   }
 
   /**
+   * POST /api/invitations/accept-mine
+   * Mark the current user's pending invitation as accepted.
+   * Any authenticated user (no admin role required).
+   */
+  @Post('accept-mine')
+  async acceptMine(@CurrentUser() user: AuthenticatedUser) {
+    return this.invitationsService.acceptInvitation(user.email);
+  }
+
+  /**
    * PATCH /api/invitations/:id/revoke
    * Revoke a pending invitation. Admin only.
    */
