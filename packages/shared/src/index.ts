@@ -99,7 +99,7 @@ export type { UploadDocumentInput, SearchDocumentsInput, SearchComplianceInput }
 
 // Types - Expenses & Budgets
 export type { ExpenseStatus, RecurrenceFrequency, Expense, ExpenseReceipt, ExpenseListItem } from './types/expense';
-export type { Budget, BudgetCategory } from './types/budget';
+export type { Budget } from './types/budget';
 export type { InAppNotification } from './types/notification';
 
 // Constants - Expenses

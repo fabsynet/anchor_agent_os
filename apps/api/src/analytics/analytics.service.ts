@@ -269,14 +269,13 @@ export class AnalyticsService {
           },
           _sum: { amount: true },
         }),
-        // Get current month budget for usage calculation
+        // Get first active budget for usage calculation
         this.prisma.budget.findFirst({
           where: {
             tenantId,
-            month: new Date().getMonth() + 1,
-            year: new Date().getFullYear(),
             isActive: true,
           },
+          orderBy: { createdAt: 'desc' },
         }),
       ]);
 

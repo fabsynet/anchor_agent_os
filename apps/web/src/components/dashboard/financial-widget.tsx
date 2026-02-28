@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { DollarSign, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
 
 import { useUser } from '@/hooks/use-user';
 import { api } from '@/lib/api';
@@ -13,7 +13,6 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetProgressBar } from '@/components/budgets/budget-progress-bar';
 import { ExpenseDonutChart } from './expense-donut-chart';
@@ -27,8 +26,6 @@ interface FinancialData {
   categories: {
     name: string;
     spent: number;
-    limit: number | null;
-    percentage: number;
   }[];
   month: number;
   year: number;
@@ -51,7 +48,6 @@ export function FinancialWidget() {
   const [data, setData] = useState<FinancialData | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const [showAllCategories, setShowAllCategories] = useState(false);
 
   useEffect(() => {
     if (userLoading) return;
@@ -73,7 +69,6 @@ export function FinancialWidget() {
         if (error instanceof Error && error.message.includes('permission')) {
           setHasAccess(false);
         } else {
-          // Other errors: still hide but log
           console.error('Failed to load financial data:', error);
           setHasAccess(false);
         }
@@ -146,12 +141,6 @@ export function FinancialWidget() {
   const chartData = data.categories
     .filter((c) => c.spent > 0)
     .map((c) => ({ name: c.name, value: c.spent }));
-
-  // Categories with budget limits for progress bars
-  const categoriesWithLimits = data.categories.filter((c) => c.limit !== null);
-  const displayCategories = showAllCategories
-    ? categoriesWithLimits
-    : categoriesWithLimits.slice(0, 5);
 
   return (
     <Card>
@@ -227,43 +216,6 @@ export function FinancialWidget() {
             </div>
           </div>
         </div>
-
-        {/* Per-category budget progress bars */}
-        {categoriesWithLimits.length > 0 && (
-          <div className="border-t pt-4 space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">
-              Category Budget Progress
-            </p>
-            {displayCategories.map((cat) => (
-              <BudgetProgressBar
-                key={cat.name}
-                category={cat.name}
-                spent={cat.spent}
-                limit={cat.limit!}
-              />
-            ))}
-            {categoriesWithLimits.length > 5 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full"
-                onClick={() => setShowAllCategories(!showAllCategories)}
-              >
-                {showAllCategories ? (
-                  <>
-                    <ChevronUp className="size-4" />
-                    Show less
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="size-4" />
-                    Show all ({categoriesWithLimits.length})
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-        )}
       </CardContent>
     </Card>
   );

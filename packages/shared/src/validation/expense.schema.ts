@@ -8,6 +8,7 @@ export const createExpenseSchema = z
     description: z.string().optional().or(z.literal('')),
     isRecurring: z.boolean().default(false),
     recurrence: z.enum(['weekly', 'monthly', 'yearly']).optional(),
+    budgetId: z.string().uuid().optional(),
   })
   .refine(
     (data) => !data.isRecurring || data.recurrence !== undefined,
@@ -25,6 +26,7 @@ export const updateExpenseSchema = z
     description: z.string().optional().or(z.literal('')),
     isRecurring: z.boolean().optional(),
     recurrence: z.enum(['weekly', 'monthly', 'yearly']).optional(),
+    budgetId: z.string().uuid().optional().nullable(),
   })
   .refine(
     (data) => {

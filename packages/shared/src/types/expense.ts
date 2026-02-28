@@ -18,6 +18,7 @@ export interface Expense {
   recurrence: RecurrenceFrequency | null;
   nextOccurrence: string | null;
   parentExpenseId: string | null;
+  budgetId: string | null;
   createdAt: string;
   updatedAt: string;
   submittedBy?: {

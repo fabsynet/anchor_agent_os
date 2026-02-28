@@ -15,6 +15,7 @@ import type {
   CreateExpenseInput,
   ExpenseListItem,
   ExpenseReceipt,
+  Budget,
 } from "@anchor/shared";
 
 import { api } from "@/lib/api";
@@ -92,8 +93,9 @@ export function ExpenseFormDialog({
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [useCustomCategory, setUseCustomCategory] = useState(false);
   const [receipts, setReceipts] = useState<ExpenseReceipt[]>([]);
+  const [activeBudgets, setActiveBudgets] = useState<Budget[]>([]);
 
-  // Fetch categories
+  // Fetch categories and active budgets
   useEffect(() => {
     api
       .get<CategoryOption[]>("/api/expenses/categories")
@@ -103,6 +105,13 @@ export function ExpenseFormDialog({
           EXPENSE_CATEGORIES.map((c) => ({ value: c.value, label: c.label }))
         );
       });
+
+    api
+      .get<{ budget: Budget; spending: { totalSpent: number } }[]>(
+        "/api/budgets/active"
+      )
+      .then((data) => setActiveBudgets(data.map((d) => d.budget)))
+      .catch(() => setActiveBudgets([]));
   }, []);
 
   // Form setup - use createExpenseSchema for both create and edit
@@ -115,6 +124,7 @@ export function ExpenseFormDialog({
       description: "",
       isRecurring: false,
       recurrence: undefined,
+      budgetId: undefined,
     },
   });
 
@@ -144,6 +154,7 @@ export function ExpenseFormDialog({
         description: expense.description || "",
         isRecurring: expense.isRecurring,
         recurrence: expense.recurrence ?? undefined,
+        budgetId: expense.budgetId ?? undefined,
       });
     } else {
       setReceipts([]);
@@ -155,6 +166,7 @@ export function ExpenseFormDialog({
         description: "",
         isRecurring: false,
         recurrence: undefined,
+        budgetId: undefined,
       });
     }
   }, [expense, open, form]);
@@ -193,6 +205,7 @@ export function ExpenseFormDialog({
         await api.patch(`/api/expenses/${expense.id}`, {
           ...data,
           date: data.date instanceof Date ? data.date.toISOString() : data.date,
+          budgetId: data.budgetId || null,
         });
         expenseId = expense.id;
         toast.success("Expense updated");
@@ -201,6 +214,7 @@ export function ExpenseFormDialog({
         const created = await api.post<{ id: string }>("/api/expenses", {
           ...data,
           date: data.date instanceof Date ? data.date.toISOString() : data.date,
+          budgetId: data.budgetId || undefined,
         });
         expenseId = created.id;
         toast.success("Expense created");
@@ -337,6 +351,16 @@ export function ExpenseFormDialog({
                 </Label>
                 <p className="text-sm font-medium capitalize">
                   {expense.recurrence ?? "-"}
+                </p>
+              </div>
+            )}
+            {(expense as any)?.budget && (
+              <div>
+                <Label className="text-muted-foreground text-xs">
+                  Budget
+                </Label>
+                <p className="text-sm font-medium">
+                  {(expense as any).budget.name}
                 </p>
               </div>
             )}
@@ -536,6 +560,40 @@ export function ExpenseFormDialog({
                   </FormItem>
                 )}
               />
+
+              {/* Budget */}
+              {activeBudgets.length > 0 && (
+                <FormField
+                  control={form.control}
+                  name="budgetId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Budget (optional)</FormLabel>
+                      <Select
+                        value={field.value ?? "_none"}
+                        onValueChange={(val) =>
+                          field.onChange(val === "_none" ? undefined : val)
+                        }
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="No budget" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="_none">No budget</SelectItem>
+                          {activeBudgets.map((b) => (
+                            <SelectItem key={b.id} value={b.id}>
+                              {b.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               {/* Recurring */}
               <div className="space-y-3">

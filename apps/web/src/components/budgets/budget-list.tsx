@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { format, setMonth, setYear } from 'date-fns';
-import { Plus, Pencil, Trash2, Wallet } from 'lucide-react';
+import { format } from 'date-fns';
+import { Plus, Pencil, Trash2, Wallet, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { Budget } from '@anchor/shared';
@@ -30,18 +30,11 @@ import {
 import { BudgetProgressBar } from './budget-progress-bar';
 import { BudgetFormDialog } from './budget-form-dialog';
 
-interface CurrentBudgetResponse {
-  budget: Budget | null;
+interface ActiveBudgetResponse {
+  budget: Budget;
   spending: {
     totalSpent: number;
-    byCategory: { category: string; spent: number }[];
-  } | null;
-}
-
-function formatMonthYear(month: number, year: number): string {
-  // Create a date for the first of the given month
-  let date = new Date(year, month - 1, 1);
-  return format(date, 'MMMM yyyy');
+  };
 }
 
 const currencyFormatter = new Intl.NumberFormat('en-CA', {
@@ -51,26 +44,35 @@ const currencyFormatter = new Intl.NumberFormat('en-CA', {
   maximumFractionDigits: 2,
 });
 
+function formatDateRange(startDate: string | null, endDate: string | null): string | null {
+  if (!startDate && !endDate) return null;
+  const start = startDate ? format(new Date(startDate), 'MMM d, yyyy') : 'Open';
+  const end = endDate ? format(new Date(endDate), 'MMM d, yyyy') : 'Ongoing';
+  return `${start} — ${end}`;
+}
+
 export function BudgetList() {
   const { isAdmin } = useUser();
   const [budgets, setBudgets] = useState<Budget[]>([]);
-  const [currentBudget, setCurrentBudget] =
-    useState<CurrentBudgetResponse | null>(null);
+  const [activeBudgets, setActiveBudgets] = useState<ActiveBudgetResponse[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | undefined>(
     undefined
   );
   const [deleteTarget, setDeleteTarget] = useState<Budget | null>(null);
+  const [renewingId, setRenewingId] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
-      const [budgetsData, currentData] = await Promise.all([
+      const [budgetsData, activeData] = await Promise.all([
         api.get<Budget[]>('/api/budgets'),
-        api.get<CurrentBudgetResponse>('/api/budgets/current'),
+        api.get<ActiveBudgetResponse[]>('/api/budgets/active'),
       ]);
       setBudgets(budgetsData);
-      setCurrentBudget(currentData);
+      setActiveBudgets(activeData);
     } catch (error) {
       console.error('Failed to load budgets:', error);
       toast.error('Failed to load budgets');
@@ -97,6 +99,21 @@ export function BudgetList() {
     }
   };
 
+  const handleRenew = async (budgetId: string) => {
+    setRenewingId(budgetId);
+    try {
+      await api.post(`/api/budgets/${budgetId}/renew`);
+      toast.success('Budget renewed successfully');
+      fetchData();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to renew budget';
+      toast.error(message);
+    } finally {
+      setRenewingId(null);
+    }
+  };
+
   const handleEdit = (budget: Budget) => {
     setEditingBudget(budget);
     setFormOpen(true);
@@ -107,10 +124,16 @@ export function BudgetList() {
     setFormOpen(true);
   };
 
+  // Build a spending map from active budgets response
+  const spendingMap = new Map<string, number>();
+  for (const item of activeBudgets) {
+    spendingMap.set(item.budget.id, item.spending.totalSpent);
+  }
+
   // Separate active and inactive budgets
-  const activeBudgets = budgets.filter((b) => b.isActive);
-  const inactiveBudgets = budgets.filter((b) => !b.isActive);
-  const sortedBudgets = [...activeBudgets, ...inactiveBudgets];
+  const active = budgets.filter((b) => b.isActive);
+  const inactive = budgets.filter((b) => !b.isActive);
+  const sortedBudgets = [...active, ...inactive];
 
   // Loading state
   if (loading) {
@@ -124,7 +147,6 @@ export function BudgetList() {
             <CardContent className="space-y-3">
               <Skeleton className="h-2 w-full" />
               <Skeleton className="h-2 w-3/4" />
-              <Skeleton className="h-2 w-1/2" />
             </CardContent>
           </Card>
         ))}
@@ -145,7 +167,7 @@ export function BudgetList() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Create a monthly budget to track spending against limits.
+              Create a budget to track spending against limits.
             </p>
             {isAdmin && (
               <Button onClick={handleCreate}>
@@ -181,20 +203,25 @@ export function BudgetList() {
       {/* Budget cards */}
       <div className="space-y-4">
         {sortedBudgets.map((budget) => {
-          const isCurrentMonth =
-            currentBudget?.budget?.id === budget.id;
-          const spending = isCurrentMonth ? currentBudget?.spending : null;
-          const totalSpent = spending?.totalSpent ?? 0;
+          const totalSpent = spendingMap.get(budget.id) ?? 0;
           const totalLimit = Number(budget.totalLimit);
+          const dateRange = formatDateRange(budget.startDate, budget.endDate);
 
           return (
             <Card key={budget.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <CardTitle className="text-base">
-                      {formatMonthYear(budget.month, budget.year)}
-                    </CardTitle>
+                    <div>
+                      <CardTitle className="text-base">
+                        {budget.name}
+                      </CardTitle>
+                      {dateRange && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {dateRange}
+                        </p>
+                      )}
+                    </div>
                     <Badge
                       variant={budget.isActive ? 'default' : 'secondary'}
                       className={
@@ -209,6 +236,17 @@ export function BudgetList() {
 
                   {isAdmin && (
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => handleRenew(budget.id)}
+                        disabled={renewingId === budget.id}
+                        title="Renew budget"
+                      >
+                        <RefreshCw
+                          className={`size-4 ${renewingId === budget.id ? 'animate-spin' : ''}`}
+                        />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon-sm"
@@ -236,37 +274,10 @@ export function BudgetList() {
                   limit={totalLimit}
                 />
 
-                {/* Per-category progress bars (only for current active month) */}
-                {isCurrentMonth &&
-                  spending?.byCategory &&
-                  spending.byCategory.length > 0 && (
-                    <div className="space-y-3 border-t pt-4">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        Category Breakdown
-                      </p>
-                      {budget.categories.map((cat) => {
-                        const categorySpending =
-                          spending.byCategory.find(
-                            (s) => s.category === cat.category
-                          )?.spent ?? 0;
-                        return (
-                          <BudgetProgressBar
-                            key={cat.id}
-                            category={cat.category}
-                            spent={categorySpending}
-                            limit={Number(cat.limitAmount)}
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
-
-                {/* Budget info footer */}
-                {!isCurrentMonth && (
+                {/* Budget info footer for inactive */}
+                {!budget.isActive && (
                   <p className="text-xs text-muted-foreground">
                     Limit: {currencyFormatter.format(totalLimit)}
-                    {budget.categories.length > 0 &&
-                      ` (${budget.categories.length} category limits)`}
                   </p>
                 )}
               </CardContent>
@@ -292,10 +303,9 @@ export function BudgetList() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Budget</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the budget for{' '}
-              {deleteTarget &&
-                formatMonthYear(deleteTarget.month, deleteTarget.year)}
-              ? This action cannot be undone.
+              Are you sure you want to delete &quot;{deleteTarget?.name}&quot;?
+              Linked expenses will be unlinked (not deleted). This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

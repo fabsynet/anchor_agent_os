@@ -1,21 +1,45 @@
 import { z } from 'zod';
 
-const budgetCategorySchema = z.object({
-  category: z.string().min(1, 'Category is required'),
-  limitAmount: z.coerce.number().positive('Limit must be positive'),
-});
+export const createBudgetSchema = z
+  .object({
+    name: z.string().min(1, 'Budget name is required').max(100),
+    totalLimit: z.coerce.number().positive('Total limit must be positive'),
+    startDate: z.coerce.date().optional(),
+    endDate: z.coerce.date().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.startDate && data.endDate) {
+        return data.endDate >= data.startDate;
+      }
+      return true;
+    },
+    {
+      message: 'End date must be on or after start date',
+      path: ['endDate'],
+    },
+  );
 
-export const createBudgetSchema = z.object({
-  month: z.number().int().min(1, 'Month must be 1-12').max(12, 'Month must be 1-12'),
-  year: z.number().int().min(2020).max(2100),
-  totalLimit: z.coerce.number().positive('Total limit must be positive'),
-  categories: z.array(budgetCategorySchema).optional().default([]),
-});
-
-export const updateBudgetSchema = z.object({
-  totalLimit: z.coerce.number().positive('Total limit must be positive').optional(),
-  categories: z.array(budgetCategorySchema).optional(),
-});
+export const updateBudgetSchema = z
+  .object({
+    name: z.string().min(1, 'Budget name is required').max(100).optional(),
+    totalLimit: z.coerce.number().positive('Total limit must be positive').optional(),
+    startDate: z.coerce.date().optional().nullable(),
+    endDate: z.coerce.date().optional().nullable(),
+    isActive: z.boolean().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.startDate && data.endDate) {
+        return data.endDate >= data.startDate;
+      }
+      return true;
+    },
+    {
+      message: 'End date must be on or after start date',
+      path: ['endDate'],
+    },
+  );
 
 export type CreateBudgetInput = z.input<typeof createBudgetSchema>;
 export type UpdateBudgetInput = z.input<typeof updateBudgetSchema>;
