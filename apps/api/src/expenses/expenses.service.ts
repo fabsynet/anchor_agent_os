@@ -110,15 +110,16 @@ export class ExpensesService {
    * Create a new expense with status 'draft'.
    * If isRecurring, calculate nextOccurrence from date + recurrence.
    */
-  async create(tenantId: string, userId: string, dto: CreateExpenseDto) {
+  async create(tenantId: string, userId: string, dto: CreateExpenseDto, userRole?: string) {
     const expenseDate = new Date(dto.date);
+    const isAdmin = userRole === 'admin';
 
     const data: Record<string, unknown> = {
       amount: dto.amount,
       category: dto.category,
       date: expenseDate,
       description: dto.description || null,
-      status: 'draft',
+      status: isAdmin ? 'approved' : 'draft',
       submittedById: userId,
       isRecurring: dto.isRecurring ?? false,
       recurrence: dto.recurrence || null,

@@ -58,7 +58,7 @@ export class ExpensesController {
     @CurrentUser() user: AuthenticatedUser,
     @Body() dto: CreateExpenseDto,
   ) {
-    return this.expensesService.create(tenantId, user.id, dto);
+    return this.expensesService.create(tenantId, user.id, dto, user.role);
   }
 
   // ─── 2. GET /api/expenses ──────────────────────────────
