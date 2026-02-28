@@ -2,21 +2,25 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useUser } from '@/hooks/use-user';
 import { cn } from '@/lib/utils';
 
 const SETTINGS_TABS = [
-  { label: 'Team', href: '/settings/team' },
-  { label: 'Profile', href: '/settings/profile' },
-  { label: 'Badge', href: '/settings/badge' },
-  { label: 'Import', href: '/settings/import' },
+  { label: 'Team', href: '/settings/team', adminOnly: true },
+  { label: 'Profile', href: '/settings/profile', adminOnly: false },
+  { label: 'Badge', href: '/settings/badge', adminOnly: false },
+  { label: 'Import', href: '/settings/import', adminOnly: false },
 ];
 
 export function SettingsNav() {
   const pathname = usePathname();
+  const { isAdmin } = useUser();
+
+  const visibleTabs = SETTINGS_TABS.filter((tab) => !tab.adminOnly || isAdmin);
 
   return (
     <div className="flex gap-4 border-b overflow-x-auto">
-      {SETTINGS_TABS.map((tab) => (
+      {visibleTabs.map((tab) => (
         <Link
           key={tab.href}
           href={tab.href}
