@@ -185,8 +185,9 @@ export class InvitationsService {
   }
 
   /**
-   * Revoke a pending invitation.
-   * Also cleans up the unconfirmed auth user created by inviteUserByEmail.
+   * Revoke a pending or accepted invitation.
+   * For pending: cleans up unconfirmed auth user.
+   * For accepted: removes user from users table and deletes auth user.
    */
   async revokeInvitation(tenantId: string, invitationId: string) {
     const invitation = await this.prisma.invitation.findFirst({
@@ -197,23 +198,69 @@ export class InvitationsService {
       throw new NotFoundException('Invitation not found');
     }
 
-    if (invitation.status !== 'pending') {
+    if (!['pending', 'accepted'].includes(invitation.status)) {
       throw new BadRequestException(
         `Cannot revoke invitation with status "${invitation.status}"`,
       );
     }
 
-    // Clean up the unconfirmed auth user so the email can be re-invited
-    try {
-      await this.deleteUnconfirmedAuthUser(invitation.email);
-    } catch {
-      // If deletion fails (user already confirmed), still revoke the invitation record
+    if (invitation.status === 'accepted') {
+      // Remove the accepted user's access: delete DB user + auth user
+      await this.revokeAcceptedUser(invitation.email, tenantId);
+    } else {
+      // Clean up the unconfirmed auth user so the email can be re-invited
+      try {
+        await this.deleteUnconfirmedAuthUser(invitation.email);
+      } catch {
+        // If deletion fails (user already confirmed), still revoke the invitation record
+      }
     }
 
     return this.prisma.invitation.update({
       where: { id: invitationId },
       data: { status: 'revoked' },
     });
+  }
+
+  /**
+   * Remove an accepted user's access: delete from users table and Supabase auth.
+   */
+  private async revokeAcceptedUser(
+    email: string,
+    tenantId: string,
+  ): Promise<void> {
+    // 1. Delete from users table (cascades to agent profiles, etc.)
+    try {
+      const dbUser = await this.prisma.user.findFirst({
+        where: { email: email.toLowerCase(), tenantId },
+      });
+
+      if (dbUser) {
+        await this.prisma.user.delete({ where: { id: dbUser.id } });
+        this.logger.log(`Deleted user record for ${email}`);
+      }
+    } catch (err: any) {
+      this.logger.warn(`Failed to delete user record for ${email}: ${err.message}`);
+    }
+
+    // 2. Delete from Supabase auth so they can no longer log in
+    try {
+      const { data, error } =
+        await this.supabaseAdmin.auth.admin.listUsers();
+
+      if (!error) {
+        const authUser = data.users.find(
+          (u) => u.email?.toLowerCase() === email.toLowerCase(),
+        );
+
+        if (authUser) {
+          await this.supabaseAdmin.auth.admin.deleteUser(authUser.id);
+          this.logger.log(`Deleted auth user for ${email}`);
+        }
+      }
+    } catch (err: any) {
+      this.logger.warn(`Failed to delete auth user for ${email}: ${err.message}`);
+    }
   }
 
   /**

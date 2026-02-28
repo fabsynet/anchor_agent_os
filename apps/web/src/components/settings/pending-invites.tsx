@@ -175,6 +175,22 @@ export function PendingInvites({ invitations, onUpdate }: PendingInvitesProps) {
                         </Button>
                       </>
                     )}
+                    {inv.status === "accepted" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRevoke(inv.id)}
+                        disabled={actionId === inv.id}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        {actionId === inv.id ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <XCircle className="mr-1 size-4" />
+                        )}
+                        Revoke Access
+                      </Button>
+                    )}
                     {inv.status === "expired" && (
                       <Button
                         variant="ghost"
