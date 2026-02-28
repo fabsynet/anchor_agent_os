@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
+import { useUser } from "@/hooks/use-user";
 import { Badge } from "@/components/ui/badge";
 import { SettingsNav } from "@/components/settings/settings-nav";
 import {
@@ -51,10 +53,19 @@ interface TeamMember {
 const INVITE_CAP = 2;
 
 export default function TeamSettingsPage() {
+  const router = useRouter();
+  const { isAdmin, isLoading: isUserLoading } = useUser();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Redirect non-admin users to profile settings
+  useEffect(() => {
+    if (!isUserLoading && !isAdmin) {
+      router.replace("/settings/profile");
+    }
+  }, [isAdmin, isUserLoading, router]);
 
   const fetchData = useCallback(async () => {
     try {
