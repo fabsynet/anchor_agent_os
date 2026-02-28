@@ -60,6 +60,11 @@ This hook adds `tenant_id` and `user_role` to the JWT claims, which are required
 4. Choose the function: `public.custom_access_token_hook`
 5. Save
 
+
+## run DB
+npx prisma generate
+npx prisma migrate deploy
+
 ## 5. Set Email Redirect URLs
 
 These URLs control where Supabase redirects users after email verification, password reset, and invite acceptance.
