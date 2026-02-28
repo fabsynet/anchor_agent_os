@@ -89,7 +89,21 @@ DECLARE
   v_agency_name text;
   v_slug text;
   v_random_suffix text;
+  v_first_name text;
+  v_last_name text;
 BEGIN
+  -- Read name from metadata: try camelCase first (frontend), then snake_case fallback
+  v_first_name := COALESCE(
+    NEW.raw_user_meta_data->>'firstName',
+    NEW.raw_user_meta_data->>'first_name',
+    ''
+  );
+  v_last_name := COALESCE(
+    NEW.raw_user_meta_data->>'lastName',
+    NEW.raw_user_meta_data->>'last_name',
+    ''
+  );
+
   -- Check if this is an invited user (has invitation_id in metadata)
   IF NEW.raw_user_meta_data->>'invitation_id' IS NOT NULL THEN
     -- ============================
@@ -122,8 +136,8 @@ BEGIN
       NEW.id,
       v_tenant_id,
       NEW.email,
-      COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
-      COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
+      v_first_name,
+      v_last_name,
       v_role::"UserRole",
       NOW()
     );
@@ -132,7 +146,11 @@ BEGIN
     -- ============================
     -- ORGANIC SIGNUP FLOW
     -- ============================
-    v_agency_name := COALESCE(NEW.raw_user_meta_data->>'agency_name', 'My Agency');
+    v_agency_name := COALESCE(
+      NEW.raw_user_meta_data->>'agencyName',
+      NEW.raw_user_meta_data->>'agency_name',
+      'My Agency'
+    );
 
     -- Generate slug from agency name: lowercase, replace spaces with hyphens, append random 4 chars
     v_random_suffix := substr(md5(random()::text), 1, 4);
@@ -151,8 +169,8 @@ BEGIN
       NEW.id,
       v_tenant_id,
       NEW.email,
-      COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
-      COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
+      v_first_name,
+      v_last_name,
       'admin',
       NOW()
     );
