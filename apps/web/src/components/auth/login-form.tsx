@@ -43,6 +43,23 @@ export function LoginForm() {
     });
 
     if (error) {
+      // Detect unverified email — Supabase returns "Email not confirmed"
+      if (error.message?.toLowerCase().includes("email not confirmed")) {
+        // Resend the verification email automatically
+        await supabase.auth.resend({
+          type: "signup",
+          email: data.email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        toast.info(
+          "Your email is not verified yet. A new verification link has been sent to your inbox."
+        );
+        return;
+      }
+
       toast.error("Invalid email or password");
       return;
     }
