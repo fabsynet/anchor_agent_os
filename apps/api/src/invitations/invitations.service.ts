@@ -223,27 +223,31 @@ export class InvitationsService {
   }
 
   /**
-   * Remove an accepted user's access: delete from users table and Supabase auth.
+   * Soft-deactivate an accepted user: set isActive=false and sign out all sessions.
+   * Preserves the user record and all related data (agent profiles, tasks, expenses, etc.).
    */
   private async revokeAcceptedUser(
     email: string,
     tenantId: string,
   ): Promise<void> {
-    // 1. Delete from users table (cascades to agent profiles, etc.)
+    // 1. Set isActive = false on the user record
     try {
       const dbUser = await this.prisma.user.findFirst({
         where: { email: email.toLowerCase(), tenantId },
       });
 
       if (dbUser) {
-        await this.prisma.user.delete({ where: { id: dbUser.id } });
-        this.logger.log(`Deleted user record for ${email}`);
+        await this.prisma.user.update({
+          where: { id: dbUser.id },
+          data: { isActive: false },
+        });
+        this.logger.log(`Deactivated user record for ${email}`);
       }
     } catch (err: any) {
-      this.logger.warn(`Failed to delete user record for ${email}: ${err.message}`);
+      this.logger.warn(`Failed to deactivate user record for ${email}: ${err.message}`);
     }
 
-    // 2. Delete from Supabase auth so they can no longer log in
+    // 2. Sign out all Supabase sessions so the user is kicked out immediately
     try {
       const { data, error } =
         await this.supabaseAdmin.auth.admin.listUsers();
@@ -254,12 +258,12 @@ export class InvitationsService {
         );
 
         if (authUser) {
-          await this.supabaseAdmin.auth.admin.deleteUser(authUser.id);
-          this.logger.log(`Deleted auth user for ${email}`);
+          await this.supabaseAdmin.auth.admin.signOut(authUser.id, 'global');
+          this.logger.log(`Signed out all sessions for ${email}`);
         }
       }
     } catch (err: any) {
-      this.logger.warn(`Failed to delete auth user for ${email}: ${err.message}`);
+      this.logger.warn(`Failed to sign out auth user for ${email}: ${err.message}`);
     }
   }
 

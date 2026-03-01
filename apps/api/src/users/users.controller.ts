@@ -11,6 +11,9 @@ import { UsersService } from './users.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { TenantId } from '../auth/decorators/tenant-id.decorator.js';
+import type { AuthenticatedUser } from '../auth/guards/jwt-auth.guard.js';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -47,5 +50,18 @@ export class UsersController {
     @Body() body: { canViewFinancials: boolean },
   ) {
     return this.usersService.updateFinancialAccess(id, body.canViewFinancials);
+  }
+
+  /**
+   * PATCH /api/users/:id/reactivate
+   * Admin-only: Reactivate a deactivated team member.
+   */
+  @Patch(':id/reactivate')
+  @Roles('admin')
+  async reactivateUser(
+    @Param('id', ParseUUIDPipe) id: string,
+    @TenantId() tenantId: string,
+  ) {
+    return this.usersService.reactivateUser(id, tenantId);
   }
 }

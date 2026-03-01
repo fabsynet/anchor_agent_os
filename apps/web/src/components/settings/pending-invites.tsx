@@ -240,7 +240,7 @@ export function PendingInvites({ invitations, onUpdate }: PendingInvitesProps) {
             <AlertDialogTitle>Are you sure you want to revoke?</AlertDialogTitle>
             <AlertDialogDescription>
               {revokeTarget?.status === "accepted"
-                ? `This will remove ${revokeTarget.email}'s access to your agency. They will no longer be able to log in.`
+                ? `This will deactivate ${revokeTarget.email}'s account. They will be logged out and unable to access the system until reactivated.`
                 : `This will cancel the pending invitation to ${revokeTarget?.email}. You can re-invite them later.`}
             </AlertDialogDescription>
           </AlertDialogHeader>

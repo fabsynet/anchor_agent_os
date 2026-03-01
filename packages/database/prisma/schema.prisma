@@ -176,6 +176,7 @@ model User {
   notifyTaskReminders    Boolean  @default(true)  @map("notify_task_reminders")
   emailRenewalReminders  Boolean  @default(true)  @map("email_renewal_reminders")
   canViewFinancials Boolean  @default(false) @map("can_view_financials")
+  isActive          Boolean  @default(true) @map("is_active")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 

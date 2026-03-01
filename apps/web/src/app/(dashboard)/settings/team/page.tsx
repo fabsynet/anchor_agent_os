@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Users } from "lucide-react";
+import { Loader2, RotateCcw, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
@@ -48,6 +48,7 @@ interface TeamMember {
   avatarUrl: string | null;
   createdAt: string;
   canViewFinancials: boolean;
+  isActive: boolean;
 }
 
 const INVITE_CAP = 2;
@@ -147,6 +148,23 @@ export default function TeamSettingsPage() {
     }
   };
 
+  const [reactivatingId, setReactivatingId] = useState<string | null>(null);
+
+  const handleReactivate = async (memberId: string) => {
+    setReactivatingId(memberId);
+    try {
+      await api.patch(`/api/users/${memberId}/reactivate`);
+      toast.success("Team member reactivated");
+      fetchData();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to reactivate user";
+      toast.error(message);
+    } finally {
+      setReactivatingId(null);
+    }
+  };
+
   // Count pending + accepted invitations for cap enforcement
   const activeInviteCount = invitations.filter(
     (inv) => inv.status === "pending" || inv.status === "accepted"
@@ -204,13 +222,18 @@ export default function TeamSettingsPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Financials</TableHead>
                   <TableHead>Joined</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {members.map((member) => (
-                  <TableRow key={member.id}>
+                  <TableRow
+                    key={member.id}
+                    className={!member.isActive ? "opacity-60" : undefined}
+                  >
                     <TableCell className="font-medium">
                       {member.firstName} {member.lastName}
                     </TableCell>
@@ -221,10 +244,19 @@ export default function TeamSettingsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      {member.isActive ? (
+                        <Badge variant="default">Active</Badge>
+                      ) : (
+                        <Badge variant="destructive">Deactivated</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       {member.role === "admin" ? (
                         <span className="text-xs text-muted-foreground">
                           Always
                         </span>
+                      ) : !member.isActive ? (
+                        <span className="text-xs text-muted-foreground">—</span>
                       ) : (
                         <button
                           onClick={() =>
@@ -258,6 +290,22 @@ export default function TeamSettingsPage() {
                         month: "short",
                         day: "numeric",
                       })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {!member.isActive && member.role !== "admin" && (
+                        <button
+                          onClick={() => handleReactivate(member.id)}
+                          disabled={reactivatingId === member.id}
+                          className="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm font-medium text-primary hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          {reactivatingId === member.id ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <RotateCcw className="size-4" />
+                          )}
+                          Reactivate
+                        </button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

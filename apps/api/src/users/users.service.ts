@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service.js';
 
 @Injectable()
@@ -65,5 +65,52 @@ export class UsersService {
       where: { id: userId },
       data: { canViewFinancials },
     });
+  }
+
+  /**
+   * Reactivate a deactivated user (admin-only).
+   * Sets isActive=true and updates the matching revoked invitation back to accepted.
+   */
+  async reactivateUser(userId: string, tenantId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User ${userId} not found`);
+    }
+
+    if (user.tenantId !== tenantId) {
+      throw new NotFoundException(`User ${userId} not found`);
+    }
+
+    if (user.isActive) {
+      throw new BadRequestException('User is already active');
+    }
+
+    // Reactivate the user
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { isActive: true },
+    });
+
+    // Find and update the matching revoked invitation back to accepted
+    const invitation = await this.prisma.invitation.findFirst({
+      where: {
+        tenantId,
+        email: user.email.toLowerCase(),
+        status: 'revoked',
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    if (invitation) {
+      await this.prisma.invitation.update({
+        where: { id: invitation.id },
+        data: { status: 'accepted' },
+      });
+    }
+
+    return updated;
   }
 }
