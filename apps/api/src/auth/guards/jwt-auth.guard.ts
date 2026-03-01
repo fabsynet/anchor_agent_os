@@ -88,10 +88,15 @@ export class JwtAuthGuard implements CanActivate {
     try {
       const dbUser = await this.prisma.user.findUnique({
         where: { id: supabaseUser.id },
-        select: { tenantId: true, role: true },
+        select: { tenantId: true, role: true, isActive: true },
       });
 
       if (dbUser) {
+        if (!dbUser.isActive) {
+          throw new UnauthorizedException(
+            'Your account has been deactivated. Contact your agency admin.',
+          );
+        }
         dbUserExists = true;
         if (!tenantId) tenantId = dbUser.tenantId;
         if (!userRole) userRole = dbUser.role;
