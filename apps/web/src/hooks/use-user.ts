@@ -64,7 +64,7 @@ export function useUser(): UseUserReturn {
           setProfile(dbProfile);
         }
       } catch (err) {
-        // If the user has been deactivated, sign them out and redirect to login
+        // If the user has been deactivated (403), sign them out and redirect to login
         if (err instanceof Error && err.message.includes('deactivated')) {
           await supabase.auth.signOut();
           setUser(null);
