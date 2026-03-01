@@ -22,6 +22,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Invitation {
   id: string;
@@ -59,8 +69,13 @@ function statusVariant(
 
 export function PendingInvites({ invitations, onUpdate }: PendingInvitesProps) {
   const [actionId, setActionId] = useState<string | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<Invitation | null>(null);
 
-  async function handleRevoke(id: string) {
+  async function confirmRevoke() {
+    if (!revokeTarget) return;
+
+    const id = revokeTarget.id;
+    setRevokeTarget(null);
     setActionId(id);
     try {
       await api.patch(`/api/invitations/${id}/revoke`);
@@ -112,40 +127,87 @@ export function PendingInvites({ invitations, onUpdate }: PendingInvitesProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Invitations</CardTitle>
-        <CardDescription>
-          Manage your team invitations. You can revoke pending invitations or
-          resend expired ones.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Sent</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {invitations.map((inv) => (
-              <TableRow key={inv.id}>
-                <TableCell className="font-medium">{inv.email}</TableCell>
-                <TableCell className="capitalize">{inv.role}</TableCell>
-                <TableCell>
-                  <Badge variant={statusVariant(inv.status)}>
-                    {inv.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{formatDate(inv.createdAt)}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    {inv.status === "pending" && (
-                      <>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Invitations</CardTitle>
+          <CardDescription>
+            Manage your team invitations. You can revoke pending invitations or
+            resend expired ones.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Sent</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {invitations.map((inv) => (
+                <TableRow key={inv.id}>
+                  <TableCell className="font-medium">{inv.email}</TableCell>
+                  <TableCell className="capitalize">{inv.role}</TableCell>
+                  <TableCell>
+                    <Badge variant={statusVariant(inv.status)}>
+                      {inv.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{formatDate(inv.createdAt)}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      {inv.status === "pending" && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleResend(inv.id)}
+                            disabled={actionId === inv.id}
+                          >
+                            {actionId === inv.id ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <RotateCcw className="mr-1 size-4" />
+                            )}
+                            Resend
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setRevokeTarget(inv)}
+                            disabled={actionId === inv.id}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            {actionId === inv.id ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <XCircle className="mr-1 size-4" />
+                            )}
+                            Revoke
+                          </Button>
+                        </>
+                      )}
+                      {inv.status === "accepted" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setRevokeTarget(inv)}
+                          disabled={actionId === inv.id}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          {actionId === inv.id ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <XCircle className="mr-1 size-4" />
+                          )}
+                          Revoke Access
+                        </Button>
+                      )}
+                      {inv.status === "expired" && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -159,60 +221,40 @@ export function PendingInvites({ invitations, onUpdate }: PendingInvitesProps) {
                           )}
                           Resend
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRevoke(inv.id)}
-                          disabled={actionId === inv.id}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          {actionId === inv.id ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            <XCircle className="mr-1 size-4" />
-                          )}
-                          Revoke
-                        </Button>
-                      </>
-                    )}
-                    {inv.status === "accepted" && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRevoke(inv.id)}
-                        disabled={actionId === inv.id}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        {actionId === inv.id ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <XCircle className="mr-1 size-4" />
-                        )}
-                        Revoke Access
-                      </Button>
-                    )}
-                    {inv.status === "expired" && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleResend(inv.id)}
-                        disabled={actionId === inv.id}
-                      >
-                        {actionId === inv.id ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <RotateCcw className="mr-1 size-4" />
-                        )}
-                        Resend
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <AlertDialog
+        open={!!revokeTarget}
+        onOpenChange={(open) => !open && setRevokeTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to revoke?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {revokeTarget?.status === "accepted"
+                ? `This will remove ${revokeTarget.email}'s access to your agency. They will no longer be able to log in.`
+                : `This will cancel the pending invitation to ${revokeTarget?.email}. You can re-invite them later.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRevoke}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Revoke
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
