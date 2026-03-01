@@ -23,13 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
   Table,
   TableBody,
@@ -474,25 +468,22 @@ export function ExpenseList({ onView, onEdit, refreshKey }: ExpenseListProps) {
             <label className="text-xs font-medium text-muted-foreground mb-1 block">
               Category
             </label>
-            <Select
+            <SearchableSelect
               value={categoryFilter}
               onValueChange={(val) => {
                 setCategoryFilter(val);
                 setPage(1);
               }}
-            >
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="_none">All Categories</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder="All Categories"
+              className="h-9"
+              options={[
+                { value: "_none", label: "All Categories" },
+                ...categories.map((cat) => ({
+                  value: cat.value,
+                  label: cat.label,
+                })),
+              ]}
+            />
           </div>
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">

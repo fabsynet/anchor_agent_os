@@ -15,13 +15,7 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { TaskViewToggle, type TaskViewMode } from "./task-view-toggle";
 import { TaskTable } from "./task-table";
 import { TaskKanban } from "./task-kanban";
@@ -197,62 +191,48 @@ export function TaskList() {
           />
         </div>
 
-        <Select
+        <SearchableSelect
           value={statusFilter}
           onValueChange={(v) => {
             setStatusFilter(v as TaskStatus | "all");
             setPage(1);
           }}
-        >
-          <SelectTrigger className="w-[calc(50%-6px)] sm:w-[140px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {TASK_STATUSES.map((s) => (
-              <SelectItem key={s.value} value={s.value}>
-                {s.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Status"
+          className="w-[calc(50%-6px)] sm:w-[140px]"
+          options={[
+            { value: "all", label: "All Statuses" },
+            ...TASK_STATUSES.map((s) => ({ value: s.value, label: s.label })),
+          ]}
+        />
 
-        <Select
+        <SearchableSelect
           value={priorityFilter}
           onValueChange={(v) => {
             setPriorityFilter(v as TaskPriority | "all");
             setPage(1);
           }}
-        >
-          <SelectTrigger className="w-[calc(50%-6px)] sm:w-[140px]">
-            <SelectValue placeholder="Priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Priorities</SelectItem>
-            {TASK_PRIORITIES.map((p) => (
-              <SelectItem key={p.value} value={p.value}>
-                {p.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Priority"
+          className="w-[calc(50%-6px)] sm:w-[140px]"
+          options={[
+            { value: "all", label: "All Priorities" },
+            ...TASK_PRIORITIES.map((p) => ({ value: p.value, label: p.label })),
+          ]}
+        />
 
-        <Select
+        <SearchableSelect
           value={typeFilter}
           onValueChange={(v) => {
             setTypeFilter(v as TaskType | "all");
             setPage(1);
           }}
-        >
-          <SelectTrigger className="w-[calc(50%-6px)] sm:w-[130px]">
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="manual">Manual</SelectItem>
-            <SelectItem value="renewal">Renewal</SelectItem>
-          </SelectContent>
-        </Select>
+          placeholder="Type"
+          className="w-[calc(50%-6px)] sm:w-[130px]"
+          options={[
+            { value: "all", label: "All Types" },
+            { value: "manual", label: "Manual" },
+            { value: "renewal", label: "Renewal" },
+          ]}
+        />
 
         {hasActiveFilters && (
           <Button variant="ghost" size="sm" onClick={handleFilterReset}>

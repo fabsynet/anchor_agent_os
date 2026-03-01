@@ -4,13 +4,7 @@ import { useMemo } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 
 export interface ComplianceFilterState {
   clientId?: string;
@@ -94,24 +88,21 @@ export function ComplianceFilters({
         <label className="text-xs font-medium text-muted-foreground">
           Client
         </label>
-        <Select
+        <SearchableSelect
           value={filters.clientId || NONE}
           onValueChange={(val) =>
             update({ clientId: val === NONE ? undefined : val })
           }
-        >
-          <SelectTrigger className="w-44 h-8 text-xs">
-            <SelectValue placeholder="All Clients" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={NONE}>All Clients</SelectItem>
-            {clients.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.firstName} {c.lastName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="All Clients"
+          className="w-44 h-8 text-xs"
+          options={[
+            { value: NONE, label: "All Clients" },
+            ...clients.map((c) => ({
+              value: c.id,
+              label: `${c.firstName} ${c.lastName}`,
+            })),
+          ]}
+        />
       </div>
 
       {/* Action type filter */}
@@ -119,24 +110,21 @@ export function ComplianceFilters({
         <label className="text-xs font-medium text-muted-foreground">
           Action Type
         </label>
-        <Select
+        <SearchableSelect
           value={filters.type || NONE}
           onValueChange={(val) =>
             update({ type: val === NONE ? undefined : val })
           }
-        >
-          <SelectTrigger className="w-44 h-8 text-xs">
-            <SelectValue placeholder="All Actions" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={NONE}>All Actions</SelectItem>
-            {actionTypes.map((at) => (
-              <SelectItem key={at.value} value={at.value}>
-                {at.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="All Actions"
+          className="w-44 h-8 text-xs"
+          options={[
+            { value: NONE, label: "All Actions" },
+            ...actionTypes.map((at) => ({
+              value: at.value,
+              label: at.label,
+            })),
+          ]}
+        />
       </div>
 
       {/* User filter (admin-only, hidden if not available) */}
@@ -145,24 +133,21 @@ export function ComplianceFilters({
           <label className="text-xs font-medium text-muted-foreground">
             User
           </label>
-          <Select
+          <SearchableSelect
             value={filters.userId || NONE}
             onValueChange={(val) =>
               update({ userId: val === NONE ? undefined : val })
             }
-          >
-            <SelectTrigger className="w-44 h-8 text-xs">
-              <SelectValue placeholder="All Users" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NONE}>All Users</SelectItem>
-              {users.map((u) => (
-                <SelectItem key={u.id} value={u.id}>
-                  {u.firstName} {u.lastName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder="All Users"
+            className="w-44 h-8 text-xs"
+            options={[
+              { value: NONE, label: "All Users" },
+              ...users.map((u) => ({
+                value: u.id,
+                label: `${u.firstName} ${u.lastName}`,
+              })),
+            ]}
+          />
         </div>
       )}
 
@@ -171,25 +156,21 @@ export function ComplianceFilters({
         <label className="text-xs font-medium text-muted-foreground">
           Linked Policy
         </label>
-        <Select
+        <SearchableSelect
           value={filters.policyId || NONE}
           onValueChange={(val) =>
             update({ policyId: val === NONE ? undefined : val })
           }
-        >
-          <SelectTrigger className="w-52 h-8 text-xs">
-            <SelectValue placeholder="All Policies" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={NONE}>All Policies</SelectItem>
-            {filteredPolicies.map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.type.charAt(0).toUpperCase() + p.type.slice(1)}
-                {p.policyNumber ? ` - #${p.policyNumber}` : ""}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="All Policies"
+          className="w-52 h-8 text-xs"
+          options={[
+            { value: NONE, label: "All Policies" },
+            ...filteredPolicies.map((p) => ({
+              value: p.id,
+              label: `${p.type.charAt(0).toUpperCase() + p.type.slice(1)}${p.policyNumber ? ` - #${p.policyNumber}` : ""}`,
+            })),
+          ]}
+        />
       </div>
 
       {/* Date range filter */}
