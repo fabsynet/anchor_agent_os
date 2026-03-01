@@ -52,7 +52,9 @@ DIRECT_DATABASE_URL=<from Dashboard > Settings > Database > Connection string (d
 API_PORT=3001
 FRONTEND_URL=http://localhost:3000
 CORS_ORIGIN=http://localhost:3000
-RESEND_API_KEY=<from Resend dashboard>
+ZEPTOMAIL_API_KEY=<from ZeptoMail Mail Agent>
+ZEPTOMAIL_FROM_ADDRESS=noreply@yourdomain.com
+ZEPTOMAIL_FROM_NAME=Anchor
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
@@ -181,7 +183,7 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 - Verify DATABASE_URL is in root .env and packages/database/.env
 - Test /settings/team after auth rewrite (Phase 1 checkpoint)
 - Apply RLS migration via Supabase SQL Editor (may not be needed)
-- RESEND_API_KEY needed for email sending (invitations + daily digest)
+- ZEPTOMAIL_API_KEY needed for email sending (daily digest)
 
 ### Blockers/Concerns
 
@@ -240,6 +242,6 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 
 ## Session Continuity
 
-Last session: 2026-02-28
-Stopped at: 07-05-PLAN.md Task 3 checkpoint:human-verify — 8 bug fixes committed during user testing
+Last session: 2026-03-01
+Stopped at: 07-05-PLAN.md Task 3 checkpoint:human-verify — 6 more fixes (soft-deactivate, guard catch bug, agent names, ZeptoMail swap)
 Resume file: .planning/phases/07-analytics-import-and-polish/.continue-here.md
