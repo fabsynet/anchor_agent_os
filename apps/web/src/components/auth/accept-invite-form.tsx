@@ -61,15 +61,26 @@ export function AcceptInviteForm({ agencyName }: AcceptInviteFormProps) {
         return;
       }
 
-      // Mark the invitation as accepted and update user profile in the database
+      // Password change may refresh the session — ensure we have a valid token
+      // by forcing a session refresh before making API calls
+      await supabase.auth.getUser();
+
+      // Mark the invitation as accepted (best-effort)
       try {
         await api.post("/api/invitations/accept-mine");
+      } catch {
+        // Non-blocking — guard auto-provisioning handles this as fallback
+      }
+
+      // Save first/last name to the database — the trigger creates the user
+      // with empty names since metadata doesn't have names at invite time
+      try {
         await api.patch("/api/auth/me", {
           firstName: data.firstName,
           lastName: data.lastName,
         });
       } catch {
-        // Non-blocking — DB updates are best-effort
+        // Non-blocking — names are in Supabase metadata as fallback
       }
 
       toast.success("Account setup complete! Welcome aboard.");
