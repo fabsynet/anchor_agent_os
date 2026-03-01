@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../common/prisma/prisma.service.js';
-import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import { startOfDay, addDays, differenceInDays, format } from 'date-fns';
 import {
@@ -14,26 +13,29 @@ import {
 @Injectable()
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
-  private resend: Resend | null = null;
-  private readonly fromEmail: string;
+  private readonly zeptoApiKey: string | null = null;
+  private readonly fromAddress: string;
+  private readonly fromName: string;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {
-    const apiKey = this.configService.get<string>('RESEND_API_KEY');
+    const apiKey = this.configService.get<string>('ZEPTOMAIL_API_KEY');
     if (apiKey) {
-      this.resend = new Resend(apiKey);
-      this.logger.log('Resend client initialized');
+      this.zeptoApiKey = apiKey;
+      this.logger.log('ZeptoMail configured');
     } else {
       this.logger.warn(
-        'RESEND_API_KEY not configured. Email sending disabled.',
+        'ZEPTOMAIL_API_KEY not configured. Email sending disabled.',
       );
     }
 
-    this.fromEmail =
-      this.configService.get<string>('RESEND_FROM_EMAIL') ??
-      'Anchor <onboarding@resend.dev>';
+    this.fromAddress =
+      this.configService.get<string>('ZEPTOMAIL_FROM_ADDRESS') ??
+      'noreply@anchor.com';
+    this.fromName =
+      this.configService.get<string>('ZEPTOMAIL_FROM_NAME') ?? 'Anchor';
   }
 
   /**
@@ -44,8 +46,8 @@ export class NotificationsService {
   async sendDailyDigestForAllTenants(): Promise<void> {
     this.logger.log('Starting daily digest for all tenants...');
 
-    if (!this.resend) {
-      this.logger.warn('Resend not configured. Skipping daily digest.');
+    if (!this.zeptoApiKey) {
+      this.logger.warn('ZeptoMail not configured. Skipping daily digest.');
       return;
     }
 
@@ -214,30 +216,39 @@ export class NotificationsService {
   }
 
   /**
-   * Render and send the digest email to a user.
+   * Render and send the digest email to a user via ZeptoMail.
    */
   private async sendDigestToUser(
     email: string,
     data: DigestData,
   ): Promise<void> {
-    if (!this.resend) {
-      this.logger.warn('Resend not configured. Cannot send email.');
+    if (!this.zeptoApiKey) {
+      this.logger.warn('ZeptoMail not configured. Cannot send email.');
       return;
     }
 
     try {
       const html = await render(DailyDigestEmail(data));
 
-      const result = await this.resend.emails.send({
-        from: this.fromEmail,
-        to: email,
-        subject: `Anchor Daily Digest - ${data.date}`,
-        html,
+      const response = await fetch('https://api.zeptomail.com/v1.1/email', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Zoho-enczapikey ${this.zeptoApiKey}`,
+        },
+        body: JSON.stringify({
+          from: { address: this.fromAddress, name: this.fromName },
+          to: [{ email_address: { address: email } }],
+          subject: `Anchor Daily Digest - ${data.date}`,
+          htmlbody: html,
+        }),
       });
 
-      if (result.error) {
+      if (!response.ok) {
+        const body = await response.text();
         this.logger.error(
-          `Resend error for ${email}: ${JSON.stringify(result.error)}`,
+          `ZeptoMail error for ${email} (${response.status}): ${body}`,
         );
       }
     } catch (error) {

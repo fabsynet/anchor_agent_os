@@ -63,7 +63,15 @@ export function useUser(): UseUserReturn {
         if (dbProfile) {
           setProfile(dbProfile);
         }
-      } catch {
+      } catch (err) {
+        // If the user has been deactivated, sign them out and redirect to login
+        if (err instanceof Error && err.message.includes('deactivated')) {
+          await supabase.auth.signOut();
+          setUser(null);
+          setProfile(null);
+          window.location.href = '/login';
+          return;
+        }
         // Backend unreachable — keep metadata-derived profile
       }
     } catch (error) {
