@@ -60,6 +60,7 @@ export default function TeamSettingsPage() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reactivatingId, setReactivatingId] = useState<string | null>(null);
 
   // Redirect non-admin users to profile settings
   useEffect(() => {
@@ -147,8 +148,6 @@ export default function TeamSettingsPage() {
       toast.error(message);
     }
   };
-
-  const [reactivatingId, setReactivatingId] = useState<string | null>(null);
 
   const handleReactivate = async (memberId: string) => {
     setReactivatingId(memberId);
