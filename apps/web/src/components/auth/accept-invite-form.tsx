@@ -61,11 +61,15 @@ export function AcceptInviteForm({ agencyName }: AcceptInviteFormProps) {
         return;
       }
 
-      // Mark the invitation as accepted in the database
+      // Mark the invitation as accepted and update user profile in the database
       try {
         await api.post("/api/invitations/accept-mine");
+        await api.patch("/api/auth/me", {
+          firstName: data.firstName,
+          lastName: data.lastName,
+        });
       } catch {
-        // Non-blocking — invitation status update is best-effort
+        // Non-blocking — DB updates are best-effort
       }
 
       toast.success("Account setup complete! Welcome aboard.");
