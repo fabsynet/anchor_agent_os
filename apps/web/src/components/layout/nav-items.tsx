@@ -9,6 +9,8 @@ import {
   CheckSquare,
   FileText,
   DollarSign,
+  BarChart3,
+  Mail,
   Settings,
   type LucideIcon,
 } from 'lucide-react';
@@ -33,6 +35,8 @@ const iconMap: Record<string, LucideIcon> = {
   CheckSquare,
   FileText,
   DollarSign,
+  BarChart3,
+  Mail,
   Settings,
 };
 
