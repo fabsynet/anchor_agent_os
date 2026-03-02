@@ -272,4 +272,4 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 
 Last session: 2026-03-02
 Stopped at: 08-05 checkpoint:human-verify (build passed, awaiting user approval)
-Resume file: None
+Resume file: .planning/phases/08-scheduled-emails-and-client-communications/.continue-here.md
