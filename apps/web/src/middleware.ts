@@ -48,15 +48,25 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  // IMPORTANT: Use getUser() not getSession() -- getUser() revalidates the JWT
-  // against the Supabase Auth server, preventing token spoofing.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
     pathname.startsWith(route),
   );
+
+  // IMPORTANT: Use getUser() not getSession() -- getUser() revalidates the JWT
+  // against the Supabase Auth server, preventing token spoofing.
+  // Wrap in try-catch: stale refresh tokens cause AuthApiError which crashes middleware.
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // Auth error (e.g. refresh_token_not_found) — clear stale cookies to stop error loop
+    request.cookies.getAll().forEach((cookie) => {
+      if (cookie.name.startsWith('sb-')) {
+        supabaseResponse.cookies.delete(cookie.name);
+      }
+    });
+  }
 
   // Redirect unauthenticated users to login for protected routes
   if (!user && !isPublicRoute) {

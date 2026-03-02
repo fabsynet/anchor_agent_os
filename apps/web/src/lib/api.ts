@@ -16,7 +16,16 @@ async function getAuthHeaders(forceRefresh = false): Promise<Record<string, stri
 
   if (forceRefresh) {
     // Force a token refresh by calling getUser() which validates with Supabase server
-    await supabase.auth.getUser();
+    try {
+      await supabase.auth.getUser();
+    } catch {
+      // Refresh token invalid (e.g. expired/revoked) — sign out and redirect
+      await supabase.auth.signOut();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      throw new Error('Session expired. Please sign in again.');
+    }
   }
 
   const {
@@ -130,7 +139,15 @@ export const api = {
 
     // On 401, refresh token and retry (same pattern as request())
     if (response.status === 401) {
-      await supabase.auth.getUser(); // force refresh
+      try {
+        await supabase.auth.getUser(); // force refresh
+      } catch {
+        await supabase.auth.signOut();
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
+        throw new Error('Session expired. Please sign in again.');
+      }
       const { data: { session: freshSession } } = await supabase.auth.getSession();
       const retryHeaders: Record<string, string> = {};
       if (freshSession?.access_token) {
