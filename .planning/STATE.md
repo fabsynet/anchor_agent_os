@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 8 of 8 (Scheduled Emails & Client Communications)
-Plan: 4 of 5 in current phase
-Status: In progress
-Last activity: 2026-03-02 -- Completed 08-04-PLAN.md (Communications Frontend)
+Plan: 5 of 5 in current phase
+Status: At checkpoint (08-05 human-verify pending)
+Last activity: 2026-03-02 -- Build verification passed for 08-05, awaiting human checkpoint approval
 
-Progress: ████████████████████████████████ 100% (34/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 remaining)
+Progress: ████████████████████████████████ 100% (35/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 at Phase 8 checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -251,12 +251,14 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 
 - Phase 8 added: Scheduled Emails & Client Communications (birthday emails, configurable renewal reminders, bulk email to all clients)
 
-## Phase 8: Scheduled Emails & Client Communications -- IN PROGRESS
+## Phase 8: Scheduled Emails & Client Communications -- AT CHECKPOINT
 
 ### Plans completed:
 - 08-01: Data Foundation (EmailLog + TenantEmailSettings models, shared types/constants/validation, generic sendEmail/sendBatchEmail)
 - 08-02: Birthday & Renewal Reminder Cron Jobs (birthday/renewal templates, cron at 7:00/7:30 AM, idempotent EmailLog, TenantEmailSettings toggles)
 - 08-03: Communications Module (4 endpoints: bulk email, history, settings CRUD, bulk announcement template)
+- 08-04: Communications Frontend (3 new pages: email settings toggles, email history with filters/pagination, bulk compose with admin gating)
+- 08-05: Build Verification & Human Checkpoint (build passed, awaiting user verification)
 
 | Decision | When | Rationale |
 |----------|------|-----------|
@@ -266,14 +268,8 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Optimistic toggle updates with revert on error | Phase 8 | Responsive settings UX for email toggle switches |
 | window.confirm for bulk email send confirmation | Phase 8 | Simple and effective confirmation for MVP |
 
-### Plans completed (continued):
-- 08-04: Communications Frontend (3 new pages: email settings toggles, email history with filters/pagination, bulk compose with admin gating)
-
-### Remaining:
-- 08-05: Final plan in phase
-
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 08-04-PLAN.md (Communications Frontend)
+Stopped at: 08-05 checkpoint:human-verify (build passed, awaiting user approval)
 Resume file: None
