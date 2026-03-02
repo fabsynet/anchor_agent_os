@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 7 -- Analytics, Import & Polish (in progress)
+**Current focus:** Phase 8 -- Scheduled Emails & Client Communications (in progress)
 
 ## Current Position
 
-Phase: 7 of 7 (Analytics, Import & Polish)
-Plan: 5 of 5 in current phase
-Status: At checkpoint (07-05 Task 3: human-verify for Phase 7 completion)
-Last activity: 2026-02-26 -- Completed 07-05-PLAN.md Tasks 1-2 (Performance & Polish), awaiting checkpoint approval
+Phase: 8 of 8 (Scheduled Emails & Client Communications)
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-03-02 -- Completed 08-01-PLAN.md (Data Foundation)
 
-Progress: ██████████████████████████████ 100% (30/30 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint)
+Progress: ████████████████████████████████ 100% (31/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-02 through 08-05 remaining)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -163,6 +163,9 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Import dedup via normalized name+email composite key | Phase 7 | More robust than name-only or email-only matching |
 | Unrecognized import types default to other with customType | Phase 7 | Preserves original value while normalizing to valid enum |
 | Single $transaction for batch imports | Phase 7 | Atomic client+policy creation with per-row error capture |
+| EmailLog type/status as String not enum | Phase 8 | Extensible without migrations; validation at app layer |
+| sendEmail() returns result object not throws | Phase 8 | Caller-controlled error handling with { success, error? } pattern |
+| sendDigestToUser delegates to sendEmail | Phase 8 | Eliminates duplicate ZeptoMail fetch logic |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -240,8 +243,23 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | No API query optimizations needed | Phase 7 | All endpoints use proper pagination, selective includes, no N+1 patterns |
 | useMemo on 3 analytics tabs only | Phase 7 | Overview/renewals/expenses already had useMemo; policies/compliance/crosssell did not |
 
+### Roadmap Evolution
+
+- Phase 8 added: Scheduled Emails & Client Communications (birthday emails, configurable renewal reminders, bulk email to all clients)
+
+## Phase 8: Scheduled Emails & Client Communications -- IN PROGRESS
+
+### Plans completed:
+- 08-01: Data Foundation (EmailLog + TenantEmailSettings models, shared types/constants/validation, generic sendEmail/sendBatchEmail)
+
+### Remaining:
+- 08-02: Birthday Greeting Cron
+- 08-03: Renewal Reminder Cron
+- 08-04: Bulk Email Endpoint
+- 08-05: Email History & Settings UI
+
 ## Session Continuity
 
-Last session: 2026-03-01
-Stopped at: 07-05-PLAN.md Task 3 checkpoint:human-verify — 6 more fixes (soft-deactivate, guard catch bug, agent names, ZeptoMail swap)
-Resume file: .planning/phases/07-analytics-import-and-polish/.continue-here.md
+Last session: 2026-03-02
+Stopped at: Completed 08-01-PLAN.md (Data Foundation)
+Resume file: None
