@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 8 of 8 (Scheduled Emails & Client Communications)
-Plan: 1 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: In progress
-Last activity: 2026-03-02 -- Completed 08-01-PLAN.md (Data Foundation)
+Last activity: 2026-03-02 -- Completed 08-03-PLAN.md (Communications Module)
 
-Progress: ████████████████████████████████ 100% (31/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-02 through 08-05 remaining)
+Progress: ████████████████████████████████ 100% (33/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-04 and 08-05 remaining)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -166,6 +166,10 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | EmailLog type/status as String not enum | Phase 8 | Extensible without migrations; validation at app layer |
 | sendEmail() returns result object not throws | Phase 8 | Caller-controlled error handling with { success, error? } pattern |
 | sendDigestToUser delegates to sendEmail | Phase 8 | Eliminates duplicate ZeptoMail fetch logic |
+| Birthday query uses $queryRaw with EXTRACT(MONTH/DAY) | Phase 8 | Month/day matching from date_of_birth regardless of year |
+| Renewal idempotency uses two-step check (DB + metadata) | Phase 8 | Avoids Prisma JSON path filtering; DB query then app-level policyId comparison |
+| Default TenantEmailSettings: all emails enabled | Phase 8 | Send by default when no settings record exists |
+| Per-client/per-policy try/catch in cron loops | Phase 8 | One failure doesn't stop entire batch |
 
 ## Phase 3: Tasks, Renewals & Dashboard -- COMPLETE (User tested 2026-02-22)
 
@@ -251,15 +255,21 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 
 ### Plans completed:
 - 08-01: Data Foundation (EmailLog + TenantEmailSettings models, shared types/constants/validation, generic sendEmail/sendBatchEmail)
+- 08-02: Birthday & Renewal Reminder Cron Jobs (birthday/renewal templates, cron at 7:00/7:30 AM, idempotent EmailLog, TenantEmailSettings toggles)
+- 08-03: Communications Module (4 endpoints: bulk email, history, settings CRUD, bulk announcement template)
+
+| Decision | When | Rationale |
+|----------|------|-----------|
+| Bulk email creates one EmailLog per recipient | Phase 8 | Granular history tracking rather than single aggregate log |
+| Settings returns defaults when no row exists | Phase 8 | No premature row creation; all toggles default to true |
+| Empty recipients returns success with sentCount 0 | Phase 8 | Better UX than error when no clients match filter |
 
 ### Remaining:
-- 08-02: Birthday Greeting Cron
-- 08-03: Renewal Reminder Cron
-- 08-04: Bulk Email Endpoint
+- 08-04: Bulk Email Endpoint (REPLACED BY 08-03 -- covered in communications module)
 - 08-05: Email History & Settings UI
 
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 08-01-PLAN.md (Data Foundation)
+Stopped at: Completed 08-03-PLAN.md (Communications Module)
 Resume file: None
