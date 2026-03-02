@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 8 of 8 (Scheduled Emails & Client Communications)
-Plan: 3 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-03-02 -- Completed 08-03-PLAN.md (Communications Module)
+Last activity: 2026-03-02 -- Completed 08-04-PLAN.md (Communications Frontend)
 
-Progress: ████████████████████████████████ 100% (33/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-04 and 08-05 remaining)
+Progress: ████████████████████████████████ 100% (34/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 remaining)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -263,13 +263,17 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Bulk email creates one EmailLog per recipient | Phase 8 | Granular history tracking rather than single aggregate log |
 | Settings returns defaults when no row exists | Phase 8 | No premature row creation; all toggles default to true |
 | Empty recipients returns success with sentCount 0 | Phase 8 | Better UX than error when no clients match filter |
+| Optimistic toggle updates with revert on error | Phase 8 | Responsive settings UX for email toggle switches |
+| window.confirm for bulk email send confirmation | Phase 8 | Simple and effective confirmation for MVP |
+
+### Plans completed (continued):
+- 08-04: Communications Frontend (3 new pages: email settings toggles, email history with filters/pagination, bulk compose with admin gating)
 
 ### Remaining:
-- 08-04: Bulk Email Endpoint (REPLACED BY 08-03 -- covered in communications module)
-- 08-05: Email History & Settings UI
+- 08-05: Final plan in phase
 
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 08-03-PLAN.md (Communications Module)
+Stopped at: Completed 08-04-PLAN.md (Communications Frontend)
 Resume file: None
