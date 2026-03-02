@@ -1,6 +1,8 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
+  HttpException,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -93,7 +95,7 @@ export class JwtAuthGuard implements CanActivate {
 
       if (dbUser) {
         if (!dbUser.isActive) {
-          throw new UnauthorizedException(
+          throw new ForbiddenException(
             'Your account has been deactivated. Contact your agency admin.',
           );
         }
@@ -102,6 +104,8 @@ export class JwtAuthGuard implements CanActivate {
         if (!userRole) userRole = dbUser.role;
       }
     } catch (err: any) {
+      // Re-throw HTTP exceptions (e.g. deactivated user) — only catch DB errors
+      if (err instanceof HttpException) throw err;
       this.logger.warn(`DB lookup failed for user ${supabaseUser.id}: ${err.message}`);
     }
 
