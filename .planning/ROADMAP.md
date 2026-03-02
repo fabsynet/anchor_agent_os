@@ -2,7 +2,7 @@
 
 ## Overview
 
-Anchor's MVP delivers a complete insurance agent operating system in 7 phases, starting with authentication and tenant isolation, building the core client-policy-renewal-task chain, then layering documents, finances, trust features, and analytics. Each phase delivers a coherent, testable capability. The dashboard is built incrementally — skeleton in Phase 3, enhanced as modules come online.
+Anchor's MVP delivers a complete insurance agent operating system in 8 phases, starting with authentication and tenant isolation, building the core client-policy-renewal-task chain, then layering documents, finances, trust features, and analytics. Each phase delivers a coherent, testable capability. The dashboard is built incrementally — skeleton in Phase 3, enhanced as modules come online.
 
 ## Phases
 
@@ -13,6 +13,7 @@ Anchor's MVP delivers a complete insurance agent operating system in 7 phases, s
 - [x] **Phase 5: Expenses & Budgets** - Expense tracking, receipt uploads, budgets, alerts, financial dashboard widget
 - [x] **Phase 6: Trust & Reputation** - Testimonials, public Agent Badge page
 - [ ] **Phase 7: Analytics, Import & Polish** - Analytics dashboards, CSV import, cross-sell intelligence, performance optimization
+- [ ] **Phase 8: Scheduled Emails & Client Communications** - Birthday emails, configurable renewal reminders, bulk email to all clients
 
 ## Phase Details
 
@@ -148,6 +149,24 @@ Plans:
 - [ ] 07-04-PLAN.md -- CSV import wizard (4-step wizard: upload, column mapping, preview, summary)
 - [ ] 07-05-PLAN.md -- Performance optimization, mobile responsive audit, UX polish
 
+### Phase 8: Scheduled Emails & Client Communications
+**Goal**: Agents never miss a client touchpoint — automated birthday greetings, configurable renewal reminder emails, and bulk email capability for agency-wide announcements
+**Depends on**: Phase 3 (email infrastructure, renewal engine), Phase 2 (client data)
+**Success Criteria** (what must be TRUE):
+  1. System automatically sends birthday emails to clients on their birthday
+  2. Admin can configure renewal reminder email timing (60, 30, 7 days before — toggle each on/off)
+  3. Renewal reminder emails are sent to clients at the configured intervals before policy expiry
+  4. Admin can compose and send a bulk email to all clients (or filtered subset)
+  5. Email send history is visible so agents know what was sent and when
+**Plans**: 5 plans
+
+Plans:
+- [ ] 08-01-PLAN.md -- Data foundation (EmailLog + TenantEmailSettings schema, shared types/constants/validation, sendEmail refactor)
+- [ ] 08-02-PLAN.md -- Birthday + renewal reminder cron jobs (templates, service methods, scheduler entries, idempotent sends)
+- [ ] 08-03-PLAN.md -- Communications backend module (bulk email endpoint, email history, settings CRUD)
+- [ ] 08-04-PLAN.md -- Frontend (settings communications page, email history page, bulk email compose page)
+- [ ] 08-05-PLAN.md -- Build verification and human checkpoint
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -159,3 +178,4 @@ Plans:
 | 5. Expenses & Budgets | 5/5 | Complete | 2026-02-23 |
 | 6. Trust & Reputation | 4/4 | Complete | 2026-02-23 |
 | 7. Analytics, Import & Polish | 0/5 | Planning complete | - |
+| 8. Scheduled Emails & Client Communications | 0/5 | Planning complete | - |
