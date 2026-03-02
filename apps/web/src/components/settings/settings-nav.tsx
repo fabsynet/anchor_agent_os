@@ -9,6 +9,7 @@ const SETTINGS_TABS = [
   { label: 'Team', href: '/settings/team', adminOnly: true },
   { label: 'Profile', href: '/settings/profile', adminOnly: false },
   { label: 'Badge', href: '/settings/badge', adminOnly: false },
+  { label: 'Communications', href: '/settings/communications', adminOnly: true },
   { label: 'Import', href: '/settings/import', adminOnly: false },
 ];
 
