@@ -109,6 +109,24 @@ export class JwtAuthGuard implements CanActivate {
       this.logger.warn(`DB lookup failed for user ${supabaseUser.id}: ${err.message}`);
     }
 
+    // Step 3.5: Check if tenant is suspended (before proceeding)
+    if (tenantId) {
+      try {
+        const tenant = await this.prisma.tenant.findUnique({
+          where: { id: tenantId },
+          select: { isSuspended: true },
+        });
+        if (tenant?.isSuspended) {
+          throw new ForbiddenException(
+            'Your agency has been suspended. Contact support.',
+          );
+        }
+      } catch (err: any) {
+        if (err instanceof HttpException) throw err;
+        this.logger.warn(`Tenant suspension check failed: ${err.message}`);
+      }
+    }
+
     // Step 4: Auto-provision tenant + user if no tenant found at all
     if (!tenantId) {
       this.logger.warn(
