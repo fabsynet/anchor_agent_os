@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 9 of 9 (Founder / Super-Admin Dashboard)
-Plan: 3 of 8 in current phase
+Plan: 4 of 8 in current phase
 Status: In progress
-Last activity: 2026-03-07 -- Completed 09-03-PLAN.md (Admin Backend API)
+Last activity: 2026-03-08 -- Completed 09-04-PLAN.md (Agency & User Management API)
 
-Progress: █████████████████████████████████░░░░░░░░ 88% (38/43 plans; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 at Phase 8 checkpoint)
+Progress: █████████████████████████████████░░░░░░░░ 91% (39/43 plans; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 at Phase 8 checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -284,9 +284,12 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Manual app scaffold instead of create-next-app | Phase 9 | Avoids interactive prompts, exact dependency control |
 | SuperAdminGuard looks up by email not auth user ID | Phase 9 | SuperAdmin table has own UUIDs; email is the link to auth.users |
 | Growth time series N+1 queries per month | Phase 9 | 12 months = 36 queries; simpler than raw SQL for admin dashboard |
+| Suspension check at step 3.5 in JwtAuthGuard | Phase 9 | After tenantId resolved but before auto-provision |
+| Magic link for impersonation | Phase 9 | Supabase generateLink creates valid session without user password |
+| 876000h ban duration for user disable | Phase 9 | ~100 years effectively permanent; Supabase requires duration string |
 
 ## Session Continuity
 
-Last session: 2026-03-07
-Stopped at: Completed 09-03-PLAN.md
+Last session: 2026-03-08
+Stopped at: Completed 09-04-PLAN.md
 Resume file: None
