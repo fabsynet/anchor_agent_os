@@ -203,3 +203,49 @@ export type {
   EmailSettingsInput,
   EmailHistoryQueryInput,
 } from './validation/communication.schema';
+
+// Types - Admin
+export type {
+  SuperAdminProfile,
+  AdminAuditLogEntry,
+  PlatformMetrics,
+  PlatformGrowthPoint,
+  HealthAlert,
+  AgencyListItem,
+  AgencyDetail,
+  AdminUserListItem,
+  ImpersonationSession,
+  AuditLogFilters,
+  AgencyListFilters,
+} from './types/admin';
+
+// Constants - Admin
+export {
+  ADMIN_ACTIONS,
+  ADMIN_TARGET_TYPES,
+  HEALTH_THRESHOLDS,
+  IMPERSONATION_DURATION_MS,
+  ADMIN_PAGE_SIZES,
+} from './constants/admin';
+
+// Validation schemas - Admin
+export {
+  agencySuspendSchema,
+  agencyUnsuspendSchema,
+  agencyUpdateLimitsSchema,
+  userRoleChangeSchema,
+  userDeactivateSchema,
+  auditLogQuerySchema,
+  agencyListQuerySchema,
+  inviteSuperAdminSchema,
+} from './validation/admin';
+export type {
+  AgencySuspendInput,
+  AgencyUnsuspendInput,
+  AgencyUpdateLimitsInput,
+  UserRoleChangeInput,
+  UserDeactivateInput,
+  AuditLogQueryInput,
+  AgencyListQueryInput,
+  InviteSuperAdminInput,
+} from './validation/admin';

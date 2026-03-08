@@ -12,8 +12,9 @@ Anchor's MVP delivers a complete insurance agent operating system in 8 phases, s
 - [x] **Phase 4: Documents & Compliance** - Document upload/linking, compliance activity log
 - [x] **Phase 5: Expenses & Budgets** - Expense tracking, receipt uploads, budgets, alerts, financial dashboard widget
 - [x] **Phase 6: Trust & Reputation** - Testimonials, public Agent Badge page
-- [ ] **Phase 7: Analytics, Import & Polish** - Analytics dashboards, CSV import, cross-sell intelligence, performance optimization
-- [ ] **Phase 8: Scheduled Emails & Client Communications** - Birthday emails, configurable renewal reminders, bulk email to all clients
+- [x] **Phase 7: Analytics, Import & Polish** - Analytics dashboards, CSV import, cross-sell intelligence, performance optimization
+- [x] **Phase 8: Scheduled Emails & Client Communications** - Birthday emails, configurable renewal reminders, bulk email, cross-sell campaigns
+- [ ] **Phase 9: Founder / Super-Admin Dashboard** - Centralized founder dashboard with agency-wide oversight, metrics, and administrative controls
 
 ## Phase Details
 
@@ -137,20 +138,21 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. User can view clients broken down by policy type
   2. User can view a renewal pipeline by month and active vs expired policy counts
-  3. System identifies cross-sell opportunities (e.g., client has auto but no home insurance)
+  3. System identifies cross-sell opportunities with client email/phone visible in gap table
   4. User can import clients from a CSV file with column mapping
   5. Dashboard loads within 2 seconds for agencies with up to 200 clients
+  6. CSV and PDF exports include client email and phone columns
 **Plans**: 5 plans
 
 Plans:
-- [ ] 07-01-PLAN.md -- Data foundation + backend (shared types/constants, analytics module with 8 endpoints, import module)
-- [ ] 07-02-PLAN.md -- Analytics frontend part 1 (page shell, time range selector, export utils, Overview/Clients/Policies tabs)
-- [ ] 07-03-PLAN.md -- Analytics frontend part 2 (Renewals/Expenses/Compliance/Cross-Sell tabs, client profile cross-sell badge)
-- [ ] 07-04-PLAN.md -- CSV import wizard (4-step wizard: upload, column mapping, preview, summary)
-- [ ] 07-05-PLAN.md -- Performance optimization, mobile responsive audit, UX polish
+- [x] 07-01-PLAN.md -- Data foundation + backend (shared types/constants, analytics module with 8 endpoints, import module)
+- [x] 07-02-PLAN.md -- Analytics frontend part 1 (page shell, time range selector, export utils, Overview/Clients/Policies tabs)
+- [x] 07-03-PLAN.md -- Analytics frontend part 2 (Renewals/Expenses/Compliance/Cross-Sell tabs, client profile cross-sell badge)
+- [x] 07-04-PLAN.md -- CSV import wizard (4-step wizard: upload, column mapping, preview, summary)
+- [x] 07-05-PLAN.md -- Performance optimization, mobile responsive audit, UX polish
 
 ### Phase 8: Scheduled Emails & Client Communications
-**Goal**: Agents never miss a client touchpoint — automated birthday greetings, configurable renewal reminder emails, and bulk email capability for agency-wide announcements
+**Goal**: Agents never miss a client touchpoint — automated birthday greetings, configurable renewal reminder emails, bulk email capability, and cross-sell campaign outreach
 **Depends on**: Phase 3 (email infrastructure, renewal engine), Phase 2 (client data)
 **Success Criteria** (what must be TRUE):
   1. System automatically sends birthday emails to clients on their birthday
@@ -158,14 +160,43 @@ Plans:
   3. Renewal reminder emails are sent to clients at the configured intervals before policy expiry
   4. Admin can compose and send a bulk email to all clients (or filtered subset)
   5. Email send history is visible so agents know what was sent and when
+  6. Admin can configure up to 10 custom cross-sell pairings that drive gap analysis
+  7. Admin can schedule cross-sell email campaigns (one-time or recurring monthly) to clients with coverage gaps
+  8. Emailed clients list shows who received each campaign with sent date and status
 **Plans**: 5 plans
 
 Plans:
-- [ ] 08-01-PLAN.md -- Data foundation (EmailLog + TenantEmailSettings schema, shared types/constants/validation, sendEmail refactor)
-- [ ] 08-02-PLAN.md -- Birthday + renewal reminder cron jobs (templates, service methods, scheduler entries, idempotent sends)
-- [ ] 08-03-PLAN.md -- Communications backend module (bulk email endpoint, email history, settings CRUD)
-- [ ] 08-04-PLAN.md -- Frontend (settings communications page, email history page, bulk email compose page)
-- [ ] 08-05-PLAN.md -- Build verification and human checkpoint
+- [x] 08-01-PLAN.md -- Data foundation (EmailLog + TenantEmailSettings schema, shared types/constants/validation, sendEmail refactor)
+- [x] 08-02-PLAN.md -- Birthday + renewal reminder cron jobs (templates, service methods, scheduler entries, idempotent sends)
+- [x] 08-03-PLAN.md -- Communications backend module (bulk email endpoint, email history, settings CRUD)
+- [x] 08-04-PLAN.md -- Frontend (settings communications page, email history page, bulk email compose page)
+- [x] 08-05-PLAN.md -- Build verification and human checkpoint
+
+### Phase 9: Founder / Super-Admin Dashboard
+**Goal**: Founder has centralized oversight of the entire platform — key metrics, agency management, user support actions, impersonation, and administrative controls in a separate admin app
+**Depends on**: Phase 8
+**Success Criteria** (what must be TRUE):
+  1. Super-admin can log in to a separate admin app and see platform-wide metrics (agencies, users, policies, clients)
+  2. Dashboard shows health alerts, growth charts, and engagement metrics with time range filtering
+  3. Super-admin can browse, search, and filter agencies in a sortable table
+  4. Clicking an agency shows detail page with tabs: overview, users, policies summary, activity log
+  5. Super-admin can suspend/unsuspend agencies with confirmation and suspended agency users are locked out
+  6. Super-admin can export agency data as CSV or JSON
+  7. Super-admin can disable/enable users, change roles, trigger password resets, and deactivate (soft delete) users
+  8. Super-admin can impersonate agency users with a visible banner and 30-minute auto-expiry
+  9. Every admin action is logged in an audit trail viewable in the admin panel
+  10. Super-admins can invite and remove other super-admins
+**Plans**: 8 plans
+
+Plans:
+- [ ] 09-01-PLAN.md -- Data foundation (SuperAdmin + AdminAuditLog models, Tenant/User extensions, shared types/constants/validation)
+- [ ] 09-02-PLAN.md -- Admin app scaffold (Next.js app, auth, middleware, layout, sidebar, API client)
+- [ ] 09-03-PLAN.md -- Backend admin module (SuperAdminGuard, AuditService, platform metrics, health endpoints)
+- [ ] 09-04-PLAN.md -- Backend agencies, users, and impersonation endpoints
+- [ ] 09-05-PLAN.md -- Dashboard metrics UI (summary cards, health alerts, growth charts, time range, export)
+- [ ] 09-06-PLAN.md -- Agency management UI (list, detail tabs, suspend, export, limits)
+- [ ] 09-07-PLAN.md -- User management UI (cross-tenant table, support actions, impersonation flow)
+- [ ] 09-08-PLAN.md -- Audit log UI, super-admin settings, build verification, human checkpoint
 
 ## Progress
 
@@ -177,5 +208,6 @@ Plans:
 | 4. Documents & Compliance | 4/4 | Verified | 2026-02-23 |
 | 5. Expenses & Budgets | 5/5 | Complete | 2026-02-23 |
 | 6. Trust & Reputation | 4/4 | Complete | 2026-02-23 |
-| 7. Analytics, Import & Polish | 0/5 | Planning complete | - |
-| 8. Scheduled Emails & Client Communications | 0/5 | Planning complete | - |
+| 7. Analytics, Import & Polish | 5/5 | Complete | 2026-03-02 |
+| 8. Scheduled Emails & Client Communications | 5/5 | Complete | 2026-03-02 |
+| 9. Founder / Super-Admin Dashboard | 0/8 | Planned | - |

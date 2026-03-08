@@ -24,6 +24,7 @@ import { BadgeModule } from './badge/badge.module.js';
 import { AnalyticsModule } from './analytics/analytics.module.js';
 import { ImportModule } from './import/import.module.js';
 import { CommunicationsModule } from './communications/communications.module.js';
+import { AdminModule } from './admin/admin.module.js';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { CommunicationsModule } from './communications/communications.module.js'
     AnalyticsModule,
     ImportModule,
     CommunicationsModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

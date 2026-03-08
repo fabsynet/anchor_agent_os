@@ -162,6 +162,11 @@ model Tenant {
   crossSellPairings   CrossSellPairing[]
   crossSellCampaigns  CrossSellCampaign[]
 
+  isSuspended  Boolean   @default(false) @map("is_suspended")
+  suspendedAt  DateTime? @map("suspended_at")
+  userCap      Int       @default(3) @map("user_cap")
+  storageCap   Int       @default(500) @map("storage_cap")
+
   @@map("tenants")
 }
 
@@ -181,6 +186,7 @@ model User {
   emailRenewalReminders  Boolean  @default(true)  @map("email_renewal_reminders")
   canViewFinancials Boolean  @default(false) @map("can_view_financials")
   isActive          Boolean  @default(true) @map("is_active")
+  deactivatedAt     DateTime? @map("deactivated_at")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
@@ -607,4 +613,36 @@ model CrossSellCampaign {
 
   @@index([tenantId])
   @@map("cross_sell_campaigns")
+}
+
+model SuperAdmin {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  auditLogs AdminAuditLog[]
+
+  @@map("super_admins")
+}
+
+model AdminAuditLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  superAdminId String   @map("super_admin_id") @db.Uuid
+  action       String
+  targetType   String   @map("target_type")
+  targetId     String   @map("target_id") @db.Uuid
+  metadata     Json?
+  ipAddress    String?  @map("ip_address")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  superAdmin SuperAdmin @relation(fields: [superAdminId], references: [id])
+
+  @@index([superAdminId, createdAt(sort: Desc)])
+  @@index([targetType, targetId])
+  @@index([action, createdAt(sort: Desc)])
+  @@map("admin_audit_logs")
 }
