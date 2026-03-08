@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** No renewal, follow-up, or compliance task silently slips through the cracks.
-**Current focus:** Phase 8 -- Scheduled Emails & Client Communications (in progress)
+**Current focus:** Phase 9 -- Founder / Super-Admin Dashboard (in progress)
 
 ## Current Position
 
-Phase: 8 of 8 (Scheduled Emails & Client Communications)
-Plan: 5 of 5 in current phase
-Status: At checkpoint (08-05 human-verify pending)
-Last activity: 2026-03-02 -- Build verification passed for 08-05, awaiting human checkpoint approval
+Phase: 9 of 9 (Founder / Super-Admin Dashboard)
+Plan: 1 of 8 in current phase
+Status: In progress
+Last activity: 2026-03-07 -- Completed 09-01-PLAN.md (Admin Foundation)
 
-Progress: ████████████████████████████████ 100% (35/35 plans complete; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 at Phase 8 checkpoint)
+Progress: █████████████████████████████████░░░░░░░░ 83% (36/43 plans; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 at Phase 8 checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -250,6 +250,7 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 ### Roadmap Evolution
 
 - Phase 8 added: Scheduled Emails & Client Communications (birthday emails, configurable renewal reminders, bulk email to all clients)
+- Phase 9 added: Founder / Super-Admin Dashboard (centralized founder dashboard with agency-wide oversight, metrics, and administrative controls)
 
 ## Phase 8: Scheduled Emails & Client Communications -- AT CHECKPOINT
 
@@ -268,8 +269,19 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Optimistic toggle updates with revert on error | Phase 8 | Responsive settings UX for email toggle switches |
 | window.confirm for bulk email send confirmation | Phase 8 | Simple and effective confirmation for MVP |
 
+## Phase 9: Founder / Super-Admin Dashboard -- IN PROGRESS
+
+### Plans completed:
+- 09-01: Admin Foundation (SuperAdmin/AdminAuditLog models, Tenant admin fields, shared admin types/constants/validation, AuditService)
+
+| Decision | When | Rationale |
+|----------|------|-----------|
+| AuditService uses raw prisma not tenantClient | Phase 9 | Cross-tenant admin queries need unscoped access |
+| AuditModule not in AppModule yet | Phase 9 | Plan 03 will register it via AdminModule |
+| Metadata cast to Prisma.InputJsonValue | Phase 9 | Record<string, unknown> incompatible with Prisma Json type |
+
 ## Session Continuity
 
-Last session: 2026-03-02
-Stopped at: 08-05 checkpoint:human-verify (build passed, awaiting user approval)
-Resume file: .planning/phases/08-scheduled-emails-and-client-communications/.continue-here.md
+Last session: 2026-03-07
+Stopped at: Completed 09-01-PLAN.md
+Resume file: None
