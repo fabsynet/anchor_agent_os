@@ -62,8 +62,8 @@ export function RoleChangeDialog({
               type="radio"
               name="role"
               value="ADMIN"
-              checked={selectedRole === 'ADMIN'}
-              onChange={() => setSelectedRole('ADMIN' as typeof selectedRole)}
+              checked={selectedRole === 'admin'}
+              onChange={() => setSelectedRole('admin' as typeof selectedRole)}
               className="h-4 w-4 accent-[#2563eb]"
             />
             <div>
@@ -79,8 +79,8 @@ export function RoleChangeDialog({
               type="radio"
               name="role"
               value="AGENT"
-              checked={selectedRole === 'AGENT'}
-              onChange={() => setSelectedRole('AGENT' as typeof selectedRole)}
+              checked={selectedRole === 'agent'}
+              onChange={() => setSelectedRole('agent' as typeof selectedRole)}
               className="h-4 w-4 accent-[#2563eb]"
             />
             <div>
