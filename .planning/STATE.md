@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 9 of 9 (Founder / Super-Admin Dashboard)
-Plan: 2 of 8 in current phase
+Plan: 3 of 8 in current phase
 Status: In progress
-Last activity: 2026-03-07 -- Completed 09-02-PLAN.md (Admin App Shell & Auth)
+Last activity: 2026-03-07 -- Completed 09-03-PLAN.md (Admin Backend API)
 
-Progress: █████████████████████████████████░░░░░░░░ 86% (37/43 plans; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 at Phase 8 checkpoint)
+Progress: █████████████████████████████████░░░░░░░░ 88% (38/43 plans; 01-04, 01-05 at Phase 1 checkpoint, 07-05 at Phase 7 checkpoint, 08-05 at Phase 8 checkpoint)
 
 ## Phase 1 Checkpoint State (Carried Forward)
 
@@ -282,9 +282,11 @@ DIRECT_DATABASE_URL=<same as root -- needed for migrations>
 | Metadata cast to Prisma.InputJsonValue | Phase 9 | Record<string, unknown> incompatible with Prisma Json type |
 | Admin app uses always-dark theme (no toggle) | Phase 9 | Visually distinguishes admin from tenant app |
 | Manual app scaffold instead of create-next-app | Phase 9 | Avoids interactive prompts, exact dependency control |
+| SuperAdminGuard looks up by email not auth user ID | Phase 9 | SuperAdmin table has own UUIDs; email is the link to auth.users |
+| Growth time series N+1 queries per month | Phase 9 | 12 months = 36 queries; simpler than raw SQL for admin dashboard |
 
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 09-02-PLAN.md
+Stopped at: Completed 09-03-PLAN.md
 Resume file: None
