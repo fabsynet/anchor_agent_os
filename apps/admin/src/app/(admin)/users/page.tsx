@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { AdminUserListItem, AgencyListItem } from '@anchor/shared';
 import { api } from '@/lib/api';
 import { UserTable } from '@/components/users/user-table';
+import { useImpersonation } from '@/components/impersonation/impersonation-provider';
 
 interface UsersResponse {
   users: AdminUserListItem[];
@@ -103,12 +104,17 @@ export default function UsersPage() {
     loadAgencies();
   }, []);
 
-  function handleImpersonate(user: AdminUserListItem) {
-    // Will be wired up in Task 2 via ImpersonationProvider
-    showToast(
-      `Impersonation of ${user.firstName} ${user.lastName} - feature requires ImpersonationProvider`,
-      'error',
-    );
+  const { startImpersonation } = useImpersonation();
+
+  async function handleImpersonate(user: AdminUserListItem) {
+    try {
+      await startImpersonation(user.id);
+    } catch (err) {
+      showToast(
+        err instanceof Error ? err.message : 'Failed to start impersonation',
+        'error',
+      );
+    }
   }
 
   return (
