@@ -53,6 +53,24 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Verify authenticated user is a super-admin
+  if (user && !isPublicRoute) {
+    const { data: superAdmin } = await supabase
+      .from('super_admins')
+      .select('id, is_active')
+      .eq('email', user.email!)
+      .single();
+
+    if (!superAdmin || !superAdmin.is_active) {
+      // Not a super-admin — sign out and redirect to login with error
+      await supabase.auth.signOut();
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Redirect authenticated users away from login
   if (user && isPublicRoute) {
     const url = request.nextUrl.clone();
